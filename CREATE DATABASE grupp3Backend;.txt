@@ -1,0 +1,40 @@
+CREATE DATABASE grupp3Backend;
+
+CREATE TABLE category(
+    categoryId INT NOT NULL AUTO_INCREMENT,
+    categoryName VARCHAR(100) UNIQUE,
+    PRIMARY KEY (categoryId)
+);
+
+CREATE TABLE user (
+    userId INT NOT NULL AUTO_INCREMENT,
+    firstName VARCHAR(100),
+    lastName VARCHAR(100),
+    phone INT UNIQUE,
+    email VARCHAR(100) UNIQUE,
+    city VARCHAR(200),
+    PRIMARY KEY (userId)
+);
+
+CREATE TABLE task (
+    taskId INT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    description VARCHAR(700),
+    date DATE,
+    address VARCHAR(200) NOT NULL,
+    price DEC(10, 2) NOT NULL,
+    status VARCHAR(20) DEFAULT 'New' NOT NULL,
+    dateCreated DATETIME DEFAULT NOW(),
+    taskCategoryId INT NOT NULL,
+    FOREIGN KEY (taskCategoryId) REFERENCES category (categoryId)
+);
+
+CREATE TABLE userTask (
+    userTaskId INT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
+    userTaskUId INT NOT NULL,
+    userTaskTId INT NOT NULL,
+    userRole VARCHAR(30),
+    FOREIGN KEY (userTaskUId) REFERENCES user (userId),
+    FOREIGN KEY (userTaskTId) REFERENCES task (taskId),
+    confirmed BOOLEAN DEFAULT FALSE
+);
