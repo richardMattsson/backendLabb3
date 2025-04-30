@@ -6,21 +6,23 @@ import TestComponent from './components/TestComponent.vue';
 
 <template>
   <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="./assets/logo.svg"
-      width="125"
-      height="125"
-    />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
+    <nav>
+      <ul>
+        <li>
+          <RouterLink to="/">Hem</RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/categories">Kategorier</RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/createtask">Skapa tjänst</RouterLink>
+        </li>
+      </ul>
+    </nav>
   </header>
 
   <main>
-    <TestComponent />
+    <RouterView />
     <!-- <TheWelcome /> -->
   </main>
 </template>

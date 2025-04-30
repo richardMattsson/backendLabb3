@@ -20,20 +20,22 @@ function getCategory(categoryId) {
     });
   });
 }
-function createCategory(categoryName) {
+function createCategory(categoryName, categoryImage) {
   return new Promise((resolve, reject) => {
-    let sql = 'INSERT INTO category(categoryName)VALUES(?)';
+    let sql = 'INSERT INTO category(categoryName, categoryImage)VALUES (?, ?)';
+    let params = [categoryName, categoryImage];
 
-    connection.query(sql, [categoryName], (err) => {
+    connection.query(sql, params, (err) => {
       if (err) reject(err);
       else resolve();
     });
   });
 }
-function updateCategory(categoryName, categoryId) {
+function updateCategory(categoryName, categoryImage, categoryId) {
   return new Promise((resolve, reject) => {
-    let sql = 'UPDATE category SET categoryName = ? WHERE categoryId = ?';
-    let params = [categoryName, categoryId];
+    let sql =
+      'UPDATE category SET categoryName = ?, categoryImage = ? WHERE categoryId = ?';
+    let params = [categoryName, categoryImage, categoryId];
 
     connection.query(sql, params, (err) => {
       if (err) reject(err);

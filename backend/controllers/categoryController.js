@@ -25,10 +25,10 @@ exports.getCategory = async (req, res) => {
 };
 
 exports.createCategory = async (req, res) => {
-  const { categoryName } = req.body;
+  const { categoryName, categoryImage } = req.body;
 
   try {
-    await categoryService.createCategory(categoryName);
+    await categoryService.createCategory(categoryName, categoryImage);
     return res.status(201).json({
       success: true,
       message: 'Du har skapat en ny kategori!',
@@ -42,10 +42,14 @@ exports.createCategory = async (req, res) => {
 };
 
 exports.updateCategory = async (req, res) => {
-  const { categoryName, categoryId } = req.body;
+  const { categoryName, categoryImage, categoryId } = req.body;
 
   try {
-    await categoryService.updateCategory(categoryName, categoryId);
+    await categoryService.updateCategory(
+      categoryName,
+      categoryImage,
+      categoryId
+    );
     return res.status(201).json({
       success: true,
       message: 'Du har uppdaterat en kategori!',
