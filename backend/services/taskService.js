@@ -36,15 +36,37 @@ function getTaskUserDetails(taskId) {
     })
 }
 
+function getTasksInCategory(categoryId) {
+    return new Promise((resolve, reject) => {
+        let sql = 'SELECT title, description, date, price, address, c.categoryName FROM task INNER JOIN category c on task.taskCategoryId = c.categoryId WHERE categoryId = ?';
+        connectionMySQL.query(sql, [categoryId], (err, rows) => {
+            if (err) 
+                reject(err);
+            else 
+            resolve(rows);
+        })
+    })
+}
 
-
+function createTask(title, description, date, address, price, taskCategoryId) {
+    return new Promise((resolve, reject) => {
+        let sql = 'INSERT INTO task (title, description, date, address, price, taskCategoryId) VALUES (?, ?, ?, ?, ?, ?)';
+        let params = [title, description, date, address, price, taskCategoryId];
+        connectionMySQL.query(sql, params, (err, rows) => {
+            if (err)
+                reject(err);
+            else 
+            resolve(rows);
+        }) 
+    })
+}
 
 module.exports = {
     getTasks,
     getTask,
     getTaskUserDetails,
-    // getTaskInCategory,
-    // createTask,
+    getTasksInCategory,
+    createTask,
     // editTask,
     // deleteTask
 }
