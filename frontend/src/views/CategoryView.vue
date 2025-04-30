@@ -19,13 +19,11 @@ async function getCategories() {
 getCategories();
 </script>
 <template>
-  <h1>Kategorier</h1>
-  <!-- <ul>
-    <li v-for="category in categories">{{ category.categoryName }}</li>
-  </ul> -->
+  <h1 style="text-align: center">Kategorier</h1>
+
   <BContainer>
     <BRow>
-      <BCol class="mt-4 mb-2" cols="6" sm="4" v-for="category in categories">
+      <BCol class="mt-4 mb-2" cols="6" md="4" v-for="category in categories">
         <BCard
           overlay
           :title="category.categoryName"
@@ -34,43 +32,10 @@ getCategories();
           tag="article"
           style="max-width: 20rem"
         >
-          <!-- no-body tag="section" class="categoryCard" -->
-
-          <!-- <BCardImg
-            :src="category.categoryImage"
-            alt="Image"
-            top
-            class="categoryCardImage"
-          /> -->
-          <!-- <BCardBody>
-            <BCardTitle>{{ category.categoryName }}</BCardTitle> -->
-          <!-- <BCardSubtitle class="mb-2">Card Sub Title</BCardSubtitle> -->
-          <!-- <BCardText>
-              {{ recept.recept_beskrivning }}
-            </BCardText>
-            <BContainer>
-              <BRow>
-                <BCol> {{ recept.recept_tid_minuter }} min </BCol>
-                <BCol>{{ recept.recept_kategori }} </BCol>
-              </BRow>
-            </BContainer> -->
-          <!-- </BCardBody> -->
-          <!-- <BCardText>
-            {{ recept.recept_beskrivning }}
-          </BCardText> -->
         </BCard>
       </BCol>
     </BRow>
   </BContainer>
 </template>
 
-<style scoped>
-.categoryCard {
-  height: 150px;
-  background-color: grey;
-  color: white;
-}
-.categoryCardImage {
-  max-width: 100%;
-}
-</style>
+<style scoped></style>
