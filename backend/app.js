@@ -12,6 +12,11 @@ app.use(cors());
 app.use(express.static('public'));
 
 const categoryRoute = require('./routes/categoryRoute');
+const taskRoutes = require('./routes/taskRoute');
+const userRoutes = require('./routes/userRoute');
+
 app.use(categoryRoute);
+app.use(taskRoutes);
+app.use(userRoutes);
 
 app.listen(port, () => console.log(`Labb 3 app listening on port ${port}.`));
