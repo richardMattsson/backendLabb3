@@ -40,10 +40,10 @@ function getTasksInCategory(categoryId) {
     return new Promise((resolve, reject) => {
         let sql = 'SELECT title, description, date, price, address, c.categoryName FROM task INNER JOIN category c on task.taskCategoryId = c.categoryId WHERE categoryId = ?';
         connectionMySQL.query(sql, [categoryId], (err, rows) => {
-            if (err) 
+            if (err)
                 reject(err);
-            else 
-            resolve(rows);
+            else
+                resolve(rows);
         })
     })
 }
@@ -55,9 +55,34 @@ function createTask(title, description, date, address, price, taskCategoryId) {
         connectionMySQL.query(sql, params, (err, rows) => {
             if (err)
                 reject(err);
-            else 
-            resolve(rows);
-        }) 
+            else
+                resolve(rows);
+        })
+    })
+}
+
+function editTask(title, description, date, address, price, taskCategoryId, status, taskId) {
+    return new Promise((resolve, reject) => {
+        let sql = 'UPDATE task SET title = ?, description = ?, date = ?, address = ?, price = ?, taskCategoryId = ?, status = ? WHERE taskId = ?';
+        let params = [title, description, date, address, price, taskCategoryId, status, taskId];
+        connectionMySQL.query(sql, params, (err) => {
+            if (err)
+                reject(err);
+            else
+                resolve();
+        })
+    })
+}
+
+function deleteTask(taskId) {
+    return new Promise((resolve, reject) => {
+        let sql = 'DELETE FROM task WHERE taskId = ?';
+        connectionMySQL.query(sql, [taskId], (err) => {
+            if (err)
+                reject(err);
+            else
+                resolve();
+        })
     })
 }
 
@@ -67,6 +92,6 @@ module.exports = {
     getTaskUserDetails,
     getTasksInCategory,
     createTask,
-    // editTask,
-    // deleteTask
+    editTask,
+    deleteTask
 }
