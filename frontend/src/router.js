@@ -1,15 +1,15 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-import CategoryView from './views/CategoryView.vue';
 import HomeView from './views/HomeView.vue';
 import CreateTaskView from './views/CreateTaskView.vue';
+import TasksView from './views/TasksView.vue';
 
 export default createRouter({
   history: createWebHashHistory(),
   routes: [
     {
-      component: CategoryView,
-      path: '/categories',
+      component: TasksView,
+      path: '/tasks',
     },
     {
       component: HomeView,
