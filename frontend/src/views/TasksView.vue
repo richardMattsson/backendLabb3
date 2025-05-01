@@ -1,14 +1,16 @@
 <script setup>
 import { ref } from 'vue';
+import { onMounted } from 'vue';
+import { useTaskStore } from '@/stores/taskStore';
+
+const taskStore = useTaskStore()
+
+onMounted(async () => {
+  await taskStore.fetchAllTasks()
+  console.log('Tasks fetched:', taskStore.tasks)
+})
 
 const categories = ref(null);
-
-const testTasks = ref([
-  { title: 'test' },
-  { title: 'test' },
-  { title: 'test' },
-  { title: 'test' },
-]);
 
 async function getCategories() {
   const url = 'http://localhost:3000/api/categories';
@@ -25,28 +27,23 @@ async function getCategories() {
 }
 getCategories();
 </script>
+
 <template>
   <article>
     <BContainer id="tasks-container">
       <BRow align-h="center">
         <BCol>
           <h1 style="text-align: center">Tjänster</h1>
-          <BCard
-            v-for="task in testTasks"
-            no-body
-            class="overflow-hidden mt-4 mb-2"
-            style="max-width: 540px; cursor: pointer"
-          >
+          <BCard v-for="task in taskStore.tasks" no-body class="overflow-hidden mt-4 mb-2"
+            style="max-width: 540px; cursor: pointer">
             <BRow class="g-0">
-              <BCol md="4">
+              <!-- <BCol md="4">
                 <BCardImg alt="Image" class="rounded-0" />
-              </BCol>
+              </BCol> -->
               <BCol md="8">
                 <BCardBody :title="task.title">
                   <BCardText>
-                    This is a wider card with supporting text as a natural
-                    lead-in to additional content. This content is a little bit
-                    longer.
+                    {{ task.description }}
                   </BCardText>
                 </BCardBody>
               </BCol>
@@ -57,20 +54,9 @@ getCategories();
           <BContainer>
             <BRow>
               <h1 style="text-align: center">Kategorier</h1>
-              <BCol
-                class="mt-4 mb-2"
-                cols="6"
-                lg="4"
-                v-for="category in categories"
-              >
-                <BCard
-                  overlay
-                  :title="category.categoryName"
-                  :img-src="category.categoryImage"
-                  img-alt="Image"
-                  tag="figure"
-                  style="max-width: 20rem; cursor: pointer"
-                >
+              <BCol class="mt-4 mb-2" cols="6" lg="4" v-for="category in categories">
+                <BCard overlay :title="category.categoryName" :img-src="category.categoryImage" img-alt="Image"
+                  tag="figure" style="max-width: 20rem; cursor: pointer">
                 </BCard>
               </BCol>
             </BRow>
