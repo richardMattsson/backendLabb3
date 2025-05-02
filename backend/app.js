@@ -11,9 +11,13 @@ app.use(cors());
 
 app.use(express.static('public'));
 
+// fattas const userTaskRoutes nedan
+
 const categoryRoute = require('./routes/categoryRoute');
 const taskRoutes = require('./routes/taskRoute');
 const userRoutes = require('./routes/userRoute');
+
+// fattas app.use(userTaskRoutes) nedan
 
 app.use(categoryRoute);
 app.use(taskRoutes);
