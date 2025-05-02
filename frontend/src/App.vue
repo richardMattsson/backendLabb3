@@ -21,4 +21,6 @@
   </main>
 </template>
 
-<style scoped></style>
+<style>
+@import "primeicons/primeicons.css";
+</style>

@@ -13,26 +13,19 @@ onMounted(async () => {
 </script>
 
 <template>
-        <BCol>
-          <h1 style="text-align: center">Tjänster</h1>
-          <BCard
-            v-for="task in taskStore.tasks"
-            no-body
-            class="overflow-hidden mt-4 mb-2"
-            style="max-width: 540px; cursor: pointer"
-          >
-            <BRow class="g-0">
-              <!-- <BCol md="4">
-                <BCardImg alt="Image" class="rounded-0" />
-              </BCol> -->
-              <BCol md="8">
-                <BCardBody :title="task.title">
-                  <BCardText>
-                    {{ task.description }}
-                  </BCardText>
-                </BCardBody>
-              </BCol>
-            </BRow>
-          </BCard>
-        </BCol>
+  <BCol>
+    <h1 style="text-align: center">Tjänster</h1>
+
+    <article>
+      <b-card v-for="task in taskStore.tasks" :title="task.title" :subtitle="task.price + ' kr'" class="mb-2">
+        <b-card-text>
+          {{ task.description }}
+        </b-card-text>
+
+        <b-card-text style="color:sienna;"> <span class="pi pi-map-marker"></span> {{ task.address }}</b-card-text>
+
+        <a @click="router.push(`/tasks/${task.taskId}`)" href="#" class="card-link">Visa tjänst</a>
+      </b-card>
+    </article>
+  </BCol>
 </template>
