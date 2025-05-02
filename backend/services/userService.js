@@ -20,6 +20,17 @@ function getUser(id) {
   })
 }
 
+function getUserTasksRole(tasksrole, id) {
+  return new Promise((resolve, reject) => {
+    let sql =
+    "SELECT t.title, t.date, t.status, userTask.confirmed FROM user u INNER JOIN userTask ON u.userId = userTask.userTaskUId INNER JOIN task t on userTask.userTaskTId = t.taskId WHERE userRole = ? AND userId = ?"
+    connectionMySQL.query(sql, [tasksrole, id], (err, rows) => {
+      if (err) reject(err)
+      else resolve(rows)
+    })
+  })
+}
+
 function createUser(firstName, lastName, phone, email, city) {
   return new Promise((resolve, reject) => {
     let sql =
@@ -57,6 +68,7 @@ function deleteUser(id) {
 module.exports = {
   getUsers,
   getUser,
+  getUserTasksRole,
   createUser,
   updateUser,
   deleteUser,
