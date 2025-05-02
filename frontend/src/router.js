@@ -22,7 +22,7 @@ export default createRouter({
       path: '/',
     },
     {
-      commponent: ProfileView,
+      component: ProfileView,
       path: '/profile',
     },
     {
