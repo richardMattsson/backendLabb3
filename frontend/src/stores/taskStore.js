@@ -27,6 +27,19 @@ export const useTaskStore = defineStore('taskStore', {
       }
     },
 
+    async fetchLatestTasks() {
+        this.loading = true;
+        try {
+          const res = await axios.get('http://localhost:3000/api/newtasks');
+          this.tasks = res.data.newTasks;
+          this.error = null;
+        } catch (err) {
+          this.error = err.message;
+        } finally {
+          this.loading = false;
+        }
+    },
+
     async fetchTask(taskId) {
       this.loading = true;
       try {

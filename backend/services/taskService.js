@@ -48,6 +48,18 @@ function getTasksInCategory(categoryId) {
     })
 }
 
+function getNewTasks() {
+    return new Promise((resolve, reject) => {
+        let sql = "SELECT * FROM task WHERE status='New' ORDER BY dateCreated DESC";
+        connectionMySQL.query(sql, (err, rows) => {
+            if (err)
+                reject(err);
+            else
+                resolve(rows);
+        })
+    })
+}
+
 function createTask(title, description, date, address, price, taskCategoryId) {
     return new Promise((resolve, reject) => {
         let sql = 'INSERT INTO task (title, description, date, address, price, taskCategoryId) VALUES (?, ?, ?, ?, ?, ?)';
@@ -91,6 +103,7 @@ module.exports = {
     getTask,
     getTaskUserDetails,
     getTasksInCategory,
+    getNewTasks,
     createTask,
     editTask,
     deleteTask

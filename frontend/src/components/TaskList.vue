@@ -7,7 +7,7 @@ const router = useRouter();
 const taskStore = useTaskStore();
 
 onMounted(async () => {
-  await taskStore.fetchAllTasks();
+  await taskStore.fetchLatestTasks();
   console.log('Tasks fetched:', taskStore.tasks);
 });
 </script>
@@ -17,7 +17,7 @@ onMounted(async () => {
     <h1 style="text-align: center">Tjänster</h1>
 
     <article>
-      <b-card v-for="task in taskStore.tasks" :title="task.title" :subtitle="task.price + ' kr'" class="mb-2">
+      <b-card v-for="task in taskStore.tasks.slice(0, 6 || taskStore.tasks.length)" :title="task.title" :subtitle="task.price + ' kr'" class="mb-2">
         <b-card-text>
           {{ task.description }}
         </b-card-text>

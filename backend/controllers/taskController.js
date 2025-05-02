@@ -53,6 +53,17 @@ exports.getTasksInCategory = (async (req, res) => {
     }
 });
 
+exports.getNewTasks = (async (req, res) => {
+    try {
+        const newTasks = await taskService.getNewTasks();
+        res.json({ newTasks });
+    } catch {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+})
+
 exports.createTask = (async (req, res) => {
     const { title, description, date, address, price, taskCategoryId } = req.body;
 
