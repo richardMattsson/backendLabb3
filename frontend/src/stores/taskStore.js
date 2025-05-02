@@ -7,6 +7,7 @@ export const useTaskStore = defineStore('taskStore', {
     taskDetails: [],
     tasksInCategory: [],
     categories: [],
+    oneCategory: null,
     users: [],
     loading: false,
     error: null,
@@ -76,6 +77,17 @@ export const useTaskStore = defineStore('taskStore', {
         const res = await axios.get('http://localhost:3000/api/categories');
         this.categories = res.data.categories;
         console.log(res.data);
+      } catch (err) {
+        this.error = err.message;
+      }
+    },
+    async fetchOneCategory(categoryId) {
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/api/categories/${categoryId}`
+        );
+        this.oneCategory = res.data.category;
+        //console.log(res.data.category);
       } catch (err) {
         this.error = err.message;
       }

@@ -13,9 +13,13 @@ onMounted(async () => {
   console.log('Categories fetched:', taskStore.categories);
 });
 
-function sendToTasksInCategoryView(id) {
+function sendToTasksInCategoryView(id, name) {
   console.log(id);
-  router.push({ name: 'TasksInCategory', params: { categoryId: id } });
+  router.push({
+    name: 'TasksInCategory',
+    params: { categoryId: id },
+    query: { endpoint: name },
+  });
 }
 </script>
 
@@ -63,7 +67,12 @@ function sendToTasksInCategoryView(id) {
                   img-alt="Image"
                   tag="figure"
                   style="max-width: 20rem; cursor: pointer"
-                  @click="sendToTasksInCategoryView(category.categoryId)"
+                  @click="
+                    sendToTasksInCategoryView(
+                      category.categoryId,
+                      category.categoryName
+                    )
+                  "
                 >
                 </BCard>
               </BCol>

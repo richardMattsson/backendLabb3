@@ -13,19 +13,6 @@
       </BCollapse>
       <!-- <BNavbarBrand href="#">Grupp3Projekt</BNavbarBrand> -->
     </BNavbar>
-    <!-- <nav>
-      <ul>
-        <li>
-          <RouterLink to="/">Hem</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/tasks">Tjänster</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/createtask">Skapa tjänst</RouterLink>
-        </li>
-      </ul>
-    </nav> -->
   </header>
 
   <main>

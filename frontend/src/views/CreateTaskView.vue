@@ -1,5 +1,14 @@
 <script setup>
 import { ref } from 'vue';
+import { onMounted } from 'vue';
+import { useTaskStore } from '@/stores/taskStore';
+
+const taskStore = useTaskStore();
+
+onMounted(async () => {
+  await taskStore.fetchCategories();
+  console.log('Categories fetched:', taskStore.categories);
+});
 
 const title = ref(''),
   date = ref(null),
@@ -10,20 +19,22 @@ const title = ref(''),
   taskCategoryId = ref(null),
   userId = ref(null);
 
-async function getCategories() {
-  const url = 'http://localhost:3000/api/categories';
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-    const result = await response.json();
-    categories.value = result.categories;
-  } catch (error) {
-    console.error(error.message);
-  }
+function addNewTask() {
+  // console.log(
+  //   title.value,
+  //   date.value,
+  //   description.value,
+  //   address.value,
+  //   price.value,
+  //   taskCategoryId.value
+  // );
+  // skapar först en task och hämtar dess taskId
+  // fetchTask(taskId)
+  //
+  // lägger till en ny rad i userTask-tabbelen
+  // Behöver information om userId (den är beställare som default)
+  // Om vi skapar en logga in funktion kan vi spara userId via Pinia
 }
-getCategories();
 </script>
 
 <template>
@@ -99,7 +110,7 @@ getCategories();
               <BFormSelectOption
                 :value="category.categoryId"
                 :key="index"
-                v-for="(category, index) in categories"
+                v-for="(category, index) in taskStore.categories"
                 >{{ category.categoryName }}</BFormSelectOption
               >
             </BFormSelect>
@@ -119,7 +130,9 @@ getCategories();
             ></BFormInput>
           </BFormGroup>
 
-          <BButton class="mt-4" variant="light">Lägg till</BButton>
+          <BButton @click="addNewTask" class="mt-4" variant="light"
+            >Lägg till</BButton
+          >
         </BForm>
       </BCol>
     </BRow>
