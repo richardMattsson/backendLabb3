@@ -1,6 +1,4 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
   <header>
@@ -9,7 +7,7 @@
       <BCollapse id="nav-scroll" is-nav>
         <BNavbarNav>
           <BNavItem to="/">Hem</BNavItem>
-          <BNavItem to="/tasks">Tjänster</BNavItem>
+          <BNavItem to="/tasks">Visa Tjänster</BNavItem>
           <BNavItem to="/createtask">Skapa Tjänst</BNavItem>
         </BNavbarNav>
       </BCollapse>
