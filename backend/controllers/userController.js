@@ -28,14 +28,14 @@ exports.getUser = (async (req, res) => {
 })
 
 exports.getUserTasksRole = (async (req, res) => {
-  const { tasksrole, id } = req.params
+  const { id, tasksrole} = req.params
   try {
-    const userTasksRole = await userService.getUserTasksRole(tasksrole, id)
+    const userTasksRole = await userService.getUserTasksRole(id, tasksrole)
     res.json({ userTasksRole })
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: `Fel vid hämtning av användarens uppgifter med rollen: ${tasksrole} och ID: ${id}`,
+      message: `Fel vid hämtning av användarens uppgifter med ID: ${id} och rollen: ${tasksrole}`,
       error: error.message,
     })
   }
