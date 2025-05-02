@@ -1,59 +1,70 @@
-const userTaskService = require('..services/userTaskService');
-
-// exports här instället för const
-const createUserTask = async (req, res) => {
-  const { userRole, userTaskTId, userTaskUId, confirmed } = req.body;
-};
-
-try {
-  const result = await userTaskService.createUserTask(
-    userRole,
-    userTaskTId,
-    userTaskUId,
-    confirmed
-  );
-  res.status(201).json({
-    success: true,
-    message: 'Du har skapat en userTask!',
-    userTaskId: result.userTaskId,
-  });
-} catch (error) {
-  res.status(500).json({
-    success: false,
-    message: error.message,
-  });
-}
+const userTaskService = require('../services/userTaskService');
 
 exports.getUserTasks = async (req, res) => {
-  const { userId } = req.params;
+  try {
+    const userTasks = await userTaskService.getUserTasks();
+    res.json({ userTasks });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
 };
 
-try {
-  const tasks = await userTaskService.getUserTasks(userId);
-  res.json({ success: true, tasks });
-} catch (error) {
-  res.status(500).json({ success: false, error: error.message });
-}
+exports.getUserTask = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const task = await userTaskService.getUserTask(userId);
+    res.json({ task });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+};
+
+exports.createUserTask = async (req, res) => {
+  const { userRole, userTaskTId, userTaskUId, confirmed } = req.body;
+
+  try {
+    await userTaskService.createUserTask(
+      userRole,
+      userTaskTId,
+      userTaskUId,
+      confirmed
+    );
+    return res.status(201).json({
+      success: true,
+      message: 'Du har skapat en userTask!',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 exports.updateUserTask = async (req, res) => {
   const { userTaskId, confirmed } = req.body;
+  try {
+    await userTaskService.updateUserTask(userTaskId, confirmed);
+    res.status(200).json({
+      success: true,
+      message: 'userTask uppdaterad!',
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
 };
 
-try {
-  await userTaskService.updateUserTask(userTaskId, confirmed);
-  res.status(200).json({
-    success: true,
-    message: 'userTask uppdaterad!',
-  });
-} catch (error) {
-  res.status(500).json({ sucess: false, error: error.message });
-}
-
 exports.deleteUserTask = async (req, res) => {
-  const { id } = req.params;
+  const { userId } = req.params;
 
   try {
-    await userTaskService.deleteUserTask(id);
+    await userTaskService.deleteUserTask(userId);
     res.status(200).json({
       success: true,
       message: 'userTask raderad!',
