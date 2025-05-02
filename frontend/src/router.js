@@ -13,16 +13,16 @@ export default createRouter({
       component: TasksView,
       path: '/tasks',
     },
-    {
-      component: TasksView,
-      path: '/tasks/:taskId',
-    },
+    // {
+    //   component: TasksView,
+    //   path: '/tasks/:taskId',
+    // },
     {
       component: HomeView,
       path: '/',
     },
     {
-      commponent: ProfileView,
+      component: ProfileView,
       path: '/profile',
     },
     {

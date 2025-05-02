@@ -32,7 +32,8 @@ function addNewTask() {
   // fetchTask(taskId)
   //
   // lägger till en ny rad i userTask-tabbelen
-  // Behöver information om userId (den är beställare som default)
+  // använder taskId till userTaskTId
+  // Behöver information om userId till userTaskUId
   // Om vi skapar en logga in funktion kan vi spara userId via Pinia
 }
 </script>
@@ -101,7 +102,7 @@ function addNewTask() {
 
           <BFormGroup id="input-group-6" label="Kategori:" label-for="input-6">
             <BFormSelect
-              v-if="categories"
+              v-if="taskStore.categories"
               id="input-6"
               v-model="taskCategoryId"
               class="mb-2"
