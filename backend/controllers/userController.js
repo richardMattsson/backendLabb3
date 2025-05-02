@@ -27,6 +27,20 @@ exports.getUser = (async (req, res) => {
   }
 })
 
+exports.getUserTasksRole = (async (req, res) => {
+  const { tasksrole, id } = req.params
+  try {
+    const userTasksRole = await userService.getUserTasksRole(tasksrole, id)
+    res.json({ userTasksRole })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: `Fel vid hämtning av användarens uppgifter med rollen: ${tasksrole} och ID: ${id}`,
+      error: error.message,
+    })
+  }
+})
+
 exports.createUser = (async (req, res) => {
   const { firstName, lastName, phone, email, city } = req.body
   if (!firstName || firstName.trim().length < 1) {
