@@ -14,9 +14,13 @@ onMounted(async () => {
   console.log('Categories fetched:', taskStore.categories);
 });
 
-function sendToTasksInCategoryView(id) {
+function sendToTasksInCategoryView(id, name) {
   console.log(id);
-  router.push({ name: 'TasksInCategory', params: { categoryId: id } });
+  router.push({
+    name: 'TasksInCategory',
+    params: { categoryId: id },
+    query: { endpoint: name },
+  });
 }
 </script>
 
@@ -29,11 +33,27 @@ function sendToTasksInCategoryView(id) {
           <BContainer>
             <BRow>
               <h1 style="text-align: center">Kategorier</h1>
-              <BCol class="mt-4 mb-2" cols="6" lg="4" v-for="category in taskStore.categories"
-                :key="category.categoryId">
-                <BCard overlay :title="category.categoryName" :img-src="category.categoryImage" img-alt="Image"
-                  tag="figure" style="max-width: 20rem; cursor: pointer"
-                  @click="sendToTasksInCategoryView(category.categoryId)">
+              <BCol
+                class="mt-4 mb-2"
+                cols="6"
+                lg="4"
+                v-for="category in taskStore.categories"
+                :key="category.categoryId"
+              >
+                <BCard
+                  overlay
+                  :title="category.categoryName"
+                  :img-src="category.categoryImage"
+                  img-alt="Image"
+                  tag="figure"
+                  style="max-width: 20rem; cursor: pointer"
+                  @click="
+                    sendToTasksInCategoryView(
+                      category.categoryId,
+                      category.categoryName
+                    )
+                  "
+                >
                 </BCard>
               </BCol>
             </BRow>

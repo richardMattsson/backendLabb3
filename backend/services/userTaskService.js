@@ -1,21 +1,16 @@
 const connection = require('../connectionMySQL');
 
-// behöver userTaskUId i parametern (inom parentesen)
-function createUserTask(userRole, userTaskTId, confirmed) {
+function getUserTasks() {
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO userTask (userRole, userTaskTId, userTaskUId, confirmed)
-        VALUES (?, ?, ?, ?)`;
+    const sql = `SELECT * FROM userTask`;
 
-    const params = [userRole, userTaskTid, userTaskUId, confirmed];
-
-    connection.query(sql, params, (err, result) => {
+    connection.query(sql, (err, rows) => {
       if (err) reject(err);
-      else resolve({ userTaskId: result.insertId });
+      else resolve(rows);
     });
   });
 }
-
-function getUserTasks(userId) {
+function getUserTask(userId) {
   return new Promise((resolve, reject) => {
     const sql = `SELECT * FROM userTask WHERE userTaskUId = ?`;
 
@@ -26,7 +21,21 @@ function getUserTasks(userId) {
   });
 }
 
-function updateUserTask(userTaskId, confirmed) {
+function createUserTask(userRole, userTaskTId, userTaskUId, confirmed) {
+  return new Promise((resolve, reject) => {
+    const sql = `INSERT INTO userTask (userRole, userTaskTId, userTaskUId, confirmed)
+        VALUES (?, ?, ?, ?)`;
+
+    const params = [userRole, userTaskTId, userTaskUId, confirmed];
+
+    connection.query(sql, params, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
+function updateUserTask(confirmed, userTaskId) {
   return new Promise((resolve, reject) => {
     const sql = 'UPDATE userTask SET confirmed = ? WHERE userTaskId = ?';
     const params = [confirmed, userTaskId];
@@ -43,7 +52,7 @@ function deleteUserTask(userTaskId) {
   return new Promise((resolve, reject) => {
     const sql = 'DELETE FROM userTask WHERE userTaskId = ?';
 
-    connection.query(sql, params, (err) => {
+    connection.query(sql, [userTaskId], (err) => {
       if (err) reject(err);
       else resolve();
     });
@@ -51,8 +60,9 @@ function deleteUserTask(userTaskId) {
 }
 
 module.exports = {
-  createUserTask,
   getUserTasks,
+  getUserTask,
+  createUserTask,
   updateUserTask,
   deleteUserTask,
 };
