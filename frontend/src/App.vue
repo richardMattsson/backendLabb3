@@ -9,6 +9,7 @@
           <BNavItem to="/">Hem</BNavItem>
           <BNavItem to="/tasks">Visa Tjänster</BNavItem>
           <BNavItem to="/createtask">Skapa Tjänst</BNavItem>
+          <BNavItem to="/profile">Profil</BNavItem>
         </BNavbarNav>
       </BCollapse>
       <!-- <BNavbarBrand href="#">Grupp3Projekt</BNavbarBrand> -->
