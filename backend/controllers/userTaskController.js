@@ -24,15 +24,10 @@ exports.getUserTask = async (req, res) => {
 };
 
 exports.createUserTask = async (req, res) => {
-  const { userRole, userTaskTId, userTaskUId, confirmed } = req.body;
+  const { userRole, userTaskTId, userTaskUId } = req.body;
 
   try {
-    await userTaskService.createUserTask(
-      userRole,
-      userTaskTId,
-      userTaskUId,
-      confirmed
-    );
+    await userTaskService.createUserTask(userRole, userTaskTId, userTaskUId);
     return res.status(201).json({
       success: true,
       message: 'Du har skapat en userTask!',

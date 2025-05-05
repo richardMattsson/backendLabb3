@@ -21,12 +21,12 @@ function getUserTask(userId) {
   });
 }
 
-function createUserTask(userRole, userTaskTId, userTaskUId, confirmed) {
+function createUserTask(userRole, userTaskTId, userTaskUId) {
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO userTask (userRole, userTaskTId, userTaskUId, confirmed)
-        VALUES (?, ?, ?, ?)`;
+    const sql = `INSERT INTO userTask (userRole, userTaskTId, userTaskUId)
+        VALUES (?, ?, ?)`;
 
-    const params = [userRole, userTaskTId, userTaskUId, confirmed];
+    const params = [userRole, userTaskTId, userTaskUId];
 
     connection.query(sql, params, (err) => {
       if (err) reject(err);
