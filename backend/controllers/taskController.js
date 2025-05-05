@@ -74,13 +74,6 @@ exports.createTask = (async (req, res) => {
         });
     }
 
-    if (!description || description.trim().length < 1) {
-        return res.status(400).json({
-            success: false,
-            error: 'Du har inte skrivit in något beskrivning för task',
-        });
-    }
-
     if (!address || address.trim().length < 1) {
         return res.status(400).json({
             success: false,
@@ -99,14 +92,6 @@ exports.createTask = (async (req, res) => {
         return res.status(400).json({
             success: false,
             error: "Du har inte skrivit in categoryId för uppgiften"
-        })
-    }
-
-
-    if (!date) {
-        return res.status(400).json({
-            success: false,
-            error: "Du har inte skrivit in datum för uppgiften"
         })
     }
 
@@ -135,13 +120,6 @@ exports.editTask = (async (req, res) => {
         });
     }
 
-    if (!description || description.trim().length < 1) {
-        return res.status(400).json({
-            success: false,
-            error: 'Du har inte skrivit in något beskrivning för task',
-        });
-    }
-
     if (!address || address.trim().length < 1) {
         return res.status(400).json({
             success: false,
@@ -162,15 +140,6 @@ exports.editTask = (async (req, res) => {
             error: "Du har inte skrivit in categoryId för uppgiften"
         })
     }
-
-
-    if (!date) {
-        return res.status(400).json({
-            success: false,
-            error: "Du har inte skrivit in datum för uppgiften"
-        })
-    }
-
 
     if (!status || status.trim().length < 1) {
         return res.status(400).json({
