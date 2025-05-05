@@ -28,16 +28,16 @@ export const useTaskStore = defineStore('taskStore', {
     },
 
     async fetchLatestTasks() {
-        this.loading = true;
-        try {
-          const res = await axios.get('http://localhost:3000/api/newtasks');
-          this.tasks = res.data.newTasks;
-          this.error = null;
-        } catch (err) {
-          this.error = err.message;
-        } finally {
-          this.loading = false;
-        }
+      this.loading = true;
+      try {
+        const res = await axios.get('http://localhost:3000/api/newtasks');
+        this.tasks = res.data.newTasks;
+        this.error = null;
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loading = false;
+      }
     },
 
     async fetchTask(taskId) {
@@ -89,7 +89,7 @@ export const useTaskStore = defineStore('taskStore', {
       try {
         const res = await axios.get('http://localhost:3000/api/categories');
         this.categories = res.data.categories;
-        console.log(res.data);
+        //console.log(res.data);
       } catch (err) {
         this.error = err.message;
       }

@@ -7,7 +7,7 @@ const taskStore = useTaskStore();
 
 onMounted(async () => {
   await taskStore.fetchCategories();
-  console.log('Categories fetched:', taskStore.categories);
+  //console.log('Categories fetched:', taskStore.categories);
 });
 
 const title = ref(''),
@@ -17,24 +17,81 @@ const title = ref(''),
   price = ref(null),
   categories = ref(null),
   taskCategoryId = ref(null),
-  userId = ref(null);
+  userId = ref(null),
+  latestUserTaskId = ref(null);
 
-function addNewTask() {
-  // console.log(
-  //   title.value,
-  //   date.value,
-  //   description.value,
-  //   address.value,
-  //   price.value,
-  //   taskCategoryId.value
-  // );
-  // skapar först en task och hämtar dess taskId
-  // fetchTask(taskId)
-  //
-  // lägger till en ny rad i userTask-tabbelen
-  // använder taskId till userTaskTId
-  // Behöver information om userId till userTaskUId
-  // Om vi skapar en logga in funktion kan vi spara userId via Pinia
+async function addNewTask() {
+  const task = {
+    title: title.value,
+    description: description.value,
+    date: date.value,
+    address: address.value,
+    price: price.value,
+    taskCategoryId: taskCategoryId.value,
+  };
+  console.log(task.value);
+  try {
+    const response = await fetch('http://localhost:3000/api/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(task),
+    });
+    if (!response.ok) {
+      console.log(response);
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Servern svarade med:', result);
+
+    getLatestTasks();
+  } catch (error) {
+    console.error('Något gick fel:', error.message);
+  }
+}
+async function getLatestTasks() {
+  const url = 'http://localhost:3000/api/tasks';
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    const result = await response.json();
+    latestUserTaskId.value = result.tasks[result.tasks.length - 1];
+    // console.log(result.tasks);
+    // console.log(latestUserTaskId.value.taskId);
+    createUserTask(latestUserTaskId.value.taskId);
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+async function createUserTask(id) {
+  const userTask = {
+    userRole: 'taskCreator',
+    userTaskUId: userId.value,
+    userTaskTId: id,
+  };
+  console.log(userTask.value);
+  try {
+    const response = await fetch('http://localhost:3000/api/user-tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userTask),
+    });
+    if (!response.ok) {
+      console.log(response);
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Servern svarade med:', result);
+  } catch (error) {
+    console.error('Något gick fel:', error.message);
+  }
 }
 </script>
 
