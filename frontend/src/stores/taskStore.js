@@ -30,24 +30,26 @@ export const useTaskStore = defineStore("taskStore", {
     },
 
     async fetchLatestTasks() {
-      this.loading = true
+      this.loading = true;
       try {
-        const res = await axios.get("http://localhost:3000/api/newtasks")
-        this.tasks = res.data.newTasks
-        this.error = null
+        const res = await axios.get('http://localhost:3000/api/newtasks');
+        this.tasks = res.data.newTasks;
+        this.error = null;
       } catch (err) {
-        this.error = err.message
+        this.error = err.message;
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async fetchTask(taskId) {
       this.loading = true
       try {
-        const res = await axios.get(`http://localhost:3000/api/tasks/${taskId}`)
-        this.taskDetails = res.data
-        this.error = null
+        const res = await axios.get(
+          `http://localhost:3000/api/tasks/${taskId}`
+        );
+        this.task = res.data.task;
+        this.error = null;
       } catch (err) {
         this.error = err.message
       } finally {
@@ -60,9 +62,9 @@ export const useTaskStore = defineStore("taskStore", {
       try {
         const res = await axios.get(
           `http://localhost:3000/api/tasks/details/${taskId}`
-        )
-        this.taskDetails = res.data
-        this.error = null
+        );
+        this.taskDetails = res.data.taskDetails;
+        this.error = null;
       } catch (err) {
         this.error = err.message
       } finally {
@@ -75,9 +77,9 @@ export const useTaskStore = defineStore("taskStore", {
       try {
         const res = await axios.get(
           `http://localhost:3000/api/tasks/by-category/${categoryId}`
-        )
-        this.tasksInCategory = res.data
-        this.error = null
+        );
+        this.tasksInCategory = res.data.tasksInCategory;
+        this.error = null;
       } catch (err) {
         this.error = err.message
       } finally {
@@ -87,9 +89,9 @@ export const useTaskStore = defineStore("taskStore", {
 
     async fetchCategories() {
       try {
-        const res = await axios.get("http://localhost:3000/api/categories")
-        this.categories = res.data.categories
-        console.log(res.data)
+        const res = await axios.get('http://localhost:3000/api/categories');
+        this.categories = res.data.categories;
+        //console.log(res.data);
       } catch (err) {
         this.error = err.message
       }
