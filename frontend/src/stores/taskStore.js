@@ -46,7 +46,7 @@ export const useTaskStore = defineStore('taskStore', {
         const res = await axios.get(
           `http://localhost:3000/api/tasks/${taskId}`
         );
-        this.taskDetails = res.data;
+        this.task = res.data.task;
         this.error = null;
       } catch (err) {
         this.error = err.message;

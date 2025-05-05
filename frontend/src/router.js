@@ -5,6 +5,7 @@ import CreateTaskView from './views/CreateTaskView.vue';
 import TasksView from './views/TasksView.vue';
 import TasksInCategoryView from './views/TasksInCategoryView.vue';
 import ProfileView from './views/ProfileView.vue';
+import TaskView from './views/TaskView.vue';
 
 export default createRouter({
   history: createWebHashHistory(),
@@ -14,7 +15,7 @@ export default createRouter({
       path: '/tasks',
     },
     {
-      component: TasksView,
+      component: TaskView,
       path: '/tasks/:taskId',
     },
     {

@@ -7,7 +7,7 @@ const router = useRouter();
 const taskStore = useTaskStore();
 const route = useRoute();
 const tasksList = ref([]);
-
+const limit = ref(null);
 
 onMounted(async () => {
   if (route.path.startsWith(`/tasks-in-category/`)) {
@@ -16,10 +16,12 @@ onMounted(async () => {
 
     await taskStore.fetchTasksInCategory(categoryId);
     tasksList.value = taskStore.tasksInCategory;
+    limit.value = tasksList.value.length;
     console.log('Tasks fetched:', taskStore.tasksInCategory)
   } else {
     await taskStore.fetchLatestTasks();
     tasksList.value = taskStore.tasks;
+    limit.value = 6;
     console.log('Tasks fetched:', taskStore.tasks);
   }
 });
@@ -30,7 +32,7 @@ onMounted(async () => {
     <h1 style="text-align: center">Tjänster</h1>
 
     <article>
-      <b-card v-for="task in tasksList.slice(0, 6 || tasksList.length)" :title="task.title"
+      <b-card v-for="task in tasksList.slice(0, limit || tasksList.length)" :title="task.title"
         :subtitle="task.price + ' kr'" class="mb-2">
         <b-card-text>
           {{ task.description }}
