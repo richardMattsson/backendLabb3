@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute, RouterLink } from 'vue-router';
 
 const router = useRouter();
 const taskStore = useTaskStore();
@@ -40,7 +40,7 @@ onMounted(async () => {
 
         <b-card-text style="color:sienna;"> <span class="pi pi-map-marker"></span> {{ task.address }}</b-card-text>
 
-        <a @click="router.push(`/tasks/${task.taskId}`)" href="#" class="card-link">Visa tjänst</a>
+        <RouterLink :to="`/tasks/${task.taskId}`" href="#" class="card-link">Visa tjänst</RouterLink>
       </b-card>
     </article>
   </BCol>
