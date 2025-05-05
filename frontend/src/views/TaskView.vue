@@ -26,6 +26,14 @@ const taskCreator = computed(() => {
     return taskStore.taskDetails[index].firstName;
 })
 
+const taskDoers = computed(() => {
+    let doers = []
+    for (const task of taskStore.taskDetails) {
+        if (task.userRole === "taskDoer")
+            doers.push({ name: task.firstName, email: task.email })
+    }
+    return doers;
+})
 
 </script>
 
@@ -37,5 +45,7 @@ const taskCreator = computed(() => {
         <h3 v-if="taskStore.taskDetails[0].date">{{ taskStore.taskDetails[0].date.split('T')[0] }}</h3>
         <h3>{{ taskStore.taskDetails[0].address }}</h3>
         <h3>{{ taskCreator }}</h3>
+        <p>{{ taskStore.taskDetails[0].status }}</p>
     </section>
+    <li v-for="doer in taskDoers">{{ doer.name }}</li>
 </template>
