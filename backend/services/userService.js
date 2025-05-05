@@ -23,7 +23,7 @@ function getUser(id) {
 function getUserTasksRole(id, tasksrole) {
   return new Promise((resolve, reject) => {
     let sql =
-    "SELECT t.title, t.date, t.status, userTask.confirmed FROM user u INNER JOIN userTask ON u.userId = userTask.userTaskUId INNER JOIN task t on userTask.userTaskTId = t.taskId WHERE userId = ? AND userRole = ?"
+    "SELECT t.taskId, t.title, t.date, t.status, userTask.confirmed, userTask.userrole FROM user u INNER JOIN userTask ON u.userId = userTask.userTaskUId INNER JOIN task t on userTask.userTaskTId = t.taskId WHERE u.userId = ? AND userTask.userRole = ? ORDER BY t.datecreated DESC";
     connectionMySQL.query(sql, [id, tasksrole], (err, rows) => {
       if (err) reject(err)
       else resolve(rows)

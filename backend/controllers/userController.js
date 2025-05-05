@@ -1,6 +1,6 @@
 const userService = require("../services/userService")
 
-exports.getUsers = (async (req, res) => {
+exports.getUsers = async (req, res) => {
   try {
     const users = await userService.getUsers()
     res.json({ users })
@@ -11,9 +11,9 @@ exports.getUsers = (async (req, res) => {
       error: error.message,
     })
   }
-})
+}
 
-exports.getUser = (async (req, res) => {
+exports.getUser = async (req, res) => {
   const { id } = req.params
   try {
     const user = await userService.getUser(id)
@@ -25,23 +25,24 @@ exports.getUser = (async (req, res) => {
       error: error.message,
     })
   }
-})
+}
 
-exports.getUserTasksRole = (async (req, res) => {
-  const { id, tasksrole} = req.params
+exports.getUserTasksRole = async (req, res) => {
+  const {id} = req.params
   try {
-    const userTasksRole = await userService.getUserTasksRole(id, tasksrole)
-    res.json({ userTasksRole })
+    const performer = await userService.getUserTasksRole(id, "utförare")
+    const client = await userService.getUserTasksRole(id, "beställare")
+    res.json({ utförare: performer, beställare: client })
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: `Fel vid hämtning av användarens uppgifter med ID: ${id} och rollen: ${tasksrole}`,
+      message: `Fel vid hämtning av användarens uppgifter med ID: ${id}`,
       error: error.message,
     })
   }
-})
+}
 
-exports.createUser = (async (req, res) => {
+exports.createUser = async (req, res) => {
   const { firstName, lastName, phone, email, city } = req.body
   if (!firstName || firstName.trim().length < 1) {
     return res.status(400).json({
@@ -74,14 +75,8 @@ exports.createUser = (async (req, res) => {
     })
   }
   try {
-    await userService.createUser(
-      firstName,
-      lastName,
-      phone,
-      email,
-      city
-    )
-    res.status(201).json({ success: true, message: "Ny användare tillagd!"})
+    await userService.createUser(firstName, lastName, phone, email, city)
+    res.status(201).json({ success: true, message: "Ny användare tillagd!" })
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -89,9 +84,9 @@ exports.createUser = (async (req, res) => {
       error: error.message,
     })
   }
-})
+}
 
-exports.updateUser = (async (req, res) => {
+exports.updateUser = async (req, res) => {
   const { id } = req.params
   const { firstName, lastName, phone, email, city } = req.body
 
@@ -133,15 +128,8 @@ exports.updateUser = (async (req, res) => {
   }
 
   try {
-    await userService.updateUser(
-      id,
-      firstName,
-      lastName,
-      phone,
-      email,
-      city
-    )
-    res.status(200).json({ success: true, message: "Användare uppdaterad!"})
+    await userService.updateUser(id, firstName, lastName, phone, email, city)
+    res.status(200).json({ success: true, message: "Användare uppdaterad!" })
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -149,9 +137,9 @@ exports.updateUser = (async (req, res) => {
       error: error.message,
     })
   }
-})
+}
 
-exports.deleteUser = (async (req, res) => {
+exports.deleteUser = async (req, res) => {
   const { id } = req.params
 
   if (!id) {
@@ -163,7 +151,7 @@ exports.deleteUser = (async (req, res) => {
 
   try {
     await userService.deleteUser(id)
-    res.status(200).json({ success: true, message: "Användare borttagen!"})
+    res.status(200).json({ success: true, message: "Användare borttagen!" })
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -171,4 +159,4 @@ exports.deleteUser = (async (req, res) => {
       error: error.message,
     })
   }
-})
+}
