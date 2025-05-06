@@ -1,10 +1,12 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
+import { useLoginStore } from '@/stores/loginStore';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const taskStore = useTaskStore();
+const loginStore = useLoginStore();
 
 onMounted(async () => {
   await taskStore.fetchCategories();
@@ -107,10 +109,10 @@ async function createUserTask(id) {
           @click="router.push({ path: '/login' })"
           class="mt-4"
           variant="success"
-          v-if="!taskStore.isLoggedIn"
+          v-if="!loginStore.isLoggedIn"
           >Logga in</BButton
         >
-        <BForm id="addTaskForm" v-if="taskStore.isLoggedIn">
+        <BForm id="addTaskForm" v-if="loginStore.isLoggedIn">
           <h3>Lägg till en ny tjänst</h3>
           <BFormGroup id="input-group-1" label="Titel:" label-for="input-1">
             <BFormInput
@@ -213,11 +215,7 @@ async function createUserTask(id) {
             ></BFormInput>
           </BFormGroup>
 
-          <BButton
-            @click="addNewTask"
-            class="mt-4"
-            variant="primary"
-            v-if="taskStore.isLoggedIn"
+          <BButton @click="addNewTask" class="mt-4" variant="primary"
             >Skapa ny tjänst</BButton
           >
         </BForm>
