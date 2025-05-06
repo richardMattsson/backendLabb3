@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
 import { useLoginStore } from '@/stores/loginStore';
 import { useRoute } from 'vue-router';
@@ -7,7 +7,8 @@ import { useRoute } from 'vue-router';
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
 const route = useRoute();
-const taskDetails = ref(null)
+const taskDetails = ref(null);
+const viewer = ref( loginStore.username ? loginStore.username : "anonymous");
 
 
 onMounted(async () => {
@@ -41,13 +42,13 @@ const taskDoers = computed(() => {
 
 <template>
     <section v-if="taskDetails">
-        <h1>{{ taskStore.taskDetails[0].title }}</h1>
-        <p v-if="taskStore.taskDetails[0].description">{{ taskStore.taskDetails[0].description }}</p>
-        <h2>{{ taskStore.taskDetails[0].price }} kr</h2>
-        <h3 v-if="taskStore.taskDetails[0].date">{{ taskStore.taskDetails[0].date.split('T')[0] }}</h3>
-        <h3>{{ taskStore.taskDetails[0].address }}</h3>
+        <h1>{{ taskDetails.title }}</h1>
+        <p v-if="taskDetails.description">{{ taskDetails.description }}</p>
+        <h2>{{ taskDetails.price }} kr</h2>
+        <h3 v-if="taskDetails.date">{{ taskDetails.date.split('T')[0] }}</h3>
+        <h3>{{ taskDetails.address }}</h3>
         <h3>{{ taskCreator }}</h3>
-        <p>{{ taskStore.taskDetails[0].status }}</p>
+        <p>{{ taskDetails.status }}</p>
     </section>
     <li v-for="doer in taskDoers">{{ doer.name }}</li>
 </template>
