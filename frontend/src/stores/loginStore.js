@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import axios from 'axios';
 
 export const useLoginStore = defineStore(
     "loggedUser", {
     state: () => {
         return {
             token: localStorage.getItem('token') || null,
-            // isLoggedIn: localStorage.getItem('isLoggedIn') || false,
-            isLoggedIn: true,
+            isLoggedIn: localStorage.getItem('isLoggedIn') || false,
             username: '',
         }
     },

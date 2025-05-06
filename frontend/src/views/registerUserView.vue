@@ -1,8 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { useTaskStore } from '@/stores/taskStore';
+import { useLoginStore } from '@/stores/loginStore';
 
-const taskStore = useTaskStore();
+const loginStore = useLoginStore();
 
 const passwordValidation = computed(
   () => password.value === repeatPassword.value && password.value.length > 0
@@ -10,24 +10,19 @@ const passwordValidation = computed(
 
 const userName = ref(''),
   password = ref(''),
-  repeatPassword = ref(''),
-  firstName = ref(''),
-  lastName = ref(''),
-  phone = ref(''),
-  email = ref(''),
-  city = ref('');
+  repeatPassword = ref('');
 </script>
 
 <template>
-  <h1>Registrera ny användare</h1>
   <BContainer>
     <BRow>
       <BCol cols="6">
+        <h1>Registrera dig</h1>
         <BForm id="registerForm">
           <BFormGroup id="input-group-3" label="Email:" label-for="input-3">
             <BFormInput
               id="input-3"
-              type="text"
+              type="email"
               class="mb-2"
               v-model="userName"
               placeholder="Email"
@@ -68,7 +63,7 @@ const userName = ref(''),
           </BFormGroup>
 
           <BButton
-            @click="taskStore.register(userName, password)"
+            @click="loginStore.register(userName, password)"
             class="mt-4"
             variant="success"
             >Skapa användare</BButton

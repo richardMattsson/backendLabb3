@@ -11,15 +11,14 @@ const passwordValidation = computed(
 );
 
 const userName = ref(''),
-  password = ref(''),
-  repeatPassword = ref('');
+  password = ref('');
 </script>
 
 <template>
-  <h1>Logga in / Logga ut</h1>
   <BContainer>
     <BRow>
       <BCol cols="6">
+        <h1>Logga in / Logga ut</h1>
         <BForm id="loginForm">
           <BFormGroup id="input-group-1" label="Email:" label-for="input-1">
             <BFormInput
@@ -48,18 +47,18 @@ const userName = ref(''),
             @click="loginStore.login(userName, password)"
             class="mt-4"
             variant="primary"
-            >Logga in</BButton
-          >
+            >Logga in
+          </BButton>
           <BButton @click="loginStore.logout()" class="mt-4" variant="danger"
-            >Logga ut</BButton
-          >
+            >Logga ut
+          </BButton>
         </BForm>
         <BButton
           @click="router.push({ path: '/register' })"
           class="mt-4"
           variant="success"
-          >Har du inget konto?</BButton
-        >
+          >Har du inget konto?
+        </BButton>
       </BCol>
     </BRow>
   </BContainer>
