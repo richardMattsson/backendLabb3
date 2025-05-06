@@ -106,6 +106,9 @@ async function createUserTask(id) {
   <BContainer>
     <BRow>
       <BCol cols="6">
+        <p v-if="!loginStore.isLoggedIn">
+          Du behöver skapa ett konto innan du kan lägga upp en ny tjänst.
+        </p>
         <BButton
           @click="router.push({ path: '/login' })"
           class="mt-4"
