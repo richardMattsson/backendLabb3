@@ -6,7 +6,7 @@ export const useLoginStore = defineStore('loggedUser', {
     return {
       token: localStorage.getItem('token') || null,
       isLoggedIn: localStorage.getItem('isLoggedIn') || false,
-      username: '',
+      username: localStorage.getItem('username') || '',
     };
   },
   actions: {
@@ -27,6 +27,7 @@ export const useLoginStore = defineStore('loggedUser', {
         this.username = response.data.username;
         localStorage.setItem('token', this.token);
         localStorage.setItem('isLoggedIn', this.isLoggedIn);
+        localStorage.setItem('username', this.username);
       } catch (error) {
         console.error('Något gick fel: ', error);
       }
@@ -37,6 +38,7 @@ export const useLoginStore = defineStore('loggedUser', {
       this.isLoggedIn = false;
       localStorage.removeItem('token');
       localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('username');
       alert('Du har loggat ut!');
     },
     async register(username, password) {

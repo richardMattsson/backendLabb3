@@ -29,23 +29,17 @@ const taskCreator = computed(() => {
 })
 
 const viewer = computed(() => {
-    if (loginStore.isLoggedIn) {
-        for (const task of taskStore.taskDetails) {
-            if (loginStore.username === task.email) {
-                if (task.role === 'taskCreator'){
-                    console.log(task.email)
-                        return 'creator'
+    if (!loginStore.isLoggedIn) return 'anonymous'
 
-                }
-                else {
-                    if (task.confirmed)
-                        confirmed.value = true;
-                }
+    for (const task of taskStore.taskDetails) {
+        if (loginStore.username === task.email) {
+            if (task.userRole === 'taskCreator') {
+                return 'creator'
             } else
                 return 'doer'
         }
-    } else
-        return 'anonymous'
+    }
+    return 'nonDoer'
 })
 
 const taskDoers = computed(() => {
@@ -67,14 +61,14 @@ console.log("viewer", viewer.value)
     <main v-if="taskDetails">
         <section class="task-details">
             <h1>{{ taskDetails.title }}</h1>
-            <p v-if="taskDetails.description">{{ taskDetails.description }}</p>
-            <h2>{{ taskDetails.price }} kr</h2>
-            <h3 v-if="taskDetails.date">{{ taskDetails.date.split('T')[0] }}</h3>
-            <h3>{{ taskDetails.address }}</h3>
-            <h3>{{ taskCreator }}</h3>
             <div>
                 <p>{{ taskDetails.status }}</p>
             </div>
+            <h3>{{ taskDetails.price }} kr</h3>
+            <p v-if="taskDetails.description">{{ taskDetails.description }}</p>
+            <h4 v-if="taskDetails.date">{{ taskDetails.date.split('T')[0] }}</h4>
+            <h4>{{ taskDetails.address }}</h4>
+            <h4>{{ taskCreator }}</h4>
         </section>
         <section class="task-actions" v-if="taskDetails.status === 'New'">
             <section v-if="viewer === 'creator'">
@@ -86,12 +80,12 @@ console.log("viewer", viewer.value)
                     <button>Bekräfta utförare</button>
                 </li>
             </section>
-            <section class="task-actions" v-if="viewer === 'doer'">
+            <section class="task-actions" v-if="viewer === 'nonDoer'">
                 <button>Tacka ja</button>
-                <div v-if="confirmed === false">
-                    <p>Vänta på bekräftelse från beställare av tjänsten</p>
-                </div>
             </section>
+            <div v-if="viewer === 'doer'">
+                <p>Vänta på bekräftelse från beställare av tjänsten</p>
+            </div>
             <section class="task-actions" v-if="viewer === 'anonymous'">
                 <p>Du behöver vara inloggad för att tacka ja till uppgiften</p>
                 <button>Logga in</button>
@@ -116,7 +110,7 @@ section {
     box-sizing: border-box;
 }
 
-.main {
+main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
