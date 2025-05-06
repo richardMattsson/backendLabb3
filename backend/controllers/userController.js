@@ -28,14 +28,15 @@ exports.getUser = async (req, res) => {
 };
 
 exports.getUserTasksRole = async (req, res) => {
-  const { id, tasksrole } = req.params;
+  const { id } = req.params;
   try {
-    const userTasksRole = await userService.getUserTasksRole(id, tasksrole);
-    res.json({ userTasksRole });
+    const performer = await userService.getUserTasksRole(id, 'utförare');
+    const client = await userService.getUserTasksRole(id, 'beställare');
+    res.json({ utförare: performer, beställare: client });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: `Fel vid hämtning av användarens uppgifter med ID: ${id} och rollen: ${tasksrole}`,
+      message: `Fel vid hämtning av användarens uppgifter med ID: ${id}`,
       error: error.message,
     });
   }
@@ -75,17 +76,7 @@ exports.createUser = async (req, res) => {
   }
   try {
     await userService.createUser(firstName, lastName, phone, email, city);
-    res
-      .status(201)
-      .json({
-        success: true,
-        message: 'Ny användare tillagd!',
-        firstName,
-        lastName,
-        phone,
-        email,
-        city,
-      });
+    res.status(201).json({ success: true, message: 'Ny användare tillagd!' });
   } catch (error) {
     res.status(500).json({
       success: false,

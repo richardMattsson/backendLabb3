@@ -4,11 +4,15 @@ import axios from 'axios';
 export const useTaskStore = defineStore('taskStore', {
   state: () => ({
     tasks: [],
+    task: null,
     taskDetails: [],
+    newTasks: [],
     tasksInCategory: [],
     categories: [],
     oneCategory: null,
     users: [],
+    performerTasks: [],
+    clientTasks: [],
     loading: false,
     error: null,
     token: localStorage.getItem('token') || null,
