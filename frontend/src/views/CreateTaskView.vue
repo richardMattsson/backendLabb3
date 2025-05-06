@@ -35,12 +35,13 @@ async function addNewTask() {
     price: price.value,
     taskCategoryId: taskCategoryId.value,
   };
-  console.log(task.value);
+  console.log(task);
   try {
     const response = await fetch('http://localhost:3000/api/tasks', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `${loginStore.token}`,
       },
       body: JSON.stringify(task),
     });
@@ -79,7 +80,7 @@ async function createUserTask(id) {
     userTaskUId: userId.value,
     userTaskTId: id,
   };
-  console.log(userTask.value);
+  console.log(userTask);
   try {
     const response = await fetch('http://localhost:3000/api/user-tasks', {
       method: 'POST',
