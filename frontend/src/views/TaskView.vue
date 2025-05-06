@@ -8,7 +8,6 @@ const taskStore = useTaskStore();
 const loginStore = useLoginStore();
 const route = useRoute();
 const taskDetails = ref(null);
-const confirmed = ref(false)
 
 onMounted(async () => {
     const taskId = route.params.taskId;
@@ -60,36 +59,38 @@ console.log("viewer", viewer.value)
 <template>
     <main v-if="taskDetails">
         <section class="task-details">
-            <h1>{{ taskDetails.title }}</h1>
-            <div>
-                <p>{{ taskDetails.status }}</p>
-            </div>
+            <h1>{{ taskDetails.title }} <span class="badge bg-success">{{ taskDetails.status }}</span></h1>
             <h3>{{ taskDetails.price }} kr</h3>
-            <p v-if="taskDetails.description">{{ taskDetails.description }}</p>
             <h4 v-if="taskDetails.date">{{ taskDetails.date.split('T')[0] }}</h4>
-            <h4>{{ taskDetails.address }}</h4>
-            <h4>{{ taskCreator }}</h4>
+            <h4 v-else>Datum diskuteras</h4>
+            <p class="description" v-if="taskDetails.description">{{ taskDetails.description }}</p>
+            <h4>Adress: {{ taskDetails.address }}</h4>
+            <h4>Beställare: {{ taskCreator }}</h4>
         </section>
         <section class="task-actions" v-if="taskDetails.status === 'New'">
-            <section v-if="viewer === 'creator'">
+            <section class="for-creator" v-if="viewer === 'creator'">
                 <h3>Utförare för din uppgift</h3>
                 <p v-if="taskDoers.length < 1">Inga utförare har tackat ja ännu</p>
                 <li v-for="doer in taskDoers" :key="doer.email">
                     <h5>{{ doer.name }}</h5>
                     <p>Rating: </p>
-                    <button>Bekräfta utförare</button>
+                    <button type="button" class="btn btn-warning">Bekräfta utförare</button>
                 </li>
             </section>
-            <section class="task-actions" v-if="viewer === 'nonDoer'">
-                <button>Tacka ja</button>
+            <section v-if="viewer === 'nonDoer'">
+                <button type="button" class="btn btn-primary">Tacka ja</button>
             </section>
-            <div v-if="viewer === 'doer'">
-                <p>Vänta på bekräftelse från beställare av tjänsten</p>
+            <div class="card" v-if="viewer === 'doer'">
+                <div class="card-body">
+                    Vänta på bekräftelse från beställare av tjänsten
+                </div>
             </div>
-            <section class="task-actions" v-if="viewer === 'anonymous'">
-                <p>Du behöver vara inloggad för att tacka ja till uppgiften</p>
-                <button>Logga in</button>
-            </section>
+            <div class="card" v-if="viewer === 'anonymous'">
+                <div class="card-body">
+                    Du behöver vara inloggad för att tacka ja till uppgiften
+                </div>
+                <button type="button" class="btn btn-primary">Logga in</button>
+            </div>
         </section>
         <section class="task-actions" v-if="taskDetails.status === 'Pågående'">
             <section v-if="viewer === 'creator'">
@@ -105,41 +106,54 @@ console.log("viewer", viewer.value)
 </template>
 
 <style scoped>
+main {
+    display: grid;
+    grid-template-rows: 70% 20%;
+    padding-block: 3rem;
+    gap: 0.5rem;
+}
+
 section {
     padding: 1rem;
     box-sizing: border-box;
 }
 
-main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    max-width: 1200px;
-    margin: auto;
-}
-
 .task-details {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: 3fr 1fr 1fr;
+    gap: 2rem;
+    margin-inline: auto;
     background-color: #f9f9f9;
-    padding: 1.5rem;
+    padding: 5rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    grid-column: span 2;
+}
+
+h3 {
+    color: blue;
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1.2rem;
+}
+
+.description {
+    grid-row: span 2;
+    font-size: 1.1rem;
 }
 
 .task-actions {
+    margin-inline: auto;
     background-color: #fff;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-button {
-    margin-top: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: #007ACC;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    padding-inline: 5rem;
+    /* border-radius: 8px; */
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
 
 li {
@@ -147,9 +161,16 @@ li {
     margin-bottom: 1rem;
 }
 
-@media (max-width: 768px) {
-    .task-container {
-        grid-template-columns: 1fr;
-    }
+.for-creator {
+    padding-block: 1rem;
+}
+
+.for-creator h3 {
+    padding-block: 1rem;
+}
+
+.for-creator li {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 </style>
