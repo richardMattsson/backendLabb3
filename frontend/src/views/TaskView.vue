@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
 import { useLoginStore } from '@/stores/loginStore';
 import { useRoute } from 'vue-router';
@@ -7,9 +7,8 @@ import { useRoute } from 'vue-router';
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
 const route = useRoute();
-const taskDetails = ref(null);
-const viewer = ref( loginStore.username ? loginStore.username : "anonymous");
-
+const taskDetails = ref([]);
+const confirmed = ref(false)
 
 onMounted(async () => {
     const taskId = route.params.taskId;
@@ -29,6 +28,23 @@ const taskCreator = computed(() => {
     return taskStore.taskDetails[index].firstName;
 })
 
+const viewer = computed(() => {
+    if (loginStore.username) {
+        for (const task of taskStore.taskDetails) {
+            if (loginStore.username === task.email) {
+                if (task.role === 'taskCreator')
+                    return 'creator'
+                else {
+                    if (task.confirmed)
+                        confirmed.value = true;
+                }
+            } else
+                return 'doer'
+        }
+    } else
+        return 'anonymous'
+})
+
 const taskDoers = computed(() => {
     let doers = []
     for (const task of taskStore.taskDetails) {
@@ -41,7 +57,7 @@ const taskDoers = computed(() => {
 </script>
 
 <template>
-    <section v-if="taskDetails">
+    <section v-if="taskDetails.length < 1">
         <h1>{{ taskDetails.title }}</h1>
         <p v-if="taskDetails.description">{{ taskDetails.description }}</p>
         <h2>{{ taskDetails.price }} kr</h2>
@@ -49,6 +65,10 @@ const taskDoers = computed(() => {
         <h3>{{ taskDetails.address }}</h3>
         <h3>{{ taskCreator }}</h3>
         <p>{{ taskDetails.status }}</p>
+        <p v-if="viewer === 'creator'">you can manage the task</p>
     </section>
-    <li v-for="doer in taskDoers">{{ doer.name }}</li>
+    <section v-if="viewer === 'creator'">
+        <li v-if="taskDoers.length < 1">Inga utf</li>
+        <li v-for="doer in taskDoers" :key="doer.email">{{ doer.name }}</li>
+    </section>
 </template>

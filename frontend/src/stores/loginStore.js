@@ -1,13 +1,17 @@
 import { defineStore } from 'pinia';
+import axios from 'axios';
 
 export const useLoginStore = defineStore(
     "loggedUser", {
-    state: () => ({
-        token: localStorage.getItem('token') || null,
-        isLoggedIn: localStorage.getItem('isLoggedIn') || false,
-        username: '',
-    }),
-    actions: () => ({
+    state: () => {
+        return {
+            token: localStorage.getItem('token') || null,
+            // isLoggedIn: localStorage.getItem('isLoggedIn') || false,
+            isLoggedIn: true,
+            username: '',
+        }
+    },
+    actions: {
 
         async login(username, password) {
             const loginBody = {
@@ -73,5 +77,5 @@ export const useLoginStore = defineStore(
                 console.error('Något gick fel: ', error);
             }
         },
-    })
+    }
 })

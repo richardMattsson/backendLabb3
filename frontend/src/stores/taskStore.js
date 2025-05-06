@@ -2,20 +2,22 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 export const useTaskStore = defineStore('taskStore', {
-  state: () => ({
-    tasks: [],
-    task: null,
-    taskDetails: [],
-    newTasks: [],
-    tasksInCategory: [],
-    categories: [],
-    oneCategory: null,
-    users: [],
-    performerTasks: [],
-    clientTasks: [],
-    loading: false,
-    error: null,
-  }),
+  state: () => {
+    return {
+      tasks: [],
+      task: null,
+      taskDetails: [],
+      newTasks: [],
+      tasksInCategory: [],
+      categories: [],
+      oneCategory: null,
+      users: [],
+      performerTasks: [],
+      clientTasks: [],
+      loading: false,
+      error: null,
+    }
+  },
 
   actions: {
     async fetchAllTasks() {
