@@ -1,11 +1,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
+import { useLoginStore } from '@/stores/loginStore';
 import { useRoute } from 'vue-router';
 
 const taskStore = useTaskStore();
+const loginStore = useLoginStore();
 const route = useRoute();
-const isLoaded = ref(false)
+const taskDetails = ref(null)
 
 
 onMounted(async () => {
@@ -13,7 +15,7 @@ onMounted(async () => {
 
     await taskStore.fetchTaskDetails(taskId);
     console.log('Task fetched:', taskStore.taskDetails);
-    isLoaded.value = true;
+    taskDetails.value = taskStore.taskDetails[0];
 });
 
 const taskCreator = computed(() => {
@@ -38,7 +40,7 @@ const taskDoers = computed(() => {
 </script>
 
 <template>
-    <section v-if="isLoaded">
+    <section v-if="taskDetails">
         <h1>{{ taskStore.taskDetails[0].title }}</h1>
         <p v-if="taskStore.taskDetails[0].description">{{ taskStore.taskDetails[0].description }}</p>
         <h2>{{ taskStore.taskDetails[0].price }} kr</h2>
