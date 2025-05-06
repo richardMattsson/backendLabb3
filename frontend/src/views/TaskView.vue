@@ -7,7 +7,7 @@ import { useRoute } from 'vue-router';
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
 const route = useRoute();
-const taskDetails = ref([]);
+const taskDetails = ref(null);
 const confirmed = ref(false)
 
 onMounted(async () => {
@@ -29,7 +29,7 @@ const taskCreator = computed(() => {
 })
 
 const viewer = computed(() => {
-    if (loginStore.username) {
+    if (loginStore.isLoggedIn) {
         for (const task of taskStore.taskDetails) {
             if (loginStore.username === task.email) {
                 if (task.role === 'taskCreator')
@@ -54,10 +54,14 @@ const taskDoers = computed(() => {
     return doers;
 })
 
+console.log("status", loginStore.isLoggedIn)
+console.log("username", loginStore.username)
+console.log("viewer", viewer.value)
+
 </script>
 
 <template>
-    <section v-if="taskDetails.length < 1">
+    <section v-if="taskDetails">
         <h1>{{ taskDetails.title }}</h1>
         <p v-if="taskDetails.description">{{ taskDetails.description }}</p>
         <h2>{{ taskDetails.price }} kr</h2>
@@ -70,5 +74,11 @@ const taskDoers = computed(() => {
     <section v-if="viewer === 'creator'">
         <li v-if="taskDoers.length < 1">Inga utf</li>
         <li v-for="doer in taskDoers" :key="doer.email">{{ doer.name }}</li>
+    </section>
+    <section v-if="viewer === 'doer'">
+        <button>Tacka ja</button>
+    </section>
+    <section v-if="viewer === 'anonymous'">
+        <button>Logga in</button>
     </section>
 </template>
