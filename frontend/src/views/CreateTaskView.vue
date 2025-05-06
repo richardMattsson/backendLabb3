@@ -75,9 +75,14 @@ async function getLatestTasks() {
   }
 }
 async function createUserTask(id) {
+  await taskStore.fetchUsers();
+
+  const taskCreator = taskStore.allUsers.users.filter((user) => {
+    return user.email === loginStore.username;
+  });
   const userTask = {
     userRole: 'taskCreator',
-    userTaskUId: userId.value,
+    userTaskUId: taskCreator[0].userId,
     userTaskTId: id,
   };
   console.log(userTask);
@@ -136,6 +141,23 @@ async function createUserTask(id) {
             </BFormValidFeedback>
           </BFormGroup>
 
+          <BFormGroup id="input-group-6" label="Kategori:" label-for="input-6">
+            <BFormSelect
+              v-if="taskStore.categories"
+              id="input-6"
+              v-model="taskCategoryId"
+              class="mb-2"
+            >
+              <BFormSelectOption :value="null">Kategori</BFormSelectOption>
+              <BFormSelectOption
+                :value="category.categoryId"
+                :key="index"
+                v-for="(category, index) in taskStore.categories"
+                >{{ category.categoryName }}</BFormSelectOption
+              >
+            </BFormSelect>
+          </BFormGroup>
+
           <BFormGroup id="input-group-2" label="Datum:" label-for="input-2">
             <BFormInput
               id="input-2"
@@ -182,41 +204,20 @@ async function createUserTask(id) {
             <BFormInput
               id="input-5"
               class="mb-2"
+              type="range"
+              min="0"
+              max="5000"
+              v-model="price"
+              placeholder="Pris"
+            ></BFormInput>
+
+            <BFormInput
+              class="mb-2"
               type="number"
               v-model="price"
               placeholder="Pris"
             ></BFormInput>
-          </BFormGroup>
-
-          <BFormGroup id="input-group-6" label="Kategori:" label-for="input-6">
-            <BFormSelect
-              v-if="taskStore.categories"
-              id="input-6"
-              v-model="taskCategoryId"
-              class="mb-2"
-            >
-              <BFormSelectOption :value="null">Kategori</BFormSelectOption>
-              <BFormSelectOption
-                :value="category.categoryId"
-                :key="index"
-                v-for="(category, index) in taskStore.categories"
-                >{{ category.categoryName }}</BFormSelectOption
-              >
-            </BFormSelect>
-          </BFormGroup>
-
-          <BFormGroup
-            id="input-group-7"
-            label="Användare-Id:"
-            label-for="input-7"
-          >
-            <BFormInput
-              id="input-7"
-              class="mb-2"
-              type="number"
-              v-model="userId"
-              placeholder="Användare-id"
-            ></BFormInput>
+            <div class="mt-2">Pris: {{ price }}</div>
           </BFormGroup>
 
           <BButton @click="addNewTask" class="mt-4" variant="primary"
