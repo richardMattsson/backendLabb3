@@ -1,6 +1,8 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const taskStore = useTaskStore();
 
@@ -101,7 +103,14 @@ async function createUserTask(id) {
   <BContainer>
     <BRow>
       <BCol cols="6">
-        <BForm id="addTaskForm">
+        <BButton
+          @click="router.push({ path: '/login' })"
+          class="mt-4"
+          variant="success"
+          v-if="!taskStore.isLoggedIn"
+          >Logga in</BButton
+        >
+        <BForm id="addTaskForm" v-if="taskStore.isLoggedIn">
           <h3>Lägg till en ny tjänst</h3>
           <BFormGroup id="input-group-1" label="Titel:" label-for="input-1">
             <BFormInput
@@ -204,8 +213,12 @@ async function createUserTask(id) {
             ></BFormInput>
           </BFormGroup>
 
-          <BButton @click="addNewTask" class="mt-4" variant="light"
-            >Lägg till</BButton
+          <BButton
+            @click="addNewTask"
+            class="mt-4"
+            variant="primary"
+            v-if="taskStore.isLoggedIn"
+            >Skapa ny tjänst</BButton
           >
         </BForm>
       </BCol>
