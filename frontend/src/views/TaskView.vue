@@ -8,52 +8,67 @@ const taskStore = useTaskStore();
 const loginStore = useLoginStore();
 const route = useRoute();
 const taskDetails = ref(null);
+const confirmed = ref(false);
+const taskId = ref(null);
 
 onMounted(async () => {
-    const taskId = route.params.taskId;
+  const taskId = route.params.taskId;
 
-    await taskStore.fetchTaskDetails(taskId);
-    console.log('Task fetched:', taskStore.taskDetails);
-    taskDetails.value = taskStore.taskDetails[0];
+  await taskStore.fetchTaskDetails(taskId);
+  console.log('Task fetched:', taskStore.taskDetails[0]);
+  taskDetails.value = taskStore.taskDetails[0];
 });
 
+async function onClick() {
+  console.log(route.params.taskId);
+  await taskStore.fetchUsers();
+
+  const doer = taskStore.allUsers.users.filter((user) => {
+    return user.email === loginStore.username;
+  });
+  console.log(doer[0].userId);
+  // userTaskUId === doer[0].userId
+  // userTaskTId === route.params.taskId
+  // userRole === 'doer'
+  await taskStore.createUserTask(doer[0].userId, Number(route.params.taskId));
+  alert('Du har tackat jag till att utföra tjänsten!');
+}
+
 const taskCreator = computed(() => {
-    let index = 0;
-    if (taskStore.taskDetails.length > 1) {
-        index = taskStore.taskDetails.findIndex((task) => {
-            return task.userRole === 'taskCreator'
-        })
-    }
-    return taskStore.taskDetails[index].firstName;
-})
+  let index = 0;
+  if (taskStore.taskDetails.length > 1) {
+    index = taskStore.taskDetails.findIndex((task) => {
+      return task.userRole === 'taskCreator';
+    });
+  }
+  return taskStore.taskDetails[index].firstName;
+});
 
 const viewer = computed(() => {
-    if (!loginStore.isLoggedIn) return 'anonymous'
+  if (!loginStore.isLoggedIn) return 'anonymous';
 
-    for (const task of taskStore.taskDetails) {
-        if (loginStore.username === task.email) {
-            if (task.userRole === 'taskCreator') {
-                return 'creator'
-            } else
-                return 'doer'
-        }
+  for (const task of taskStore.taskDetails) {
+    if (loginStore.username === task.email) {
+      if (task.userRole === 'taskCreator') {
+        return 'creator';
+      } else return 'doer';
     }
-    return 'nonDoer'
-})
+  }
+  return 'nonDoer';
+});
 
 const taskDoers = computed(() => {
-    let doers = []
-    for (const task of taskStore.taskDetails) {
-        if (task.userRole === "taskDoer")
-            doers.push({ name: task.firstName, email: task.email })
-    }
-    return doers;
-})
+  let doers = [];
+  for (const task of taskStore.taskDetails) {
+    if (task.userRole === 'taskDoer')
+      doers.push({ name: task.firstName, email: task.email });
+  }
+  return doers;
+});
 
-console.log("status", loginStore.isLoggedIn)
-console.log("username", loginStore.username)
-console.log("viewer", viewer.value)
-
+console.log('status', loginStore.isLoggedIn);
+console.log('username', loginStore.username);
+console.log('viewer', viewer.value);
 </script>
 
 <template>
@@ -78,7 +93,7 @@ console.log("viewer", viewer.value)
                 </li>
             </section>
             <section v-if="viewer === 'nonDoer'">
-                <button type="button" class="btn btn-primary">Tacka ja</button>
+                <button @click="onClick" type="button" class="btn btn-primary">Tacka ja</button>
             </section>
             <div class="card" v-if="viewer === 'doer'">
                 <div class="card-body">
