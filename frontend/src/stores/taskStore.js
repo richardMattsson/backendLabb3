@@ -4,11 +4,15 @@ import axios from 'axios';
 export const useTaskStore = defineStore('taskStore', {
   state: () => ({
     tasks: [],
+    task: null,
     taskDetails: [],
+    newTasks: [],
     tasksInCategory: [],
     categories: [],
     oneCategory: null,
     users: [],
+    performerTasks: [],
+    clientTasks: [],
     loading: false,
     error: null,
   }),
@@ -116,7 +120,7 @@ export const useTaskStore = defineStore('taskStore', {
         this.error = err.message;
       }
     },
-    
+
     async fetchUserTasksRole(userId, tasksrole) {
       this.loading = true;
       try {
@@ -130,6 +134,22 @@ export const useTaskStore = defineStore('taskStore', {
       } finally {
         this.loading = false;
       }
-    }
+    },
+    async fetchUserTasksbyRole(userId) {
+      this.loading = true;
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/api/users/${userId}/tasksrole`
+        );
+        this.performerTasks = res.data.utförare;
+        this.clientTasks = res.data.beställare;
+
+        this.error = null;
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loading = false;
+      }
+    },
   },
 });

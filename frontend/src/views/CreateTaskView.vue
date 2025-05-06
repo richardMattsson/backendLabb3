@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue';
-import { onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const taskStore = useTaskStore();
 
@@ -9,6 +10,9 @@ onMounted(async () => {
   await taskStore.fetchCategories();
   //console.log('Categories fetched:', taskStore.categories);
 });
+
+const titleValidation = computed(() => title.value.length > 0);
+const addressValidation = computed(() => address.value.length > 0);
 
 const title = ref(''),
   date = ref(null),
@@ -99,7 +103,14 @@ async function createUserTask(id) {
   <BContainer>
     <BRow>
       <BCol cols="6">
-        <BForm id="addTaskForm">
+        <BButton
+          @click="router.push({ path: '/login' })"
+          class="mt-4"
+          variant="success"
+          v-if="!taskStore.isLoggedIn"
+          >Logga in</BButton
+        >
+        <BForm id="addTaskForm" v-if="taskStore.isLoggedIn">
           <h3>Lägg till en ny tjänst</h3>
           <BFormGroup id="input-group-1" label="Titel:" label-for="input-1">
             <BFormInput
@@ -109,7 +120,14 @@ async function createUserTask(id) {
               v-model="title"
               placeholder="Titel"
               required
+              :state="titleValidation"
             />
+            <BFormInvalidFeedback :state="titleValidation">
+              Titelfältet får inte vara tomt.
+            </BFormInvalidFeedback>
+            <BFormValidFeedback :state="titleValidation">
+              Ser bra ut!
+            </BFormValidFeedback>
           </BFormGroup>
 
           <BFormGroup id="input-group-2" label="Datum:" label-for="input-2">
@@ -144,7 +162,14 @@ async function createUserTask(id) {
               class="mb-2"
               v-model="address"
               placeholder="Adress"
-            ></BFormInput>
+              :state="addressValidation"
+            />
+            <BFormInvalidFeedback :state="addressValidation">
+              Adressfältet får inte vara tomt.
+            </BFormInvalidFeedback>
+            <BFormValidFeedback :state="addressValidation">
+              Ser bra ut!
+            </BFormValidFeedback>
           </BFormGroup>
 
           <BFormGroup id="input-group-5" label="Pris:" label-for="input-5">
@@ -188,8 +213,12 @@ async function createUserTask(id) {
             ></BFormInput>
           </BFormGroup>
 
-          <BButton @click="addNewTask" class="mt-4" variant="light"
-            >Lägg till</BButton
+          <BButton
+            @click="addNewTask"
+            class="mt-4"
+            variant="primary"
+            v-if="taskStore.isLoggedIn"
+            >Skapa ny tjänst</BButton
           >
         </BForm>
       </BCol>
@@ -202,8 +231,9 @@ async function createUserTask(id) {
   justify-content: center; /*Justerar formuläret till mitten*/
 }
 #addTaskForm {
-  background-color: grey;
-  color: white;
+  /* background-color: grey;
+  color: white; */
+  border: 1px solid black;
   padding: 10px;
   border-radius: 5px;
 }
