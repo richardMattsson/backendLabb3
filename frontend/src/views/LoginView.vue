@@ -1,10 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { useTaskStore } from '@/stores/taskStore';
+import { useLoginStore } from '@/stores/loginStore';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
-const taskStore = useTaskStore();
+const loginStore = useLoginStore();
 
 const passwordValidation = computed(
   () => password.value === repeatPassword.value && password.value.length > 0
@@ -12,22 +12,7 @@ const passwordValidation = computed(
 
 const userName = ref(''),
   password = ref(''),
-  repeatPassword = ref(''),
-  showLoginForm = ref(true),
-  showRegisterNewUserForm = ref(false),
-  firstName = ref(''),
-  lastName = ref(''),
-  phone = ref(''),
-  email = ref(''),
-  city = ref('');
-
-function registerNewUser() {
-  userName.value = '';
-  password.value = '';
-  repeatPassword.value = '';
-  showLoginForm.value = !showLoginForm.value;
-  showRegisterNewUserForm.value = !showRegisterNewUserForm.value;
-}
+  repeatPassword = ref('');
 </script>
 
 <template>
@@ -36,17 +21,13 @@ function registerNewUser() {
     <BRow>
       <BCol cols="6">
         <BForm id="loginForm">
-          <BFormGroup
-            id="input-group-1"
-            label="Användarnamn:"
-            label-for="input-1"
-          >
+          <BFormGroup id="input-group-1" label="Email:" label-for="input-1">
             <BFormInput
               id="input-1"
               type="text"
               class="mb-2"
               v-model="userName"
-              placeholder="Användarnamn"
+              placeholder="Email"
               required
             />
             {{ userName }}
@@ -64,12 +45,12 @@ function registerNewUser() {
           </BFormGroup>
 
           <BButton
-            @click="taskStore.login(userName, password)"
+            @click="loginStore.login(userName, password)"
             class="mt-4"
             variant="primary"
             >Logga in</BButton
           >
-          <BButton @click="taskStore.logout()" class="mt-4" variant="danger"
+          <BButton @click="loginStore.logout()" class="mt-4" variant="danger"
             >Logga ut</BButton
           >
         </BForm>

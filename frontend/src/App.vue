@@ -11,7 +11,6 @@
           <BNavItem to="/createtask">Skapa Tjänst</BNavItem>
           <BNavItem to="/profile">Profil</BNavItem>
           <BNavItem to="/login">Logga in / Logga ut</BNavItem>
-          <BNavItem to="/register">Registrera</BNavItem>
         </BNavbarNav>
       </BCollapse>
       <!-- <BNavbarBrand href="#">Grupp3Projekt</BNavbarBrand> -->
