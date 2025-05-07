@@ -121,8 +121,8 @@ export const useTaskStore = defineStore("taskStore", {
         const res = await axios.get(
           `http://localhost:3000/api/users/${userId}/tasksrole`
         )
-        this.performerTasks = res.data.utförare
-        this.clientTasks = res.data.beställare
+        this.performerTasks = res.data.taskDoer
+        this.clientTasks = res.data.taskCreator
         this.error = null
       } catch (err) {
         this.error = err.message
