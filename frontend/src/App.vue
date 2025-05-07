@@ -10,6 +10,7 @@
           <BNavItem to="/tasks">Visa Tjänster</BNavItem>
           <BNavItem to="/createtask">Skapa Tjänst</BNavItem>
           <BNavItem to="/profile">Profil</BNavItem>
+          <BNavItem to="/login">Logga in / Logga ut</BNavItem>
         </BNavbarNav>
       </BCollapse>
       <!-- <BNavbarBrand href="#">Grupp3Projekt</BNavbarBrand> -->

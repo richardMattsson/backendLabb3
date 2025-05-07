@@ -5,6 +5,9 @@ import CreateTaskView from './views/CreateTaskView.vue';
 import TasksView from './views/TasksView.vue';
 import TasksInCategoryView from './views/TasksInCategoryView.vue';
 import ProfileView from './views/ProfileView.vue';
+import TaskView from './views/TaskView.vue';
+import LoginView from './views/LoginView.vue';
+import RegisterUserView from './views/RegisterUserView.vue';
 
 export default createRouter({
   history: createWebHashHistory(),
@@ -14,7 +17,7 @@ export default createRouter({
       path: '/tasks',
     },
     {
-      component: TasksView,
+      component: TaskView,
       path: '/tasks/:taskId',
     },
     {
@@ -33,6 +36,14 @@ export default createRouter({
       component: TasksInCategoryView,
       path: '/tasks-in-category/:categoryId',
       name: 'TasksInCategory',
+    },
+    {
+      component: LoginView,
+      path: '/login',
+    },
+    {
+      component: RegisterUserView,
+      path: '/register',
     },
   ],
 });

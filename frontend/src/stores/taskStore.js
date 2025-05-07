@@ -1,122 +1,154 @@
-import { defineStore } from "pinia"
-import axios from "axios"
+import { defineStore } from 'pinia';
+import axios from 'axios';
 
-export const useTaskStore = defineStore("taskStore", {
-  state: () => ({
-    tasks: [],
-    taskDetails: [],
-    tasksInCategory: [],
-    categories: [],
-    oneCategory: null,
-    users: [],
-    performerTasks: [],
-    clientTasks: [],
-    loading: false,
-    error: null,
-  }),
+export const useTaskStore = defineStore('taskStore', {
+  state: () => {
+    return {
+      tasks: [],
+      task: null,
+      taskDetails: [],
+      newTasks: [],
+      tasksInCategory: [],
+      categories: [],
+      oneCategory: null,
+      users: [],
+      allUsers: [],
+      performerTasks: [],
+      clientTasks: [],
+      loading: false,
+      error: null,
+    };
+  },
 
   actions: {
     async fetchAllTasks() {
-      this.loading = true
+      this.loading = true;
       try {
-        const res = await axios.get("http://localhost:3000/api/tasks")
-        this.tasks = res.data.tasks
-        this.error = null
+        const res = await axios.get('http://localhost:3000/api/tasks');
+        this.tasks = res.data.tasks;
+        this.error = null;
       } catch (err) {
-        this.error = err.message
+        this.error = err.message;
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async fetchLatestTasks() {
-      this.loading = true
+      this.loading = true;
       try {
-        const res = await axios.get("http://localhost:3000/api/newtasks")
-        this.tasks = res.data.newTasks
-        this.error = null
+        const res = await axios.get('http://localhost:3000/api/newtasks');
+        this.tasks = res.data.newTasks;
+        this.error = null;
       } catch (err) {
-        this.error = err.message
+        this.error = err.message;
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async fetchTask(taskId) {
-      this.loading = true
+      this.loading = true;
       try {
-        const res = await axios.get(`http://localhost:3000/api/tasks/${taskId}`)
-        this.taskDetails = res.data
-        this.error = null
+        const res = await axios.get(
+          `http://localhost:3000/api/tasks/${taskId}`
+        );
+        this.task = res.data.task;
+        this.error = null;
       } catch (err) {
-        this.error = err.message
+        this.error = err.message;
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async fetchTaskDetails(taskId) {
-      this.loading = true
+      this.loading = true;
       try {
         const res = await axios.get(
           `http://localhost:3000/api/tasks/details/${taskId}`
-        )
-        this.taskDetails = res.data
-        this.error = null
+        );
+        this.taskDetails = res.data.taskDetails;
+        this.error = null;
       } catch (err) {
-        this.error = err.message
+        this.error = err.message;
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async fetchTasksInCategory(categoryId) {
-      this.loading = true
+      this.loading = true;
       try {
         const res = await axios.get(
           `http://localhost:3000/api/tasks/by-category/${categoryId}`
-        )
-        this.tasksInCategory = res.data
-        this.error = null
+        );
+        this.tasksInCategory = res.data.tasksInCategory;
+        this.error = null;
       } catch (err) {
-        this.error = err.message
+        this.error = err.message;
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     async fetchCategories() {
       try {
-        const res = await axios.get("http://localhost:3000/api/categories")
-        this.categories = res.data.categories
-        console.log(res.data)
+        const res = await axios.get('http://localhost:3000/api/categories');
+        this.categories = res.data.categories;
+        //console.log(res.data);
       } catch (err) {
-        this.error = err.message
+        this.error = err.message;
       }
     },
     async fetchOneCategory(categoryId) {
       try {
         const res = await axios.get(
           `http://localhost:3000/api/categories/${categoryId}`
-        )
-        this.oneCategory = res.data.category
+        );
+        this.oneCategory = res.data.category;
         //console.log(res.data.category);
       } catch (err) {
-        this.error = err.message
+        this.error = err.message;
+      }
+    },
+
+    async fetchUsers() {
+      try {
+        const res = await axios.get(`http://localhost:3000/api/users`);
+        this.allUsers = res.data;
+      } catch (err) {
+        this.error = err.message;
       }
     },
 
     async fetchUser(userId) {
       try {
-        const res = await axios.get(`http://localhost:3000/api/users/${userId}`)
-        this.users = res.data
+        const res = await axios.get(
+          `http://localhost:3000/api/users/${userId}`
+        );
+        this.users = res.data;
       } catch (err) {
-        this.error = err.message
+        this.error = err.message;
       }
     },
 
+    async fetchUserTasksRole(userId, tasksrole) {
+      this.loading = true;
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/api/users/${userId}/${tasksrole}`
+        );
+        this.userTasksRole = res.data.userTasksRole;
+        this.error = null;
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loading = false;
+      }
+    },
     async fetchUserTasksbyRole(userId) {
-      this.loading = true
+      this.loading = true;
       try {
         const res = await axios.get(
           `http://localhost:3000/api/users/${userId}/tasksrole`
@@ -124,11 +156,30 @@ export const useTaskStore = defineStore("taskStore", {
         this.performerTasks = res.data.taskDoer
         this.clientTasks = res.data.taskCreator
         this.error = null
+        );
       } catch (err) {
-        this.error = err.message
+        this.error = err.message;
       } finally {
-        this.loading = false
+        this.loading = false;
+      }
+    },
+    async createUserTask(userId, taskId) {
+      const userTask = {
+        userRole: 'taskDoer',
+        userTaskUId: userId,
+        userTaskTId: taskId,
+      };
+      console.log(userTask);
+      try {
+        const response = await axios.post(
+          'http://localhost:3000/api/user-tasks',
+          userTask
+        );
+
+        console.log('Servern svarade med:', response.data);
+      } catch (error) {
+        console.error('Något gick fel:', error.message);
       }
     },
   },
-})
+});

@@ -1,14 +1,20 @@
 <script setup>
-import { ref } from 'vue';
-import { onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
+import { useLoginStore } from '@/stores/loginStore';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const taskStore = useTaskStore();
+const loginStore = useLoginStore();
 
 onMounted(async () => {
   await taskStore.fetchCategories();
-  console.log('Categories fetched:', taskStore.categories);
+  //console.log('Categories fetched:', taskStore.categories);
 });
+
+const titleValidation = computed(() => title.value.length > 0);
+const addressValidation = computed(() => address.value.length > 0);
 
 const title = ref(''),
   date = ref(null),
@@ -17,24 +23,87 @@ const title = ref(''),
   price = ref(null),
   categories = ref(null),
   taskCategoryId = ref(null),
-  userId = ref(null);
+  userId = ref(null),
+  latestUserTaskId = ref(null);
 
-function addNewTask() {
-  // console.log(
-  //   title.value,
-  //   date.value,
-  //   description.value,
-  //   address.value,
-  //   price.value,
-  //   taskCategoryId.value
-  // );
-  // skapar först en task och hämtar dess taskId
-  // fetchTask(taskId)
-  //
-  // lägger till en ny rad i userTask-tabbelen
-  // använder taskId till userTaskTId
-  // Behöver information om userId till userTaskUId
-  // Om vi skapar en logga in funktion kan vi spara userId via Pinia
+async function addNewTask() {
+  const task = {
+    title: title.value,
+    description: description.value,
+    date: date.value,
+    address: address.value,
+    price: price.value,
+    taskCategoryId: taskCategoryId.value,
+  };
+  console.log(task);
+  try {
+    const response = await fetch('http://localhost:3000/api/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `${loginStore.token}`,
+      },
+      body: JSON.stringify(task),
+    });
+    if (!response.ok) {
+      console.log(response);
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Servern svarade med:', result);
+
+    getLatestTasks();
+  } catch (error) {
+    console.error('Något gick fel:', error.message);
+  }
+}
+async function getLatestTasks() {
+  const url = 'http://localhost:3000/api/tasks';
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    const result = await response.json();
+    latestUserTaskId.value = result.tasks[result.tasks.length - 1];
+    // console.log(result.tasks);
+    // console.log(latestUserTaskId.value.taskId);
+    createUserTask(latestUserTaskId.value.taskId);
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+async function createUserTask(id) {
+  await taskStore.fetchUsers();
+
+  const taskCreator = taskStore.allUsers.users.filter((user) => {
+    return user.email === loginStore.username;
+  });
+  const userTask = {
+    userRole: 'taskCreator',
+    userTaskUId: taskCreator[0].userId,
+    userTaskTId: id,
+  };
+  console.log(userTask);
+  try {
+    const response = await fetch('http://localhost:3000/api/user-tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userTask),
+    });
+    if (!response.ok) {
+      console.log(response);
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Servern svarade med:', result);
+  } catch (error) {
+    console.error('Något gick fel:', error.message);
+  }
 }
 </script>
 
@@ -42,7 +111,17 @@ function addNewTask() {
   <BContainer>
     <BRow>
       <BCol cols="6">
-        <BForm id="addTaskForm">
+        <p v-if="!loginStore.isLoggedIn">
+          Du behöver skapa ett konto innan du kan lägga upp en ny tjänst.
+        </p>
+        <BButton
+          @click="router.push({ path: '/login' })"
+          class="mt-4"
+          variant="success"
+          v-if="!loginStore.isLoggedIn"
+          >Logga in</BButton
+        >
+        <BForm id="addTaskForm" v-if="loginStore.isLoggedIn">
           <h3>Lägg till en ny tjänst</h3>
           <BFormGroup id="input-group-1" label="Titel:" label-for="input-1">
             <BFormInput
@@ -52,7 +131,31 @@ function addNewTask() {
               v-model="title"
               placeholder="Titel"
               required
+              :state="titleValidation"
             />
+            <BFormInvalidFeedback :state="titleValidation">
+              Titelfältet får inte vara tomt.
+            </BFormInvalidFeedback>
+            <BFormValidFeedback :state="titleValidation">
+              Ser bra ut!
+            </BFormValidFeedback>
+          </BFormGroup>
+
+          <BFormGroup id="input-group-6" label="Kategori:" label-for="input-6">
+            <BFormSelect
+              v-if="taskStore.categories"
+              id="input-6"
+              v-model="taskCategoryId"
+              class="mb-2"
+            >
+              <BFormSelectOption :value="null">Kategori</BFormSelectOption>
+              <BFormSelectOption
+                :value="category.categoryId"
+                :key="index"
+                v-for="(category, index) in taskStore.categories"
+                >{{ category.categoryName }}</BFormSelectOption
+              >
+            </BFormSelect>
           </BFormGroup>
 
           <BFormGroup id="input-group-2" label="Datum:" label-for="input-2">
@@ -87,52 +190,38 @@ function addNewTask() {
               class="mb-2"
               v-model="address"
               placeholder="Adress"
-            ></BFormInput>
+              :state="addressValidation"
+            />
+            <BFormInvalidFeedback :state="addressValidation">
+              Adressfältet får inte vara tomt.
+            </BFormInvalidFeedback>
+            <BFormValidFeedback :state="addressValidation">
+              Ser bra ut!
+            </BFormValidFeedback>
           </BFormGroup>
 
           <BFormGroup id="input-group-5" label="Pris:" label-for="input-5">
             <BFormInput
               id="input-5"
               class="mb-2"
+              type="range"
+              min="0"
+              max="5000"
+              v-model="price"
+              placeholder="Pris"
+            ></BFormInput>
+
+            <BFormInput
+              class="mb-2"
               type="number"
               v-model="price"
               placeholder="Pris"
             ></BFormInput>
+            <div class="mt-2">Pris: {{ price }}</div>
           </BFormGroup>
 
-          <BFormGroup id="input-group-6" label="Kategori:" label-for="input-6">
-            <BFormSelect
-              v-if="taskStore.categories"
-              id="input-6"
-              v-model="taskCategoryId"
-              class="mb-2"
-            >
-              <BFormSelectOption :value="null">Kategori</BFormSelectOption>
-              <BFormSelectOption
-                :value="category.categoryId"
-                :key="index"
-                v-for="(category, index) in taskStore.categories"
-                >{{ category.categoryName }}</BFormSelectOption
-              >
-            </BFormSelect>
-          </BFormGroup>
-
-          <BFormGroup
-            id="input-group-7"
-            label="Användare-Id:"
-            label-for="input-7"
-          >
-            <BFormInput
-              id="input-7"
-              class="mb-2"
-              type="number"
-              v-model="userId"
-              placeholder="Användare-id"
-            ></BFormInput>
-          </BFormGroup>
-
-          <BButton @click="addNewTask" class="mt-4" variant="light"
-            >Lägg till</BButton
+          <BButton @click="addNewTask" class="mt-4" variant="primary"
+            >Skapa ny tjänst</BButton
           >
         </BForm>
       </BCol>
@@ -145,8 +234,9 @@ function addNewTask() {
   justify-content: center; /*Justerar formuläret till mitten*/
 }
 #addTaskForm {
-  background-color: grey;
-  color: white;
+  /* background-color: grey;
+  color: white; */
+  border: 1px solid black;
   padding: 10px;
   border-radius: 5px;
 }
