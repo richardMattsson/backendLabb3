@@ -70,6 +70,7 @@ export const useTaskStore = defineStore('taskStore', {
         );
         this.taskDetails = res.data.taskDetails;
         this.error = null;
+        console.log(this.taskDetails);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -179,6 +180,14 @@ export const useTaskStore = defineStore('taskStore', {
         console.log('Servern svarade med:', response.data);
       } catch (error) {
         console.error('Något gick fel:', error.message);
+      }
+    },
+
+    async confirmDoer(taskId, doerId) {
+      try {
+        console.log(taskId, doerId);
+      } catch (error) {
+        console.log(error);
       }
     },
   },
