@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
+
 export const useLoginStore = defineStore('loggedUser', {
   state: () => {
     return {
@@ -29,7 +30,7 @@ export const useLoginStore = defineStore('loggedUser', {
         localStorage.setItem('isLoggedIn', this.isLoggedIn);
         localStorage.setItem('username', this.username);
       } catch (error) {
-        console.error('Något gick fel: ', error);
+        console.error('Något gick fel: ', error.message);
       }
     },
     logout() {
@@ -40,6 +41,7 @@ export const useLoginStore = defineStore('loggedUser', {
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('username');
       alert('Du har loggat ut!');
+      this.router.push({ path: '/' });
     },
 
     async register(username, password) {
@@ -54,6 +56,7 @@ export const useLoginStore = defineStore('loggedUser', {
         );
         console.log('Svar från servern:', response.data);
         this.createNewUser(username);
+        
       } catch (error) {
         console.error('Något gick fel: ', error);
       }

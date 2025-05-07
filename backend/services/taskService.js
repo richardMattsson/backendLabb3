@@ -38,7 +38,7 @@ function getTaskUserDetails(taskId) {
 
 function getTasksInCategory(categoryId) {
     return new Promise((resolve, reject) => {
-        let sql = 'SELECT title, description, date, price, address, c.categoryName FROM task INNER JOIN category c on task.taskCategoryId = c.categoryId WHERE categoryId = ?';
+        let sql = 'SELECT taskId, title, description, date, price, address, c.categoryName FROM task INNER JOIN category c on task.taskCategoryId = c.categoryId WHERE categoryId = ?';
         connectionMySQL.query(sql, [categoryId], (err, rows) => {
             if (err)
                 reject(err);
