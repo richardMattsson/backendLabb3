@@ -30,9 +30,9 @@ exports.getUser = async (req, res) => {
 exports.getUserTasksRole = async (req, res) => {
   const { id } = req.params;
   try {
-    const performer = await userService.getUserTasksRole(id, 'utförare');
-    const client = await userService.getUserTasksRole(id, 'beställare');
-    res.json({ utförare: performer, beställare: client });
+    const performer = await userService.getUserTasksRole(id, 'taskDoer');
+    const client = await userService.getUserTasksRole(id, 'taskCreator');
+    res.json({ taskDoer: performer, taskCreator: client });
   } catch (error) {
     res.status(500).json({
       success: false,
