@@ -133,7 +133,7 @@ export const useTaskStore = defineStore('taskStore', {
       }
     },
 
-    async fetchUserTasksRole(userId, tasksrole) {
+    /*async fetchUserTasksRole(userId, tasksrole) {
       this.loading = true;
       try {
         const res = await axios.get(
@@ -146,7 +146,7 @@ export const useTaskStore = defineStore('taskStore', {
       } finally {
         this.loading = false;
       }
-    },
+    },*/
     async fetchUserTasksbyRole(userId) {
       this.loading = true;
       try {
