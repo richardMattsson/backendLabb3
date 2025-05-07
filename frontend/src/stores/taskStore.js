@@ -156,8 +156,7 @@ export const useTaskStore = defineStore('taskStore', {
         this.performerTasks = res.data.taskDoer
         this.clientTasks = res.data.taskCreator
         this.error = null
-        );
-      } catch (err) {
+      }catch (err) {
         this.error = err.message;
       } finally {
         this.loading = false;
