@@ -1,9 +1,8 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
-import { useRouter, useRoute, RouterLink } from 'vue-router';
+import { useRoute, RouterLink } from 'vue-router';
 
-const router = useRouter();
 const taskStore = useTaskStore();
 const route = useRoute();
 const tasksList = ref([]);
@@ -40,7 +39,8 @@ onMounted(async () => {
 
         <b-card-text style="color:sienna;"> <span class="pi pi-map-marker"></span> {{ task.address }}</b-card-text>
 
-        <RouterLink :to="`/tasks/${task.taskId}`" class="card-link">Visa tjänst</RouterLink>
+        <RouterLink :to="{ path: `/tasks/${task.taskId}`, query: { endpoint: route.fullPath } }" class="card-link">Visa
+          tjänst</RouterLink>
       </b-card>
     </article>
   </BCol>

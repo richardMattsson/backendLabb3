@@ -2,11 +2,11 @@
 import { computed, onMounted, ref } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
 import { useLoginStore } from '@/stores/loginStore';
-import { useRoute } from 'vue-router';
-import router from '@/router';
+import { useRoute, useRouter } from 'vue-router';
 
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
+const router = useRouter();
 const route = useRoute();
 const taskDetails = ref(null);
 const taskId = ref(null);
