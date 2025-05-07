@@ -41,6 +41,7 @@ export const useLoginStore = defineStore('loggedUser', {
       localStorage.removeItem('username');
       alert('Du har loggat ut!');
     },
+
     async register(username, password) {
       const registerBody = {
         username: username,
@@ -52,17 +53,15 @@ export const useLoginStore = defineStore('loggedUser', {
           registerBody
         );
         console.log('Svar från servern:', response.data);
+        this.createNewUser(username);
       } catch (error) {
         console.error('Något gick fel: ', error);
       }
     },
-    async createNewUser(firstName, lastName, phone, email, city) {
+
+    async createNewUser(email) {
       const inputBody = {
-        firstName: firstName,
-        lastName: lastName,
-        phone: phone,
         email: email,
-        city: city,
       };
       console.log(inputBody);
       try {

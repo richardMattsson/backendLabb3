@@ -14,7 +14,8 @@ const userName = ref(''),
   <BContainer>
     <BRow>
       <BCol cols="6">
-        <h1>Logga in / Logga ut</h1>
+        <h1 v-if="!loginStore.isLoggedIn">Logga in</h1>
+        <h1 v-else>Logga ut</h1>
         <BForm id="loginForm">
           <BFormGroup id="input-group-1" label="Email:" label-for="input-1">
             <BFormInput
