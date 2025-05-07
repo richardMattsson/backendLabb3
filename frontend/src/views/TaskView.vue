@@ -2,11 +2,11 @@
 import { computed, onMounted, ref } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
 import { useLoginStore } from '@/stores/loginStore';
-import { useRoute } from 'vue-router';
-import router from '@/router';
+import { useRoute, useRouter } from 'vue-router';
 
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
+const router = useRouter();
 const route = useRoute();
 const taskDetails = ref(null);
 const taskId = ref(null)
@@ -74,6 +74,8 @@ console.log('viewer', viewer.value);
 </script>
 
 <template>
+    <i @click="router.push({ path: route.query.endpoint || '/tasks' })" class="pi pi-arrow-left"
+        style="font-size: 1.2rem; font-weight: 500; margin-top: 0.8em; margin-left: 1em"> Till uppgifter</i>
     <main v-if="taskDetails">
         <section class="task-details">
             <h1>{{ taskDetails.title }} <span class="badge bg-success">{{ taskDetails.status }}</span></h1>
@@ -95,7 +97,7 @@ console.log('viewer', viewer.value);
                 </li>
             </section>
             <section v-if="viewer === 'nonDoer'">
-                <button @click="onClick" type="button" class="btn btn-primary" >Tacka ja</button>
+                <button @click="onClick" type="button" class="btn btn-primary">Tacka ja</button>
             </section>
             <div class="card" v-if="viewer === 'doer'">
                 <div class="card-body">
