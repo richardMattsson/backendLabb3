@@ -102,6 +102,7 @@ async function createUserTask(id) {
     }
 
     const result = await response.json();
+    router.push({ name: 'TaskView', params: { taskId: id } })
     console.log('Servern svarade med:', result);
   } catch (error) {
     console.error('Något gick fel:', error.message);

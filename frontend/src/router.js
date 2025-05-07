@@ -19,6 +19,7 @@ export default createRouter({
     {
       component: TaskView,
       path: '/tasks/:taskId',
+      name: 'TaskView'
     },
     {
       component: HomeView,
@@ -31,6 +32,7 @@ export default createRouter({
     {
       component: CreateTaskView,
       path: '/createtask',
+      name: 'CreateTask',
     },
     {
       component: TasksInCategoryView,

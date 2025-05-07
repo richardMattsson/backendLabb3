@@ -35,6 +35,18 @@ function createUserTask(userRole, userTaskTId, userTaskUId) {
   });
 }
 
+function confirmDoer(taskId, doerId) {
+  return new Promise((resolve, reject) => {
+    const sql = 'CALL ConfirmDoer(?, ?)';
+    const params = [taskId, doerId];
+
+    connection.query(sql, params, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 function updateUserTask(confirmed, userTaskId) {
   return new Promise((resolve, reject) => {
     const sql = 'UPDATE userTask SET confirmed = ? WHERE userTaskId = ?';
@@ -63,6 +75,7 @@ module.exports = {
   getUserTasks,
   getUserTask,
   createUserTask,
+  confirmDoer,
   updateUserTask,
   deleteUserTask,
 };
