@@ -153,11 +153,11 @@ export const useTaskStore = defineStore('taskStore', {
       try {
         const res = await axios.get(
           `http://localhost:3000/api/users/${userId}/tasksrole`
-        )
-        this.performerTasks = res.data.taskDoer
-        this.clientTasks = res.data.taskCreator
-        this.error = null
-      }catch (err) {
+        );
+        this.performerTasks = res.data.taskDoer;
+        this.clientTasks = res.data.taskCreator;
+        this.error = null;
+      } catch (err) {
         this.error = err.message;
       } finally {
         this.loading = false;
@@ -183,8 +183,16 @@ export const useTaskStore = defineStore('taskStore', {
     },
 
     async confirmDoer(taskId, doerId) {
+      const doerInput = {
+        taskId: taskId,
+        doerId: doerId,
+      };
       try {
-        console.log(taskId, doerId);
+        const response = await axios.post(
+          'http://localhost:3000/api/confirm-doer',
+          doerInput
+        );
+        console.log('Servern svarade med:', response.data);
       } catch (error) {
         console.log(error);
       }
