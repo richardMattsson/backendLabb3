@@ -1,12 +1,15 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
+
 export const useLoginStore = defineStore('loggedUser', {
-  state: () => ({
-    token: localStorage.getItem('token') || null,
-    isLoggedIn: localStorage.getItem('isLoggedIn') || false,
-    username: '',
-  }),
+  state: () => {
+    return {
+      token: localStorage.getItem('token') || null,
+      isLoggedIn: localStorage.getItem('isLoggedIn') || false,
+      username: localStorage.getItem('username') || '',
+    };
+  },
   actions: {
     async login(username, password) {
       const loginBody = {
@@ -25,8 +28,9 @@ export const useLoginStore = defineStore('loggedUser', {
         this.username = response.data.username;
         localStorage.setItem('token', this.token);
         localStorage.setItem('isLoggedIn', this.isLoggedIn);
+        localStorage.setItem('username', this.username);
       } catch (error) {
-        console.error('Något gick fel: ', error);
+        console.error('Något gick fel: ', error.message);
       }
     },
     logout() {
@@ -34,7 +38,12 @@ export const useLoginStore = defineStore('loggedUser', {
       this.token = null;
       this.isLoggedIn = false;
       localStorage.removeItem('token');
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('username');
+      alert('Du har loggat ut!');
+      this.router.push({ path: '/' });
     },
+
     async register(username, password) {
       const registerBody = {
         username: username,
@@ -46,17 +55,16 @@ export const useLoginStore = defineStore('loggedUser', {
           registerBody
         );
         console.log('Svar från servern:', response.data);
+        this.createNewUser(username);
+        
       } catch (error) {
         console.error('Något gick fel: ', error);
       }
     },
-    async createNewUser(firstName, lastName, phone, email, city) {
+
+    async createNewUser(email) {
       const inputBody = {
-        firstName: firstName,
-        lastName: lastName,
-        phone: phone,
         email: email,
-        city: city,
       };
       console.log(inputBody);
       try {

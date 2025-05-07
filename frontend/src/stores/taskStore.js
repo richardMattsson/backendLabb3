@@ -2,20 +2,23 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 export const useTaskStore = defineStore('taskStore', {
-  state: () => ({
-    tasks: [],
-    task: null,
-    taskDetails: [],
-    newTasks: [],
-    tasksInCategory: [],
-    categories: [],
-    oneCategory: null,
-    users: [],
-    performerTasks: [],
-    clientTasks: [],
-    loading: false,
-    error: null,
-  }),
+  state: () => {
+    return {
+      tasks: [],
+      task: null,
+      taskDetails: [],
+      newTasks: [],
+      tasksInCategory: [],
+      categories: [],
+      oneCategory: null,
+      users: [],
+      allUsers: [],
+      performerTasks: [],
+      clientTasks: [],
+      loading: false,
+      error: null,
+    };
+  },
 
   actions: {
     async fetchAllTasks() {
@@ -110,6 +113,15 @@ export const useTaskStore = defineStore('taskStore', {
       }
     },
 
+    async fetchUsers() {
+      try {
+        const res = await axios.get(`http://localhost:3000/api/users`);
+        this.allUsers = res.data;
+      } catch (err) {
+        this.error = err.message;
+      }
+    },
+
     async fetchUser(userId) {
       try {
         const res = await axios.get(
@@ -121,7 +133,7 @@ export const useTaskStore = defineStore('taskStore', {
       }
     },
 
-    async fetchUserTasksRole(userId, tasksrole) {
+    /*async fetchUserTasksRole(userId, tasksrole) {
       this.loading = true;
       try {
         const res = await axios.get(
@@ -134,21 +146,38 @@ export const useTaskStore = defineStore('taskStore', {
       } finally {
         this.loading = false;
       }
-    },
+    },*/
     async fetchUserTasksbyRole(userId) {
       this.loading = true;
       try {
         const res = await axios.get(
           `http://localhost:3000/api/users/${userId}/tasksrole`
-        );
-        this.performerTasks = res.data.utförare;
-        this.clientTasks = res.data.beställare;
-
-        this.error = null;
-      } catch (err) {
+        )
+        this.performerTasks = res.data.taskDoer
+        this.clientTasks = res.data.taskCreator
+        this.error = null
+      }catch (err) {
         this.error = err.message;
       } finally {
         this.loading = false;
+      }
+    },
+    async createUserTask(userId, taskId) {
+      const userTask = {
+        userRole: 'taskDoer',
+        userTaskUId: userId,
+        userTaskTId: taskId,
+      };
+      console.log(userTask);
+      try {
+        const response = await axios.post(
+          'http://localhost:3000/api/user-tasks',
+          userTask
+        );
+
+        console.log('Servern svarade med:', response.data);
+      } catch (error) {
+        console.error('Något gick fel:', error.message);
       }
     },
   },

@@ -17,7 +17,7 @@ onMounted(async () => {
     await taskStore.fetchTasksInCategory(categoryId);
     tasksList.value = taskStore.tasksInCategory;
     limit.value = tasksList.value.length;
-    console.log('Tasks fetched:', taskStore.tasksInCategory)
+    console.log('Tasks fetched:', tasksList.value)
   } else {
     await taskStore.fetchLatestTasks();
     tasksList.value = taskStore.tasks;
@@ -32,7 +32,7 @@ onMounted(async () => {
     <h1 style="text-align: center">Tjänster</h1>
 
     <article>
-      <b-card v-for="task in tasksList.slice(0, limit || tasksList.length)" :title="task.title"
+      <b-card v-for="task in tasksList.slice(0, limit || tasksList.length)" :title="task.title" :key="task.taskId"
         :subtitle="task.price + ' kr'" class="mb-2">
         <b-card-text>
           {{ task.description }}
@@ -40,7 +40,7 @@ onMounted(async () => {
 
         <b-card-text style="color:sienna;"> <span class="pi pi-map-marker"></span> {{ task.address }}</b-card-text>
 
-        <RouterLink :to="`/tasks/${task.taskId}`" href="#" class="card-link">Visa tjänst</RouterLink>
+        <RouterLink :to="`/tasks/${task.taskId}`" class="card-link">Visa tjänst</RouterLink>
       </b-card>
     </article>
   </BCol>
