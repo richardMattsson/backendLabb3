@@ -166,5 +166,24 @@ export const useTaskStore = defineStore('taskStore', {
       }
       await this.fetchTaskDetails(taskId);
     },
+
+    async markAsDone(taskId) {
+      // Vad ska uppdateras när markerad som klar trycks på?
+      // Bara task-tabellen status kolumnen
+
+      const inTaskId = {
+        inTaskId: Number(taskId),
+      };
+      console.log(inTaskId);
+      try {
+        const response = await axios.post(
+          'http://localhost:3000/api/tasks/mark-as-done',
+          inTaskId
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.log(error.respons.data);
+      }
+    },
   },
 });

@@ -21,16 +21,14 @@ onMounted(async () => {
 });
 
 async function onClick() {
-  console.log(taskId);
   await taskStore.fetchUsers();
 
+  // letar efter userId
   const doer = taskStore.allUsers.users.filter((user) => {
     return user.email === loginStore.username;
   });
-  console.log(doer[0].userId);
   // userTaskUId === doer[0].userId
-  // userTaskTId === route.params.taskId
-  // userRole === 'doer'
+
   await taskStore.createUserTask(doer[0].userId, taskId.value);
   alert('Du har tackat jag till att utföra tjänsten!');
 
@@ -94,7 +92,10 @@ const taskDoers = computed(() => {
       <h4>Adress: {{ taskDetails.address }}</h4>
       <h4>Beställare: {{ taskCreator }}</h4>
     </section>
-    <section class="task-actions" v-if="taskStore.taskDetails[0].status === 'New'">
+    <section
+      class="task-actions"
+      v-if="taskStore.taskDetails[0].status === 'New'"
+    >
       <section class="for-creator" v-if="viewer === 'creator'">
         <h3>Utförare för din uppgift</h3>
         <p v-if="taskDoers.length < 1">Inga utförare har tackat ja ännu</p>
@@ -138,14 +139,29 @@ const taskDoers = computed(() => {
         </button>
       </div>
     </section>
-    <section class="task-actions" v-if="taskStore.taskDetails[0].status === 'Pågående'">
+    <section
+      class="task-actions"
+      v-if="taskStore.taskDetails[0].status === 'Pågående'"
+    >
       <section v-if="viewer === 'creator'">
         <h3>Utförare för din uppgift</h3>
         <li v-for="doer in taskDoers" :key="doer.email">
           <h5>{{ doer.name }}</h5>
           <p>Rating:</p>
         </li>
-        <button>Markera som klar</button>
+        <button @click="taskStore.markAsDone(taskId)">Markera som klar</button>
+      </section>
+    </section>
+
+    <section
+      class="task-actions"
+      v-if="taskStore.taskDetails[0].status === 'Färdig'"
+    >
+      <section v-if="viewer === 'creator'">
+        <h3>Din uppgift har blivit utförd!</h3>
+        <p>Vill du betygsätta din upplevelse?</p>
+
+        <button>Ge betyg</button>
       </section>
     </section>
   </main>
