@@ -8,7 +8,7 @@ import ProfileView from './views/ProfileView.vue';
 import TaskView from './views/TaskView.vue';
 import LoginView from './views/LoginView.vue';
 import RegisterUserView from './views/RegisterUserView.vue';
-import EditTaskView from './views/editTaskView.vue';
+import EditTaskView from './views/EditTaskView.vue';
 
 export default createRouter({
   history: createWebHashHistory(),
