@@ -28,7 +28,7 @@ onMounted(async () => {
 
 <template>
   <BCol>
-    <h1 style="text-align: center">Tjänster</h1>
+    <h1 style="text-align: center">Senaste tjänster</h1>
 
     <article>
       <b-card v-for="task in tasksList.slice(0, limit || tasksList.length)" :title="task.title" :key="task.taskId"
