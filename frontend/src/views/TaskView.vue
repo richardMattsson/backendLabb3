@@ -102,7 +102,7 @@ const taskDoers = computed(() => {
           <h5>{{ doer.name }}</h5>
           <p>Rating:</p>
           <button
-            @click="taskStore.confirmDoer(taskId, doer.userId)"
+            @click="taskStore.confirmDoer(taskId, doer.userId, doer)"
             type="button"
             class="btn btn-warning"
           >

@@ -182,7 +182,7 @@ export const useTaskStore = defineStore('taskStore', {
       }
     },
 
-    async confirmDoer(taskId, doerId) {
+    async confirmDoer(taskId, doerId, doer) {
       const doerInput = {
         taskId: taskId,
         doerId: doerId,
@@ -193,6 +193,7 @@ export const useTaskStore = defineStore('taskStore', {
           doerInput
         );
         console.log('Servern svarade med:', response.data);
+        console.log(doer);
       } catch (error) {
         console.log(error);
       }
