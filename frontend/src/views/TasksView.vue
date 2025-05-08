@@ -28,32 +28,23 @@ function sendToTasksInCategoryView(id, name) {
   <article>
     <BContainer id="tasks-container">
       <BRow align-h="center">
-        <TaskList />
+        <BCol>
+          <h1 style="text-align: center; padding-bottom: 1em;">Senaste tjänster</h1>
+          <TaskList />
+        </BCol>
         <BCol>
           <BContainer>
             <BRow>
-              <h1 style="text-align: center">Kategorier</h1>
-              <BCol
-                class="mt-4 mb-2"
-                cols="6"
-                lg="4"
-                v-for="category in taskStore.categories"
-                :key="category.categoryId"
-              >
-                <BCard
-                  overlay
-                  :title="category.categoryName"
-                  :img-src="category.categoryImage"
-                  img-alt="Image"
-                  tag="figure"
-                  style="max-width: 20rem; cursor: pointer"
-                  @click="
+              <h1 style="text-align: center; padding-bottom: 1em;">Kategorier</h1>
+              <BCol class="mt-4 mb-2" cols="6" lg="4" v-for="category in taskStore.categories"
+                :key="category.categoryId">
+                <BCard overlay :title="category.categoryName" :img-src="category.categoryImage" img-alt="Image"
+                  tag="figure" style="max-width: 20rem; cursor: pointer" @click="
                     sendToTasksInCategoryView(
                       category.categoryId,
                       category.categoryName
                     )
-                  "
-                >
+                    ">
                 </BCard>
               </BCol>
             </BRow>

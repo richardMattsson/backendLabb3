@@ -18,14 +18,16 @@ onMounted(async () => {
 
 <template>
   <header v-if="taskStore.oneCategory">
-    <h1 style="text-align: center">
+    <h1 style="text-align: center; margin-bottom: -0.5em;">
       {{ taskStore.oneCategory[0].categoryName }}
     </h1>
     <div id="image-container">
       <img :src="taskStore.oneCategory[0].categoryImage" alt="" style="max-width: 100%; max-height: 100%" />
     </div>
   </header>
-  <TaskList />
+  <BContainer style="max-width: 70%;">
+    <TaskList />
+  </BContainer>
 </template>
 
 <style scoped>
