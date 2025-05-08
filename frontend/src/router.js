@@ -8,6 +8,7 @@ import ProfileView from './views/ProfileView.vue';
 import TaskView from './views/TaskView.vue';
 import LoginView from './views/LoginView.vue';
 import RegisterUserView from './views/RegisterUserView.vue';
+import EditTaskView from './views/editTaskView.vue';
 
 export default createRouter({
   history: createWebHashHistory(),
@@ -19,7 +20,7 @@ export default createRouter({
     {
       component: TaskView,
       path: '/tasks/:taskId',
-      name: 'TaskView'
+      name: 'TaskView',
     },
     {
       component: HomeView,
@@ -47,5 +48,10 @@ export default createRouter({
       component: RegisterUserView,
       path: '/register',
     },
+    {
+      component: EditTaskView,
+      path: '/edit-task/:id',
+      name: 'EditTask'
+    }
   ],
 });

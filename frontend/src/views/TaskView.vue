@@ -11,9 +11,13 @@ const route = useRoute();
 const taskDetails = ref(null);
 const taskId = ref(null)
 
+function goToPage() {
+        router.push({ name: 'EditTask', params: { id: taskId.value } })
+    }
+
 onMounted(async () => {
     taskId.value = route.params.taskId;
-
+    console.log(taskId.value)
     await taskStore.fetchTaskDetails(taskId.value);
     console.log('Task fetched:', taskStore.taskDetails[0]);
     taskDetails.value = taskStore.taskDetails[0];
@@ -35,6 +39,25 @@ async function onClick() {
 
     taskStore.fetchTaskDetails(taskId.value);
 }
+
+// async function deleteTask() {
+//     try {
+//     const res = await fetch(`http://localhost:3000/api/tasks/${taskId.value}`, {
+//         method: 'DELETE'
+//     });
+
+//     const result = await res.json();
+
+//     if (!res.ok) {
+//         throw new Error(result.error)
+//     }
+//     alert('Tjänsten har raderats!', result.message);
+//     router.push('/tasks');
+// } catch (error) {
+//     console.error('Fel vid radering')
+//     }
+// };
+
 
 const taskCreator = computed(() => {
     let index = 0;
@@ -85,6 +108,8 @@ console.log('viewer', viewer.value);
             <p class="description" v-if="taskDetails.description">{{ taskDetails.description }}</p>
             <h4>Adress: {{ taskDetails.address }}</h4>
             <h4>Beställare: {{ taskCreator }}</h4>
+            <button @click="goToPage()" class="btn btn-warning">Redigera</button>
+            <button type="button" class="btn btn-danger">Radera</button>
         </section>
         <section class="task-actions" v-if="taskDetails.status === 'New'">
             <section class="for-creator" v-if="viewer === 'creator'">
