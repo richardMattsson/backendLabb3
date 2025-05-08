@@ -73,17 +73,28 @@ const taskDoers = computed(() => {
   return doers;
 });
 
+const labelColor = computed(() => {
+  if (taskStore.taskDetails[0].status === "New")
+    return 'badge bg-success'
+  else if (taskStore.taskDetails[0].status === "Pågående")
+    return 'badge bg-warning text-dark'
+  else return 'badge bg-secondary'
+})
+
 // console.log('status', loginStore.isLoggedIn);
 // console.log('username', loginStore.username);
 // console.log('viewer', viewer.value);
 </script>
 
 <template>
-  <main v-if="taskDetails">
+  <i @click="router.push({ path: route.query.endpoint || '/tasks' })" class="pi pi-arrow-left"
+    style="font-size: 1.2rem; font-weight: 500; margin-top: 0.8em; padding-left: 2em; cursor: pointer;"><span
+      style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; cursor: pointer;"> Till tjänster</span></i>
+  <article v-if="taskDetails">
     <section class="task-details">
       <h1>
         {{ taskDetails.title }}
-        <span class="badge bg-success">{{ taskDetails.status }}</span>
+        <span :class="labelColor">{{ taskDetails.status }}</span>
       </h1>
       <h3>{{ taskDetails.price }} kr</h3>
       <h4 v-if="taskDetails.date">{{ taskDetails.date.split('T')[0] }}</h4>
@@ -101,11 +112,7 @@ const taskDoers = computed(() => {
         <li v-for="doer in taskDoers" :key="doer.email">
           <h5>{{ doer.name }}</h5>
           <p>Rating:</p>
-          <button
-            @click="taskStore.confirmDoer(taskId, doer.userId, doer)"
-            type="button"
-            class="btn btn-warning"
-          >
+          <button @click="taskStore.confirmDoer(taskId, doer.userId, doer)" type="button" class="btn btn-warning">
             Bekräfta utförare
           </button>
         </li>
@@ -124,16 +131,12 @@ const taskDoers = computed(() => {
         <div class="card-body">
           Du behöver vara inloggad för att tacka ja till uppgiften
         </div>
-        <button
-          @click="
-            router.push({
-              path: '/login',
-              query: { endpoint: route.fullPath },
-            })
-          "
-          type="button"
-          class="btn btn-primary"
-        >
+        <button @click="
+          router.push({
+            path: '/login',
+            query: { endpoint: route.fullPath },
+          })
+          " type="button" class="btn btn-primary">
           Logga in
         </button>
       </div>
@@ -148,14 +151,14 @@ const taskDoers = computed(() => {
         <button>Markera som klar</button>
       </section>
     </section>
-  </main>
+  </article>
 </template>
 
 <style scoped>
-main {
+article {
   display: grid;
-  grid-template-rows: 70% 20%;
-  padding-block: 3rem;
+  grid-template-rows: 70% 20% 20%;
+  padding-block: 2.5rem;
   gap: 0.5rem;
 }
 
@@ -174,6 +177,7 @@ section {
   padding: 5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 70%;
 }
 
 h1 {

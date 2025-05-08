@@ -2,21 +2,11 @@
 
 <template>
   <header>
-    <BNavbar
-      :toggleable="true"
-      class="navbar-nav-scroll"
-      v-b-color-mode="'light'"
-      toggleable
-      variant="light"
-    >
+    <BNavbar :toggleable="true" class="navbar-nav-scroll" v-b-color-mode="'light'" toggleable variant="light" style="padding-inline: 2.5em;">
       <BNavbarToggle target="nav-scroll" />
-      <BNavbarBrand href="#" variant="success"
-        >Delagator
-        <img
-          style="max-width: 50px"
-          src="../public/crocodileLyingDown.jpg"
-          alt=""
-      /></BNavbarBrand>
+      <BNavbarBrand href="#" variant="success">Delagator
+        <img style="max-width: 50px" src="../public/crocodileLyingDown.jpg" alt="" />
+      </BNavbarBrand>
     </BNavbar>
     <BCollapse id="nav-scroll" is-nav>
       <BNavbarNav>
@@ -29,7 +19,7 @@
     </BCollapse>
   </header>
 
-  <main>
+  <main style="padding-block: 1.5em;">
     <RouterView />
   </main>
 </template>
