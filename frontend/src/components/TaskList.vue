@@ -27,21 +27,17 @@ onMounted(async () => {
 </script>
 
 <template>
-  <BCol>
-    <h1 style="text-align: center">Tjänster</h1>
+  <article>
+    <b-card v-for="task in tasksList.slice(0, limit || tasksList.length)" :title="task.title" :key="task.taskId"
+      :subtitle="task.price + ' kr'" class="mb-2">
+      <b-card-text>
+        {{ task.description }}
+      </b-card-text>
 
-    <article>
-      <b-card v-for="task in tasksList.slice(0, limit || tasksList.length)" :title="task.title" :key="task.taskId"
-        :subtitle="task.price + ' kr'" class="mb-2">
-        <b-card-text>
-          {{ task.description }}
-        </b-card-text>
+      <b-card-text style="color:sienna;"> <span class="pi pi-map-marker"></span> {{ task.address }}</b-card-text>
 
-        <b-card-text style="color:sienna;"> <span class="pi pi-map-marker"></span> {{ task.address }}</b-card-text>
-
-        <RouterLink :to="{ path: `/tasks/${task.taskId}`, query: { endpoint: route.fullPath } }" class="card-link">Visa
-          tjänst</RouterLink>
-      </b-card>
-    </article>
-  </BCol>
+      <RouterLink :to="{ path: `/tasks/${task.taskId}`, query: { endpoint: route.fullPath } }" class="card-link">Visa
+        tjänst</RouterLink>
+    </b-card>
+  </article>
 </template>

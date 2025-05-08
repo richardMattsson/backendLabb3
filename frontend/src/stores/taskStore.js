@@ -13,8 +13,6 @@ export const useTaskStore = defineStore('taskStore', {
       oneCategory: null,
       users: [],
       allUsers: [],
-      performerTasks: [],
-      clientTasks: [],
       loading: false,
       error: null,
     };
@@ -70,6 +68,7 @@ export const useTaskStore = defineStore('taskStore', {
         );
         this.taskDetails = res.data.taskDetails;
         this.error = null;
+        console.log(this.taskDetails);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -132,36 +131,6 @@ export const useTaskStore = defineStore('taskStore', {
         this.error = err.message;
       }
     },
-
-    /*async fetchUserTasksRole(userId, tasksrole) {
-      this.loading = true;
-      try {
-        const res = await axios.get(
-          `http://localhost:3000/api/users/${userId}/${tasksrole}`
-        );
-        this.userTasksRole = res.data.userTasksRole;
-        this.error = null;
-      } catch (err) {
-        this.error = err.message;
-      } finally {
-        this.loading = false;
-      }
-    },*/
-    async fetchUserTasksbyRole(userId) {
-      this.loading = true;
-      try {
-        const res = await axios.get(
-          `http://localhost:3000/api/users/${userId}/tasksrole`
-        )
-        this.performerTasks = res.data.taskDoer
-        this.clientTasks = res.data.taskCreator
-        this.error = null
-      }catch (err) {
-        this.error = err.message;
-      } finally {
-        this.loading = false;
-      }
-    },
     async createUserTask(userId, taskId) {
       const userTask = {
         userRole: 'taskDoer',
@@ -179,6 +148,23 @@ export const useTaskStore = defineStore('taskStore', {
       } catch (error) {
         console.error('Något gick fel:', error.message);
       }
+    },
+
+    async confirmDoer(taskId, doerId, doer) {
+      const doerInput = {
+        taskId: taskId,
+        doerId: doerId,
+      };
+      try {
+        const response = await axios.post(
+          'http://localhost:3000/api/confirm-doer',
+          doerInput
+        );
+        console.log('Servern svarade med:', response.data);
+      } catch (error) {
+        console.log(error.response.data);
+      }
+      await this.fetchTaskDetails(taskId);
     },
   },
 });

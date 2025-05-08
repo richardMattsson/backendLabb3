@@ -40,6 +40,23 @@ exports.createUserTask = async (req, res) => {
   }
 };
 
+exports.confirmDoer = async (req, res) => {
+  const { taskId, doerId } = req.body;
+
+  try {
+    await userTaskService.confirmDoer(taskId, doerId);
+    return res.status(201).json({
+      success: true,
+      message: 'Du har tackat ja till en utförare!',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 exports.updateUserTask = async (req, res) => {
   const { userTaskId, confirmed } = req.body;
   try {
