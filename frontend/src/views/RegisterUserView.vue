@@ -1,8 +1,11 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useLoginStore } from '@/stores/loginStore';
+import { useRoute, useRouter } from 'vue-router';
 
 const loginStore = useLoginStore();
+const router = useRouter();
+const route = useRoute();
 
 const passwordValidation = computed(
   () => password.value === repeatPassword.value && password.value.length > 0
@@ -11,6 +14,13 @@ const passwordValidation = computed(
 const userName = ref(''),
   password = ref(''),
   repeatPassword = ref('');
+
+const handleSignUp = (userName, password) => {
+  console.log('Redirect to:', route.query.endpoint)
+  loginStore.register(userName, password)
+  const redirectTo = route.query.endpoint || '/'
+  router.push(redirectTo)
+}
 </script>
 
 <template>
@@ -39,7 +49,7 @@ const userName = ref(''),
             </BFormValidFeedback>
           </BFormGroup>
 
-          <BButton @click="loginStore.register(userName, password)" class="mt-4" variant="success">Skapa användare
+          <BButton @click="handleSignUp(userName, password)" class="mt-4" variant="success">Skapa användare
           </BButton>
         </BForm>
       </BCol>

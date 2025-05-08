@@ -94,7 +94,7 @@ const taskDoers = computed(() => {
       <h4>Adress: {{ taskDetails.address }}</h4>
       <h4>Beställare: {{ taskCreator }}</h4>
     </section>
-    <section class="task-actions" v-if="taskDetails.status === 'New'">
+    <section class="task-actions" v-if="taskStore.taskDetails[0].status === 'New'">
       <section class="for-creator" v-if="viewer === 'creator'">
         <h3>Utförare för din uppgift</h3>
         <p v-if="taskDoers.length < 1">Inga utförare har tackat ja ännu</p>
@@ -138,7 +138,7 @@ const taskDoers = computed(() => {
         </button>
       </div>
     </section>
-    <section class="task-actions" v-if="taskDetails.status === 'Pågående'">
+    <section class="task-actions" v-if="taskStore.taskDetails[0].status === 'Pågående'">
       <section v-if="viewer === 'creator'">
         <h3>Utförare för din uppgift</h3>
         <li v-for="doer in taskDoers" :key="doer.email">

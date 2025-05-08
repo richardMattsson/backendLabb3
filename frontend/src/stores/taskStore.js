@@ -187,6 +187,7 @@ export const useTaskStore = defineStore('taskStore', {
         taskId: taskId,
         doerId: doerId,
       };
+      console.log(doerInput)
       try {
         const response = await axios.post(
           'http://localhost:3000/api/confirm-doer',
@@ -194,8 +195,9 @@ export const useTaskStore = defineStore('taskStore', {
         );
         console.log('Servern svarade med:', response.data);
       } catch (error) {
-        console.log(error);
+        console.log(error.response.data);
       }
+      await this.fetchTaskDetails(taskId);
     },
   },
 });
