@@ -1,25 +1,25 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
-import { useTaskStore } from '@/stores/taskStore';
-import { useLoginStore } from '@/stores/loginStore';
-import { useRoute, useRouter } from 'vue-router';
+import { computed, onMounted, ref } from "vue";
+import { useTaskStore } from "@/stores/taskStore";
+import { useLoginStore } from "@/stores/loginStore";
+import { useRoute, useRouter } from "vue-router";
 
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
 const router = useRouter();
 const route = useRoute();
 const taskDetails = ref(null);
-const taskId = ref(null)
+const taskId = ref(null);
 
 function goToPage() {
-        router.push({ name: 'EditTask', params: { id: taskId.value } })
-    }
+  router.push({ name: "EditTask", params: { id: taskId.value } });
+}
 
 onMounted(async () => {
   taskId.value = route.params.taskId;
 
   await taskStore.fetchTaskDetails(taskId.value);
-  console.log('Task fetched:', taskStore.taskDetails[0]);
+  console.log("Task fetched:", taskStore.taskDetails[0]);
   taskDetails.value = taskStore.taskDetails[0];
   console.log(taskStore.taskDetails);
 });
@@ -36,7 +36,7 @@ async function onClick() {
   // userTaskTId === route.params.taskId
   // userRole === 'doer'
   await taskStore.createUserTask(doer[0].userId, taskId.value);
-  alert('Du har tackat jag till att utföra tjänsten!');
+  alert("Du har tackat jag till att utföra tjänsten!");
 
   taskStore.fetchTaskDetails(taskId.value);
 }
@@ -59,34 +59,33 @@ async function onClick() {
 //     }
 // };
 
-
 const taskCreator = computed(() => {
   let index = 0;
   if (taskStore.taskDetails.length > 1) {
     index = taskStore.taskDetails.findIndex((task) => {
-      return task.userRole === 'taskCreator';
+      return task.userRole === "taskCreator";
     });
   }
   return taskStore.taskDetails[index].firstName;
 });
 
 const viewer = computed(() => {
-  if (!loginStore.isLoggedIn) return 'anonymous';
+  if (!loginStore.isLoggedIn) return "anonymous";
 
   for (const task of taskStore.taskDetails) {
     if (loginStore.username === task.email) {
-      if (task.userRole === 'taskCreator') {
-        return 'creator';
-      } else return 'doer';
+      if (task.userRole === "taskCreator") {
+        return "creator";
+      } else return "doer";
     }
   }
-  return 'nonDoer';
+  return "nonDoer";
 });
 
 const taskDoers = computed(() => {
   let doers = [];
   for (const task of taskStore.taskDetails) {
-    if (task.userRole === 'taskDoer')
+    if (task.userRole === "taskDoer")
       doers.push({
         name: task.firstName,
         email: task.email,
@@ -97,12 +96,11 @@ const taskDoers = computed(() => {
 });
 
 const labelColor = computed(() => {
-  if (taskStore.taskDetails[0].status === "New")
-    return 'badge bg-success'
+  if (taskStore.taskDetails[0].status === "New") return "badge bg-success";
   else if (taskStore.taskDetails[0].status === "Pågående")
-    return 'badge bg-warning text-dark'
-  else return 'badge bg-secondary'
-})
+    return "badge bg-warning text-dark";
+  else return "badge bg-secondary";
+});
 
 // console.log('status', loginStore.isLoggedIn);
 // console.log('username', loginStore.username);
@@ -110,9 +108,25 @@ const labelColor = computed(() => {
 </script>
 
 <template>
-  <i @click="router.push({ path: route.query.endpoint || '/tasks' })" class="pi pi-arrow-left"
-    style="font-size: 1.2rem; font-weight: 500; margin-top: 0.8em; padding-left: 2em; cursor: pointer;"><span
-      style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; cursor: pointer;"> Till tjänster</span></i>
+  <i
+    @click="router.push({ path: route.query.endpoint || '/tasks' })"
+    class="pi pi-arrow-left"
+    style="
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-top: 0.8em;
+      padding-left: 2em;
+      cursor: pointer;
+    "
+    ><span
+      style="
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        cursor: pointer;
+      "
+    >
+      Till tjänster</span
+    ></i
+  >
   <article v-if="taskDetails">
     <section class="task-details">
       <h1>
@@ -120,22 +134,33 @@ const labelColor = computed(() => {
         <span :class="labelColor">{{ taskDetails.status }}</span>
       </h1>
       <h3>{{ taskDetails.price }} kr</h3>
-      <h4 v-if="taskDetails.date">{{ taskDetails.date.split('T')[0] }}</h4>
+      <h4 v-if="taskDetails.date">{{ taskDetails.date.split("T")[0] }}</h4>
       <h4 v-else>Datum diskuteras</h4>
       <p class="description" v-if="taskDetails.description">
         {{ taskDetails.description }}
       </p>
       <h4>Adress: {{ taskDetails.address }}</h4>
       <h4>Beställare: {{ taskCreator }}</h4>
+      <div v-if="viewer === 'creator'">
+        <button @click="goToPage()" class="btn btn-warning">Redigera</button>
+        <button type="button" class="btn btn-danger">Radera</button>
+      </div>
     </section>
-    <section class="task-actions" v-if="taskStore.taskDetails[0].status === 'New'">
+    <section
+      class="task-actions"
+      v-if="taskStore.taskDetails[0].status === 'New'"
+    >
       <section class="for-creator" v-if="viewer === 'creator'">
         <h3>Utförare för din uppgift</h3>
         <p v-if="taskDoers.length < 1">Inga utförare har tackat ja ännu</p>
         <li v-for="doer in taskDoers" :key="doer.email">
           <h5>{{ doer.name }}</h5>
           <p>Rating:</p>
-          <button @click="taskStore.confirmDoer(taskId, doer.userId, doer)" type="button" class="btn btn-warning">
+          <button
+            @click="taskStore.confirmDoer(taskId, doer.userId, doer)"
+            type="button"
+            class="btn btn-warning"
+          >
             Bekräfta utförare
           </button>
         </li>
@@ -154,17 +179,24 @@ const labelColor = computed(() => {
         <div class="card-body">
           Du behöver vara inloggad för att tacka ja till uppgiften
         </div>
-        <button @click="
-          router.push({
-            path: '/login',
-            query: { endpoint: route.fullPath },
-          })
-          " type="button" class="btn btn-primary">
+        <button
+          @click="
+            router.push({
+              path: '/login',
+              query: { endpoint: route.fullPath },
+            })
+          "
+          type="button"
+          class="btn btn-primary"
+        >
           Logga in
         </button>
       </div>
     </section>
-    <section class="task-actions" v-if="taskStore.taskDetails[0].status === 'Pågående'">
+    <section
+      class="task-actions"
+      v-if="taskStore.taskDetails[0].status === 'Pågående'"
+    >
       <section v-if="viewer === 'creator'">
         <h3>Utförare för din uppgift</h3>
         <li v-for="doer in taskDoers" :key="doer.email">
