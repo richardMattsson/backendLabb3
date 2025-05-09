@@ -52,6 +52,6 @@ export default createRouter({
       component: EditTaskView,
       path: '/edit-task/:id',
       name: 'EditTask'
-    }
+    },
   ],
 });

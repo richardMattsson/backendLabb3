@@ -23,6 +23,36 @@ function goToPage() {
   router.push({ name: 'EditTask', params: { id: taskId.value } });
 }
 
+// function goToHomePage() {
+//   router.push({ path: "/tasks" });
+// }
+
+// async function deleteTask() {
+//   try {
+//     const response = await fetch(
+//       `http://localhost:3000/api/tasks/${taskId.value}`,
+//       {
+//         method: "DELETE",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `${loginStore.token}`,
+//         },
+//       }
+//     );
+//     if (!response.ok) {
+//       console.log(response);
+//       throw new Error(`Response status: ${response.status}`);
+//     }
+//     alert("Tjänsten har raderats!");
+//     const result = await response.json();
+//     console.log("Servern svarade med:", result);
+
+//     router.push({ name: "TasksView" });
+//   } catch (error) {
+//     console.log("Något gick fel", error.message);
+//   }
+// }
+
 onMounted(async () => {
   taskId.value = route.params.taskId;
 
@@ -147,8 +177,22 @@ const labelColor = computed(() => {
       <h4>Adress: {{ taskDetails.address }}</h4>
       <h4>Beställare: {{ taskCreator }}</h4>
       <div v-if="viewer === 'creator'">
-        <button @click="goToPage()" class="btn btn-warning">Redigera</button>
-        <button type="button" class="btn btn-danger">Radera</button>
+        <button
+          @click="goToPage()"
+          type="button"
+          id="editDelete"
+          class="btn btn-warning"
+        >
+          Redigera
+        </button>
+        <button
+          @click="deleteTask()"
+          type="button"
+          id="editDelete"
+          class="btn btn-danger"
+        >
+          Radera
+        </button>
       </div>
     </section>
 
