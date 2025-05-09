@@ -1,8 +1,8 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import { useTaskStore } from "@/stores/taskStore";
-import { useLoginStore } from "@/stores/loginStore";
-import { useRoute, useRouter } from "vue-router";
+import { computed, onMounted, ref, watch } from 'vue';
+import { useTaskStore } from '@/stores/taskStore';
+import { useLoginStore } from '@/stores/loginStore';
+import { useRoute, useRouter } from 'vue-router';
 
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
@@ -11,30 +11,37 @@ const route = useRoute();
 const taskDetails = ref(null);
 const taskId = ref(null);
 
+watch(
+  () => taskStore.taskDetails,
+  (newValue, oldValue) => {
+    // console.log(oldValue, 'ändras till ', newValue[0]);
+    taskDetails.value = newValue[0];
+  }
+);
+
 function goToPage() {
-  router.push({ name: "EditTask", params: { id: taskId.value } });
+  router.push({ name: 'EditTask', params: { id: taskId.value } });
 }
 
 onMounted(async () => {
   taskId.value = route.params.taskId;
 
   await taskStore.fetchTaskDetails(taskId.value);
-  console.log("Task fetched:", taskStore.taskDetails[0]);
+  //console.log('Task fetched:', taskStore.taskDetails[0]);
   taskDetails.value = taskStore.taskDetails[0];
   console.log(taskStore.taskDetails);
 });
 
-async function onClick() {
+async function doerAcceptTask() {
   await taskStore.fetchUsers();
 
   // letar efter userId
   const doer = taskStore.allUsers.users.filter((user) => {
     return user.email === loginStore.username;
   });
-  // userTaskUId === doer[0].userId
+  // userID (userTaskUId) === doer[0].userId
 
   await taskStore.createUserTask(doer[0].userId, taskId.value);
-  alert("Du har tackat jag till att utföra tjänsten!");
 
   taskStore.fetchTaskDetails(taskId.value);
 }
@@ -61,29 +68,29 @@ const taskCreator = computed(() => {
   let index = 0;
   if (taskStore.taskDetails.length > 1) {
     index = taskStore.taskDetails.findIndex((task) => {
-      return task.userRole === "taskCreator";
+      return task.userRole === 'taskCreator';
     });
   }
   return taskStore.taskDetails[index].firstName;
 });
 
 const viewer = computed(() => {
-  if (!loginStore.isLoggedIn) return "anonymous";
+  if (!loginStore.isLoggedIn) return 'anonymous';
 
   for (const task of taskStore.taskDetails) {
     if (loginStore.username === task.email) {
-      if (task.userRole === "taskCreator") {
-        return "creator";
-      } else return "doer";
+      if (task.userRole === 'taskCreator') {
+        return 'creator';
+      } else return 'doer';
     }
   }
-  return "nonDoer";
+  return 'nonDoer';
 });
 
 const taskDoers = computed(() => {
   let doers = [];
   for (const task of taskStore.taskDetails) {
-    if (task.userRole === "taskDoer")
+    if (task.userRole === 'taskDoer')
       doers.push({
         name: task.firstName,
         email: task.email,
@@ -94,10 +101,10 @@ const taskDoers = computed(() => {
 });
 
 const labelColor = computed(() => {
-  if (taskStore.taskDetails[0].status === "New") return "badge bg-success";
-  else if (taskStore.taskDetails[0].status === "Pågående")
-    return "badge bg-warning text-dark";
-  else return "badge bg-secondary";
+  if (taskStore.taskDetails[0].status === 'New') return 'badge bg-success';
+  else if (taskStore.taskDetails[0].status === 'Pågående')
+    return 'badge bg-warning text-dark';
+  else return 'badge bg-secondary';
 });
 
 // console.log('status', loginStore.isLoggedIn);
@@ -132,7 +139,7 @@ const labelColor = computed(() => {
         <span :class="labelColor">{{ taskDetails.status }}</span>
       </h1>
       <h3>{{ taskDetails.price }} kr</h3>
-      <h4 v-if="taskDetails.date">{{ taskDetails.date.split("T")[0] }}</h4>
+      <h4 v-if="taskDetails.date">{{ taskDetails.date.split('T')[0] }}</h4>
       <h4 v-else>Datum diskuteras</h4>
       <p class="description" v-if="taskDetails.description">
         {{ taskDetails.description }}
@@ -144,6 +151,7 @@ const labelColor = computed(() => {
         <button type="button" class="btn btn-danger">Radera</button>
       </div>
     </section>
+
     <section
       class="task-actions"
       v-if="taskStore.taskDetails[0].status === 'New'"
@@ -164,7 +172,7 @@ const labelColor = computed(() => {
         </li>
       </section>
       <section v-if="viewer === 'nonDoer'">
-        <button @click="onClick" type="button" class="btn btn-primary">
+        <button @click="doerAcceptTask" type="button" class="btn btn-primary">
           Tacka ja
         </button>
       </section>
@@ -191,6 +199,7 @@ const labelColor = computed(() => {
         </button>
       </div>
     </section>
+
     <section
       class="task-actions"
       v-if="taskStore.taskDetails[0].status === 'Pågående'"
