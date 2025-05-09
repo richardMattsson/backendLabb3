@@ -65,6 +65,16 @@ function deleteUser(id) {
   })
 }
 
+function getUserCount() {
+  return new Promise((resolve, reject) => {
+    let sql = "SELECT COUNT(*) AS count FROM user"
+    connectionMySQL.query(sql, (err, rows) => {
+      if (err) reject (err);
+      else resolve(rows[0].count)
+    })
+  })
+}
+
 module.exports = {
   getUsers,
   getUser,
@@ -72,4 +82,5 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  getUserCount,
 }

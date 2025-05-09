@@ -1,13 +1,25 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
 const router = useRouter();
+const userCount = ref(null);
 
-function goToTasks() {
-  router.push({ path: '/tasks' });
-}
-function goToCreateTask() {
-  router.push({ path: '/createtask' });
-}
+onMounted(async () => {
+  try {
+    const res = await fetch("http://localhost:3000/api/user-count");
+    const data = await res.json();
+    userCount.value = data.userCount;
+  } catch (error) {
+    console.log("Fel vid hämtning utav användartal", error);
+  }
+
+  function goToTasks() {
+    router.push({ path: "/tasks" });
+  }
+  function goToCreateTask() {
+    router.push({ path: "/createtask" });
+  }
+});
 </script>
 
 <template>
@@ -25,6 +37,7 @@ function goToCreateTask() {
       </BCol>
     </BRow>
   </BContainer>
+  <div>Registrerade användare: {{ userCount }}</div>
 </template>
 
 <style scoped>

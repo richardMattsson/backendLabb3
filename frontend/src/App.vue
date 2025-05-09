@@ -41,5 +41,5 @@ const loginStore = useLoginStore();
 </template>
 
 <style>
-@import 'primeicons/primeicons.css';
+@import "primeicons/primeicons.css";
 </style>
