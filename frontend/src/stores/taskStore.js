@@ -68,7 +68,7 @@ export const useTaskStore = defineStore('taskStore', {
         );
         this.taskDetails = res.data.taskDetails;
         this.error = null;
-        console.log(this.taskDetails);
+        //console.log(this.taskDetails);
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -131,11 +131,12 @@ export const useTaskStore = defineStore('taskStore', {
         this.error = err.message;
       }
     },
+
     async createUserTask(userId, taskId) {
       const userTask = {
         userRole: 'taskDoer',
         userTaskUId: userId,
-        userTaskTId: taskId,
+        userTaskTId: Number(taskId),
       };
       console.log(userTask);
       try {
@@ -150,7 +151,7 @@ export const useTaskStore = defineStore('taskStore', {
       }
     },
 
-    async confirmDoer(taskId, doerId, doer) {
+    async confirmDoer(taskId, doerId) {
       const doerInput = {
         taskId: taskId,
         doerId: doerId,
@@ -168,9 +169,6 @@ export const useTaskStore = defineStore('taskStore', {
     },
 
     async markAsDone(taskId) {
-      // Vad ska uppdateras när markerad som klar trycks på?
-      // Bara task-tabellen status kolumnen
-
       const inTaskId = {
         inTaskId: Number(taskId),
       };
@@ -184,6 +182,7 @@ export const useTaskStore = defineStore('taskStore', {
       } catch (error) {
         console.log(error.respons.data);
       }
+      await this.fetchTaskDetails(taskId);
     },
   },
 });
