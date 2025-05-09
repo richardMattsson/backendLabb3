@@ -1,3 +1,4 @@
+const { connection } = require('mongoose');
 const connectionMySQL = require('../connectionMySQL');
 
 function getTasks() {
@@ -64,6 +65,18 @@ function createTask(title, description, date, address, price, taskCategoryId) {
   });
 }
 
+function markAsDone(inTaskId) {
+  return new Promise((resolve, reject) => {
+    let sql = 'CALL markAsDone(?)';
+    let params = [inTaskId];
+
+    connectionMySQL.query(sql, params, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 function editTask(
   title,
   description,
@@ -113,12 +126,13 @@ function deleteTask(taskId) {
 }
 
 module.exports = {
-    getTasks,
-    getTask,
-    getTaskUserDetails,
-    getTasksInCategory,
-    getNewTasks,
-    createTask,
-    editTask,
-    deleteTask
+  getTasks,
+  getTask,
+  getTaskUserDetails,
+  getTasksInCategory,
+  getNewTasks,
+  createTask,
+  markAsDone,
+  editTask,
+  deleteTask,
 };
