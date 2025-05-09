@@ -131,3 +131,16 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+exports.getUserCount = async (req, res) => {
+  try {
+  const count = await userService.getUserCount()
+  res.json({ userCount: count })
+   } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Fel vid hämtning av användartal',
+        error: error.message,
+      });
+    }
+  };
