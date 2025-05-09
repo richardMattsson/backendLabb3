@@ -6,17 +6,14 @@ const ratingSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    givenRating: {
+    givenRating: [{
         score: {
             type: Number,
-            required: true
         },
         ratedBy: {
             type: String,
-            unique: true,
-            required: true
         }
-    }
+    }]
 });
 
 module.exports = mongoose.model('rating', ratingSchema);
