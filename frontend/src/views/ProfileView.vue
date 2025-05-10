@@ -1,21 +1,31 @@
 <script setup>
 import { ref, onMounted } from "vue"
+import { useLoginStore } from "@/stores/loginStore"
 import { useUserStore } from "@/stores/userStore"
 
-
 const userStore = useUserStore()
-const userId = 2
-const form = ref({})
+const loginStore = useLoginStore()
 
+const performerTasks = userStore.performerTasks
+console.log("Performer tasks:", performerTasks)
+const clientTasks = userStore.clientTasks
+console.log("Client tasks:", clientTasks)
+
+const userEmail = loginStore.username
+console.log("User email:", userEmail)
+
+const form = ref({})
 const isEditing = ref(false)
+const userId = 2
 
 onMounted(async () => {
-    await userStore.fetchUserTasksByRole(userId)
+    /*await taskStore.fetchUserByEmail() */
+    await userStore.fetchUserTasksbyRole(userId)
 })
+
 </script>
 <template>
     <b-container class="mt-8">
-
         <b-row class="mb-4">
             <b-col md="8" class="mb-4">
                 <h4>Min Profil</h4>

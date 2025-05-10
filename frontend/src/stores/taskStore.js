@@ -121,6 +121,18 @@ export const useTaskStore = defineStore('taskStore', {
       }
     },
 
+
+    async fetchUser(userId) {
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/api/users/${userId}`
+        );
+        this.users = res.data;
+      } catch (err) {
+        this.error = err.message;
+      }
+    },
+    
     async createUserTask(userId, taskId) {
       const userTask = {
         userRole: 'taskDoer',
