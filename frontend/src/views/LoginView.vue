@@ -23,53 +23,26 @@ const handleLogin = (userName, password) => {
     <BRow>
       <BCol cols="6">
         <h1 v-if="!loginStore.isLoggedIn">Logga in</h1>
-        <h1 v-else>Logga ut</h1>
-        <BForm id="loginForm">
+        <!-- <h1 v-else>Logga ut</h1> -->
+        <BForm id="loginForm" v-if="!loginStore.isLoggedIn">
           <BFormGroup id="input-group-1" label="Email:" label-for="input-1">
-            <BFormInput
-              id="input-1"
-              type="text"
-              class="mb-2"
-              v-model="userName"
-              placeholder="Email"
-              required
-            />
+            <BFormInput id="input-1" type="text" class="mb-2" v-model="userName" placeholder="Email" required />
             {{ userName }}
           </BFormGroup>
 
           <BFormGroup id="input-group-2" label="Lösenord:" label-for="input-2">
-            <BFormInput
-              id="input-2"
-              class="mb-2"
-              type="password"
-              v-model="password"
-              placeholder="Lösenord"
-            />
+            <BFormInput id="input-2" class="mb-2" type="password" v-model="password" placeholder="Lösenord" />
             {{ password }}
           </BFormGroup>
 
-          <BButton
-            :disabled="!userName || !password"
-            v-if="!loginStore.isLoggedIn"
-            @click="handleLogin(userName, password)"
-            class="mt-4"
-            variant="primary"
-            >Logga in
-          </BButton>
-          <BButton
-            v-if="loginStore.isLoggedIn"
-            @click="loginStore.logout()"
-            class="mt-4"
-            variant="danger"
-            >Logga ut
+          <BButton :disabled="!userName || !password" v-if="!loginStore.isLoggedIn"
+            @click="handleLogin(userName, password)" class="mt-4" variant="primary">Logga in
           </BButton>
         </BForm>
-        <BButton
-          v-if="!loginStore.isLoggedIn"
-          @click="router.push({ path: '/register' })"
-          class="mt-4"
-          variant="success"
-          >Har du inget konto?
+        <!-- <BButton v-if="loginStore.isLoggedIn" @click="loginStore.logout()" class="mt-4" variant="danger">Logga ut
+        </BButton> -->
+        <BButton v-if="!loginStore.isLoggedIn" @click="router.push({ path: '/register' })" class="mt-4"
+          variant="success">Har du inget konto?
         </BButton>
       </BCol>
     </BRow>

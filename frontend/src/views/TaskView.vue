@@ -47,7 +47,8 @@ async function doerAcceptTask() {
   // userID (userTaskUId) === doer[0].userId
 
   await taskStore.createUserTask(doer[0].userId, taskId.value);
-  await ratingStore.addUserToRating(doer[0].email)
+  if (avgRating.value.findIndex((user) => user.username !== loginStore.username))
+    await ratingStore.addUserToRating(doer[0].email)
 
   taskStore.fetchTaskDetails(taskId.value);
 }
