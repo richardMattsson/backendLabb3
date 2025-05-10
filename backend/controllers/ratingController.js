@@ -43,17 +43,16 @@ exports.getGivenScore = async (req, res) => {
 //create a user entry in the rating db - should run together with the registration or tacka ja function?
 exports.addUserToRating = async (req, res) => {
     const { username } = req.body;
-    const userRating = new RatingModel({
-        username,
-        givenRating: []
-    })
 
     if (!username) {
         return res.status(400).json({ error: 'username saknas' });
     }
 
     try {
-        const newUserRating = await userRating.save();
+        const newUserRating = await RatingModel.create({
+            username,
+            givenRating: []
+        })
         res.status(201).json(newUserRating);
     }
     catch (error) {
@@ -75,7 +74,7 @@ exports.addScore = async (req, res) => {
             { $push: { givenRating: { score, ratedBy } } },
             { new: true, upsert: true } // 'new' returns the updated document, 'upsert' creates the user if not found
         );
-        res.status(201).json(newScore);
+        res.status(201).json(newScore); // use on frontend to get the score id?
     }
     catch (error) {
         res.status(500).json({ error: error.message });
@@ -84,8 +83,10 @@ exports.addScore = async (req, res) => {
 
 
 exports.deleteScore = async (req, res) => {
+    const { id } = req.params;
     try {
-
+        const deletedScore = await RatingModel.findOneAndDelete(id);
+        res.status(200).json(deletedScore)
     }
     catch (error) {
         res.status(500).json({ error: error.message });
