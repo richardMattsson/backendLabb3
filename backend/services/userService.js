@@ -31,6 +31,16 @@ function getUserTasksRole(id, tasksrole) {
   })
 }
 
+function getUserByEmail(email) {
+  return new Promise((resolve, reject) => {
+    let sql = "SELECT * FROM user WHERE email = ? LIMIT 1"
+    connectionMySQL.query(sql, [email], (err, rows) => {
+      if (err) reject(err)
+      else resolve(rows)
+    })
+  })
+}
+
 function createUser(firstName, lastName, phone, email, city) {
   return new Promise((resolve, reject) => {
     let sql =
@@ -69,6 +79,7 @@ module.exports = {
   getUsers,
   getUser,
   getUserTasksRole,
+  getUserByEmail,
   createUser,
   updateUser,
   deleteUser,

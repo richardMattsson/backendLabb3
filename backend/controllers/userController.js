@@ -1,4 +1,4 @@
-const userService = require('../services/userService');
+const userService = require("../services/userService")
 
 exports.getUsers = async (req, res) => {
   try {
@@ -42,41 +42,29 @@ exports.getUserTasksRole = async (req, res) => {
   }
 };
 
+exports.getUserByEmail = async (req, res) => {
+  const { email } = req.params
+  try {
+    const user = await userService.getUserByEmail(email)
+    if (!user || user.length === 0) {
+      return res.status(404).json({
+        message: "Ingen användare hittades med den angivna e-postadressen",
+      })
+    }
+    res.json({ user: user[0] })
+  } catch (error) {
+    res.status(500).json({
+      message: "Fel vid hämtning av användare med e-postadress",
+      error: error.message,
+    })
+  }
+}
+
 exports.createUser = async (req, res) => {
   const { firstName, lastName, phone, email, city } = req.body;
-  // if (!firstName || firstName.trim().length < 1) {
-  //   return res.status(400).json({
-  //     success: false,
-  //     message: 'Förnamn är obligatoriskt',
-  //   });
-  // }
-  // if (!lastName || lastName.trim().length < 1) {
-  //   return res.status(400).json({
-  //     success: false,
-  //     message: 'Efternamn är obligatoriskt',
-  //   });
-  // }
-  // if (!phone || phone.trim().length < 1) {
-  //   return res.status(400).json({
-  //     success: false,
-  //     message: 'Telefonnummer är obligatoriskt',
-  //   });
-  // }
-  // if (!email || email.trim().length < 1) {
-  //   return res.status(400).json({
-  //     success: false,
-  //     message: 'E-postadress är obligatorisk',
-  //   });
-  // }
-  // if (!city || city.trim().length < 1) {
-  //   return res.status(400).json({
-  //     success: false,
-  //     message: 'Stad är obligatorisk',
-  //   });
-  // }
   try {
     await userService.createUser(firstName, lastName, phone, email, city);
-    res.status(201).json({ success: true, message: 'Ny användare tillagd!' });
+    res.status(201).json({ success: true, message: "Ny användare tillagd!" });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -87,8 +75,7 @@ exports.createUser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  const { id } = req.params;
-  const { firstName, lastName, phone, email, city } = req.body;
+  const { id, firstName, lastName, phone, email, city } = req.body;
 
   if (!id) {
     return res.status(400).json({
@@ -96,40 +83,10 @@ exports.updateUser = async (req, res) => {
       message: 'Användar-ID är obligatoriskt',
     });
   }
-  if (!firstName || firstName.trim().length < 1) {
-    return res.status(400).json({
-      success: false,
-      message: 'Förnamn är obligatoriskt',
-    });
-  }
-  if (!lastName || lastName.trim().length < 1) {
-    return res.status(400).json({
-      success: false,
-      message: 'Efternamn är obligatoriskt',
-    });
-  }
-  if (!phone || phone.trim().length < 1) {
-    return res.status(400).json({
-      success: false,
-      message: 'Telefonnummer är obligatoriskt',
-    });
-  }
-  if (!email || email.trim().length < 1) {
-    return res.status(400).json({
-      success: false,
-      message: 'E-postadress är obligatorisk',
-    });
-  }
-  if (!city || city.trim().length < 1) {
-    return res.status(400).json({
-      success: false,
-      message: 'Stad är obligatorisk',
-    });
-  }
-
   try {
     await userService.updateUser(id, firstName, lastName, phone, email, city);
-    res.status(200).json({ success: true, message: 'Användare uppdaterad!' });
+    const updatedUser = await userService.getUser(id)
+    res.status(200).json({ success: true,user: updatedUser[0], message: 'Användare uppdaterad!' });
   } catch (error) {
     res.status(500).json({
       success: false,
