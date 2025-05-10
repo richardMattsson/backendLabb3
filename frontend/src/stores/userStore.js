@@ -25,7 +25,7 @@ export const useUserStore = defineStore("userStore", {
         this.loading = false
       }
     },
-
+      
     /*async fetchUserTasksRole(userId, tasksrole) {
       this.loading = true;
       try {
@@ -57,6 +57,21 @@ export const useUserStore = defineStore("userStore", {
       }
     },
 
+    async fetchUserByEmail(email) {
+      this.loading = true
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/api/users/email/${email}`
+        )
+        this.user = res.data.user
+          this.error = null
+      } catch (err) {
+        this.error = err.message
+      } finally {
+        this.loading = false
+      }
+     },
+       
     async updateUser(userId, userData) {
       this.loading = true
       try {
@@ -74,8 +89,8 @@ export const useUserStore = defineStore("userStore", {
       } finally {
         this.loading = false
       }
-    },
-
+    },   
+      
     async deleteUser(userId) {
       this.loading = true
       try {
@@ -88,5 +103,5 @@ export const useUserStore = defineStore("userStore", {
         this.loading = false
       }
     },
-  },
+  }
 })
