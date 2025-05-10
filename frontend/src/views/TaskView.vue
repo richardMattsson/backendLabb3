@@ -230,7 +230,7 @@ watchEffect(async () => {
         <li v-for="doer in taskDoers" :key="doer.email">
           <h5>{{ doer.name }}</h5>
           <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
-          <BButton @click="taskStore.confirmDoer(taskId, doer.userId, doer)" variant="warning">
+          <BButton @click="taskStore.confirmDoer(taskId, doer.userId)" variant="warning">
             Bekräfta utförare
           </BButton>
         </li>
@@ -280,8 +280,8 @@ watchEffect(async () => {
             <h5>{{ doer.name }}</h5>
             <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
             <div class="rating">
-            <CRating v-model="score" style="padding-block: 0.6em;" />
-            <BButton @click="rateDoer(doer.email, score, loginStore.username)" variant="info">Ge betyg</BButton>
+              <CRating v-model="score" style="padding-block: 0.6em;" />
+              <BButton @click="rateDoer(doer.email, score, loginStore.username)" variant="info">Ge betyg</BButton>
             </div>
           </div>
         </div>
@@ -317,7 +317,7 @@ section {
 .task-details {
   display: grid;
   grid-template-columns: 3fr 1fr;
-  grid-template-rows: 1.5fr 1fr 1fr;
+  grid-template-rows: auto;
   gap: 2rem;
   margin-inline: auto;
   background-color: #f9f9f9;
