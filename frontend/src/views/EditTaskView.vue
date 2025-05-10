@@ -1,48 +1,51 @@
 <script setup>
-import { computed, ref, onMounted } from 'vue';
-import { useTaskStore } from '@/stores/taskStore';
-import { useLoginStore } from '@/stores/loginStore';
-import { useRouter, useRoute } from 'vue-router';
+import { computed, ref, onMounted } from "vue";
+import { useTaskStore } from "@/stores/taskStore";
+import { useLoginStore } from "@/stores/loginStore";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();
 
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
+const taskId = ref(null);
 
 onMounted(async () => {
   await taskStore.fetchCategories();
+  taskId.value = route.params.id;
+  console.log(taskId.value);
   //console.log('Categories fetched:', taskStore.categories);
 });
 
 const titleValidation = computed(() => title.value.length > 0);
 const addressValidation = computed(() => address.value.length > 0);
 
-const title = ref(''),
+const title = ref(""),
   date = ref(null),
-  description = ref(''),
-  address = ref(''),
+  description = ref(""),
+  address = ref(""),
   price = ref(null),
-  categories = ref(null),
-  taskCategoryId = ref(null),
-  userId = ref(null),
-  latestUserTaskId = ref(null);
+  taskCategoryId = ref(null);
 
-async function addNewTask() {
+async function updateTask(id) {
   const task = {
+    taskId: id,
     title: title.value,
     description: description.value,
     date: date.value,
     address: address.value,
     price: price.value,
     taskCategoryId: taskCategoryId.value,
+    status: "New",
+    dateCreated: Date.now(),
   };
   console.log(task);
   try {
-    const response = await fetch('http://localhost:3000/api/tasks', {
-      method: 'POST',
+    const response = await fetch(`http://localhost:3000/api/tasks/${id}`, {
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `${loginStore.token}`,
       },
       body: JSON.stringify(task),
@@ -53,61 +56,64 @@ async function addNewTask() {
     }
 
     const result = await response.json();
-    console.log('Servern svarade med:', result);
+    console.log("Servern svarade med:", result);
 
-    getLatestTasks();
+    router.push({ name: "TaskView", params: { taskId: id } });
   } catch (error) {
-    console.error('Något gick fel:', error.message);
+    console.log("Något gick fel", error.message);
   }
-}
-async function getLatestTasks() {
-  const url = 'http://localhost:3000/api/tasks';
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-    const result = await response.json();
-    latestUserTaskId.value = result.tasks[result.tasks.length - 1];
-    // console.log(result.tasks);
-    // console.log(latestUserTaskId.value.taskId);
-    createUserTask(latestUserTaskId.value.taskId);
-  } catch (error) {
-    console.error(error.message);
-  }
-}
-async function createUserTask(id) {
-  await taskStore.fetchUsers();
+};
 
-  const taskCreator = taskStore.allUsers.users.filter((user) => {
-    return user.email === loginStore.username;
-  });
-  const userTask = {
-    userRole: 'taskCreator',
-    userTaskUId: taskCreator[0].userId,
-    userTaskTId: id,
-  };
-  console.log(userTask);
-  try {
-    const response = await fetch('http://localhost:3000/api/user-tasks', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userTask),
-    });
-    if (!response.ok) {
-      console.log(response);
-      throw new Error(`Response status: ${response.status}`);
-    }
 
-    const result = await response.json();
-    router.push({ name: 'TaskView', params: { taskId: id } });
-    console.log('Servern svarade med:', result);
-  } catch (error) {
-    console.error('Något gick fel:', error.message);
-  }
-}
+
+// async function getLatestTasks() {
+//   const url = 'http://localhost:3000/api/tasks';
+//   try {
+//     const response = await fetch(url);
+//     if (!response.ok) {
+//       throw new Error(`Response status: ${response.status}`);
+//     }
+//     const result = await response.json();
+//     latestUserTaskId.value = result.tasks[result.tasks.length - 1];
+//     // console.log(result.tasks);
+//     // console.log(latestUserTaskId.value.taskId);
+//     createUserTask(latestUserTaskId.value.taskId);
+//   } catch (error) {
+//     console.error(error.message);
+//   }
+// }
+// async function createUserTask(id) {
+//   await taskStore.fetchUsers();
+
+//   const taskCreator = taskStore.allUsers.users.filter((user) => {
+//     return user.email === loginStore.username;
+//   });
+//   const userTask = {
+//     userRole: 'taskCreator',
+//     userTaskUId: taskCreator[0].userId,
+//     userTaskTId: id,
+//   };
+//   console.log(userTask);
+//   try {
+//     const response = await fetch('http://localhost:3000/api/user-tasks', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(userTask),
+//     });
+//     if (!response.ok) {
+//       console.log(response);
+//       throw new Error(`Response status: ${response.status}`);
+//     }
+
+//     const result = await response.json();
+//     router.push({ name: 'TaskView', params: { taskId: id } })
+//     console.log('Servern svarade med:', result);
+//   } catch (error) {
+//     console.error('Något gick fel:', error.message);
+//   }
+// }
 </script>
 
 <template>
@@ -115,7 +121,7 @@ async function createUserTask(id) {
     <BRow>
       <BCol cols="6">
         <p v-if="!loginStore.isLoggedIn">
-          Du behöver logga in för att skapa en ny tjänst.
+          Du behöver skapa ett konto innan du kan lägga upp en ny tjänst.
         </p>
         <BButton
           @click="
@@ -229,8 +235,8 @@ async function createUserTask(id) {
             <div class="mt-2">Pris: {{ price }}</div>
           </BFormGroup>
 
-          <BButton @click="addNewTask" class="mt-4" variant="primary"
-            >Skapa ny tjänst</BButton
+          <BButton @click="updateTask(taskId)" class="mt-4" variant="primary"
+            >Uppdatera tjänst</BButton
           >
         </BForm>
       </BCol>

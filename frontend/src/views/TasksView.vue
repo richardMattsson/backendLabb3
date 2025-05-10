@@ -2,7 +2,7 @@
 import { onMounted } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
 import { useRouter } from 'vue-router';
-import TaskList from '@/components/TaskList.vue'
+import TaskList from '@/components/TaskList.vue';
 
 const router = useRouter();
 const taskStore = useTaskStore();
@@ -11,11 +11,11 @@ onMounted(async () => {
   // await taskStore.fetchAllTasks();
   // console.log('Tasks fetched:', taskStore.tasks);
   await taskStore.fetchCategories();
-  console.log('Categories fetched:', taskStore.categories);
+  //console.log('Categories fetched:', taskStore.categories);
 });
 
 function sendToTasksInCategoryView(id, name) {
-  console.log(id);
+  //console.log(id);
   router.push({
     name: 'TasksInCategory',
     params: { categoryId: id },
@@ -28,11 +28,18 @@ function sendToTasksInCategoryView(id, name) {
   <article>
     <BContainer id="tasks-container">
       <BRow align-h="center">
-        <TaskList />
+        <BCol>
+          <h1 style="text-align: center; padding-bottom: 1em">
+            Senaste tjänster
+          </h1>
+          <TaskList />
+        </BCol>
         <BCol>
           <BContainer>
             <BRow>
-              <h1 style="text-align: center">Kategorier</h1>
+              <h1 style="text-align: center; padding-bottom: 1em">
+                Kategorier
+              </h1>
               <BCol
                 class="mt-4 mb-2"
                 cols="6"

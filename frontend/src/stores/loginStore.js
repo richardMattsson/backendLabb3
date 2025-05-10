@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-
 export const useLoginStore = defineStore('loggedUser', {
   state: () => {
     return {
@@ -21,9 +20,8 @@ export const useLoginStore = defineStore('loggedUser', {
           'http://localhost:3000/api/auth/login',
           loginBody
         );
-        console.log('Svar från servern:', response.data);
+        //console.log('Svar från servern:', response.data);
         this.token = response.data.token;
-        console.log(this.token);
         this.isLoggedIn = true;
         this.username = response.data.username;
         localStorage.setItem('token', this.token);
@@ -40,7 +38,7 @@ export const useLoginStore = defineStore('loggedUser', {
       localStorage.removeItem('token');
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('username');
-      alert('Du har loggat ut!');
+      //alert('Du har loggat ut!');
       this.router.push({ path: '/' });
     },
 
@@ -56,7 +54,6 @@ export const useLoginStore = defineStore('loggedUser', {
         );
         console.log('Svar från servern:', response.data);
         this.createNewUser(username);
-        
       } catch (error) {
         console.error('Något gick fel: ', error);
       }
