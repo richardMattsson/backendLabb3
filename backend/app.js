@@ -16,6 +16,7 @@ const taskRoutes = require('./routes/taskRoute');
 const userRoutes = require('./routes/userRoute');
 const userTaskRoute = require('./routes/userTaskRoute');
 const authRoutes = require('./routes/authRoutes');
+const ratingRoutes = require('./routes/ratingRoutes');
 // const protectedRoutes = require('./routes/protectedRoutes');
 
 app.use(categoryRoute);
@@ -23,6 +24,7 @@ app.use(taskRoutes);
 app.use(userRoutes);
 app.use(userTaskRoute);
 app.use('/api/auth', authRoutes);
+app.use('/api', ratingRoutes);
 // app.use('/api/protected', protectedRoutes);
 
 const connectionMongoDB = require('./connectionMongoDB');

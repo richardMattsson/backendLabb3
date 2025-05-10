@@ -13,7 +13,8 @@ router.get(
 );
 router.get('/api/newtasks/', taskController.getNewTasks);
 
-//router.post('/api/tasks', taskController.createTask);
+router.post('/api/tasks/mark-as-done', taskController.markAsDone);
+
 router.put('/api/tasks/:taskId', taskController.editTask);
 router.delete('/api/tasks/:taskId', taskController.deleteTask);
 

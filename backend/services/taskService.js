@@ -1,3 +1,4 @@
+const { connection } = require('mongoose');
 const connectionMySQL = require('../connectionMySQL');
 
 function getTasks() {
@@ -64,6 +65,18 @@ function createTask(title, description, date, address, price, taskCategoryId) {
   });
 }
 
+function markAsDone(inTaskId) {
+  return new Promise((resolve, reject) => {
+    let sql = 'CALL markAsDone(?)';
+    let params = [inTaskId];
+
+    connectionMySQL.query(sql, params, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 function editTask(
   title,
   description,
@@ -73,7 +86,8 @@ function editTask(
   taskCategoryId,
   status,
   taskId
-) {
+)
+ {
   return new Promise((resolve, reject) => {
     let sql =
       'UPDATE task SET title = ?, description = ?, date = ?, address = ?, price = ?, taskCategoryId = ?, status = ? WHERE taskId = ?';
@@ -97,9 +111,16 @@ function editTask(
 function deleteTask(taskId) {
   return new Promise((resolve, reject) => {
     let sql = 'DELETE FROM task WHERE taskId = ?';
+    // let sql2 = 'DELETE FROM task WHERE taskId = ?'
+
     connectionMySQL.query(sql, [taskId], (err) => {
       if (err) reject(err);
       else resolve();
+
+      // connectionMySQL.query(sql2, [taskId], (err) => {
+      //   if (err) reject(err);
+      //   else resolve();
+      // })
     });
   });
 }
@@ -111,6 +132,7 @@ module.exports = {
   getTasksInCategory,
   getNewTasks,
   createTask,
+  markAsDone,
   editTask,
   deleteTask,
 };

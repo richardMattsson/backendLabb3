@@ -1,41 +1,116 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
 import { useLoginStore } from '@/stores/loginStore';
+import { useRatingStore } from '@/stores/ratingStore';
 import { useRoute, useRouter } from 'vue-router';
 
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
+const ratingStore = useRatingStore();
 const router = useRouter();
 const route = useRoute();
 const taskDetails = ref(null);
 const taskId = ref(null);
+const score = ref(0);
+const rated = ref(false);
+const avgRating = ref(null)
+
+watch(
+  () => taskStore.taskDetails,
+  (newValue, oldValue) => {
+    // console.log(oldValue, 'ändras till ', newValue[0]);
+    taskDetails.value = newValue[0];
+  }
+);
 
 onMounted(async () => {
   taskId.value = route.params.taskId;
 
   await taskStore.fetchTaskDetails(taskId.value);
-  console.log('Task fetched:', taskStore.taskDetails[0]);
-  taskDetails.value = taskStore.taskDetails[0];
-  console.log(taskStore.taskDetails);
+  //console.log('Task fetched:', taskStore.taskDetails[0]);
+  // taskDetails.value = taskStore.taskDetails[0];
+  console.log(taskDetails.value);
+
+  await ratingStore.getAvgRating();
+  avgRating.value = ratingStore.avgRatingByUser;
+  console.log(avgRating.value)
 });
 
-async function onClick() {
-  console.log(taskId);
+async function doerAcceptTask() {
   await taskStore.fetchUsers();
 
+  // letar efter userId
   const doer = taskStore.allUsers.users.filter((user) => {
     return user.email === loginStore.username;
   });
-  console.log(doer[0].userId);
-  // userTaskUId === doer[0].userId
-  // userTaskTId === route.params.taskId
-  // userRole === 'doer'
+  // userID (userTaskUId) === doer[0].userId
+
   await taskStore.createUserTask(doer[0].userId, taskId.value);
-  alert('Du har tackat jag till att utföra tjänsten!');
+  await ratingStore.addUserToRating(doer[0].email)
 
   taskStore.fetchTaskDetails(taskId.value);
 }
+
+async function rateDoer(newScore, creatorEmail) {
+  const doer = taskStore.taskDetails.email;
+  await ratingStore.addNewScore(doer, newScore, creatorEmail);
+  await ratingStore.getUserScore(doer, creatorEmail);
+  rated.value = true;
+}
+
+
+function goToPage() {
+  router.push({ name: 'EditTask', params: { id: taskId.value } });
+}
+
+// function goToHomePage() {
+//   router.push({ path: "/tasks" });
+// }
+
+// async function deleteTask() {
+//   try {
+//     const response = await fetch(
+//       `http://localhost:3000/api/tasks/${taskId.value}`,
+//       {
+//         method: "DELETE",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `${loginStore.token}`,
+//         },
+//       }
+//     );
+//     if (!response.ok) {
+//       console.log(response);
+//       throw new Error(`Response status: ${response.status}`);
+//     }
+//     alert("Tjänsten har raderats!");
+//     const result = await response.json();
+//     console.log("Servern svarade med:", result);
+
+//     router.push({ name: "TasksView" });
+//   } catch (error) {
+//     console.log("Något gick fel", error.message);
+//   }
+// }
+
+// async function deleteTask() {
+//     try {
+//     const res = await fetch(`http://localhost:3000/api/tasks/${taskId.value}`, {
+//         method: 'DELETE'
+//     });
+
+//     const result = await res.json();
+
+//     if (!res.ok) {
+//         throw new Error(result.error)
+//     }
+//     alert('Tjänsten har raderats!', result.message);
+//     router.push('/tasks');
+// } catch (error) {
+//     console.error('Fel vid radering')
+//     }
+// };
 
 const taskCreator = computed(() => {
   let index = 0;
@@ -70,7 +145,25 @@ const taskDoers = computed(() => {
         userId: task.userTaskUId,
       });
   }
+  console.log(doers)
+  if (avgRating.value && doers) {
+    for (const doer of doers) {
+      console.log(doer.email)
+      const index = avgRating.value.findIndex((user) => user.username === doer.email)
+      console.log(index)
+      doer.rating = Math.round(avgRating.value[index].avgRating) || 'Användare har ingen rating'
+      doer.scoreNumber = avgRating.value[index].nRatings
+    }
+  }
+  console.log(doers)
   return doers;
+});
+
+const labelColor = computed(() => {
+  if (taskStore.taskDetails[0].status === 'New') return 'success';
+  else if (taskStore.taskDetails[0].status === 'Pågående')
+    return 'warning';
+  else return 'secondary';
 });
 
 // console.log('status', loginStore.isLoggedIn);
@@ -79,11 +172,22 @@ const taskDoers = computed(() => {
 </script>
 
 <template>
-  <main v-if="taskDetails">
+  <i @click="router.push({ path: route.query.endpoint || '/tasks' })" class="pi pi-arrow-left" style="
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-top: 0.8em;
+      padding-left: 2em;
+      cursor: pointer;
+    "><span style="
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        cursor: pointer;
+      ">
+      Till tjänster</span></i>
+  <article v-if="taskDetails">
     <section class="task-details">
       <h1>
         {{ taskDetails.title }}
-        <span class="badge bg-success">{{ taskDetails.status }}</span>
+        <BBadge :variant="labelColor">{{ taskDetails.status }}</BBadge>
       </h1>
       <h3>{{ taskDetails.price }} kr</h3>
       <h4 v-if="taskDetails.date">{{ taskDetails.date.split('T')[0] }}</h4>
@@ -93,27 +197,32 @@ const taskDoers = computed(() => {
       </p>
       <h4>Adress: {{ taskDetails.address }}</h4>
       <h4>Beställare: {{ taskCreator }}</h4>
+      <div v-if="viewer === 'creator'">
+        <BButton @click="goToPage()" id="editDelete" variant="warning">
+          Redigera
+        </BButton>
+        <BButton @click="deleteTask()" id="editDelete" variant="danger">
+          Radera
+        </BButton>
+      </div>
     </section>
-    <section class="task-actions" v-if="taskDetails.status === 'New'">
+
+    <section class="task-actions" v-if="taskStore.taskDetails[0].status === 'New'">
       <section class="for-creator" v-if="viewer === 'creator'">
         <h3>Utförare för din uppgift</h3>
         <p v-if="taskDoers.length < 1">Inga utförare har tackat ja ännu</p>
         <li v-for="doer in taskDoers" :key="doer.email">
           <h5>{{ doer.name }}</h5>
-          <p>Rating:</p>
-          <button
-            @click="taskStore.confirmDoer(taskId, doer.userId)"
-            type="button"
-            class="btn btn-warning"
-          >
+          <p>Rating: {{ doer.rating }}</p>
+          <BButton @click="taskStore.confirmDoer(taskId, doer.userId, doer)" variant="warning">
             Bekräfta utförare
-          </button>
+          </BButton>
         </li>
       </section>
       <section v-if="viewer === 'nonDoer'">
-        <button @click="onClick" type="button" class="btn btn-primary">
+        <BButton @click="doerAcceptTask" type="button" variant="primary">
           Tacka ja
-        </button>
+        </BButton>
       </section>
       <div class="card" v-if="viewer === 'doer'">
         <div class="card-body">
@@ -124,38 +233,49 @@ const taskDoers = computed(() => {
         <div class="card-body">
           Du behöver vara inloggad för att tacka ja till uppgiften
         </div>
-        <button
-          @click="
-            router.push({
-              path: '/login',
-              query: { endpoint: route.fullPath },
-            })
-          "
-          type="button"
-          class="btn btn-primary"
-        >
+        <BButton variant="primary" @click="
+          router.push({
+            path: '/login',
+            query: { endpoint: route.fullPath },
+          })
+          " type="button">
           Logga in
-        </button>
+        </BButton>
       </div>
     </section>
-    <section class="task-actions" v-if="taskDetails.status === 'Pågående'">
+
+    <section class="task-actions" v-if="taskStore.taskDetails[0].status === 'Pågående'">
       <section v-if="viewer === 'creator'">
         <h3>Utförare för din uppgift</h3>
         <li v-for="doer in taskDoers" :key="doer.email">
           <h5>{{ doer.name }}</h5>
-          <p>Rating:</p>
+          <p>Rating: {{ doer.rating }}</p>
         </li>
-        <button>Markera som klar</button>
+        <BButton variant="success" @click="taskStore.markAsDone(taskId)">Markera som klar</BButton>
       </section>
     </section>
-  </main>
+
+    <section class="task-actions" v-if="taskStore.taskDetails[0].status === 'Färdig'">
+      <section v-if="viewer === 'creator'">
+        <h3>Din uppgift har blivit utförd!</h3>
+        <div v-if="!rated">
+          <h5>Vill du betygsätta din upplevelse?</h5>
+          <!-- <b-form-rating v-model="score" variant="primary" class="mb-2" show-value inline></b-form-rating> FUNKAR INTE -->
+          <!-- <BButton @click="rateDoer(score, loginStore.username)" variant="secondary">Ge betyg</BButton> -->
+        </div>
+        <div v-if="rated">
+          <p>Tack, du har betygsätt utföraren</p>
+        </div>
+      </section>
+    </section>
+  </article>
 </template>
 
 <style scoped>
-main {
+article {
   display: grid;
-  grid-template-rows: 70% 20%;
-  padding-block: 3rem;
+  grid-template-rows: 70% 20% 20%;
+  padding-block: 2.5rem;
   gap: 0.5rem;
 }
 
@@ -174,6 +294,7 @@ section {
   padding: 5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 70%;
 }
 
 h1 {
