@@ -1,11 +1,12 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import TaskList from '@/components/TaskList.vue';
 
 const taskStore = useTaskStore();
 const route = useRoute();
+const router = useRouter();
 // console.log('categoryId: ', route.params.categoryId); // Skriver ut inkommande categoryId
 
 onMounted(async () => {
@@ -17,7 +18,18 @@ onMounted(async () => {
 </script>
 
 <template>
-  <BContainer class="mb-4 mt-2" v-if="taskStore.oneCategory">
+    <i @click="router.push({ path: '/tasks' })" class="pi pi-arrow-left" style="
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-top: 0.8em;
+      padding-left: 2em;
+      cursor: pointer;
+    "><span style="
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        cursor: pointer;
+      ">
+      Till tjänster</span></i>
+  <BContainer class="mb-4 mt-4" v-if="taskStore.oneCategory">
     <BRow>
       <BCol class="d-flex justify-content-center align-items-center">
         <h1>

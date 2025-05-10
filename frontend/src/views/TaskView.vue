@@ -1,9 +1,10 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch, watchEffect } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
 import { useLoginStore } from '@/stores/loginStore';
 import { useRatingStore } from '@/stores/ratingStore';
 import { useRoute, useRouter } from 'vue-router';
+import { CRating } from '@coreui/vue-pro';
 
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
@@ -13,8 +14,8 @@ const route = useRoute();
 const taskDetails = ref(null);
 const taskId = ref(null);
 const score = ref(0);
-const rated = ref(false);
-const avgRating = ref(null)
+const avgRating = ref(null);
+const rated = ref(false)
 
 watch(
   () => taskStore.taskDetails,
@@ -53,10 +54,10 @@ async function doerAcceptTask() {
   taskStore.fetchTaskDetails(taskId.value);
 }
 
-async function rateDoer(newScore, creatorEmail) {
-  const doer = taskStore.taskDetails.email;
-  await ratingStore.addNewScore(doer, newScore, creatorEmail);
-  await ratingStore.getUserScore(doer, creatorEmail);
+async function rateDoer(doerEmail, newScore, creatorEmail) {
+  await ratingStore.addNewScore(doerEmail, newScore, creatorEmail);
+  await ratingStore.getUserScore(doerEmail, creatorEmail);
+
   rated.value = true;
 }
 
@@ -151,12 +152,12 @@ const taskDoers = computed(() => {
     for (const doer of doers) {
       console.log(doer.email)
       const index = avgRating.value.findIndex((user) => user.username === doer.email)
-      console.log(index)
       doer.rating = Math.round(avgRating.value[index].avgRating) || 'Användare har ingen rating'
       doer.scoreNumber = avgRating.value[index].nRatings
     }
   }
   console.log(doers)
+
   return doers;
 });
 
@@ -167,9 +168,23 @@ const labelColor = computed(() => {
   else return 'secondary';
 });
 
-// console.log('status', loginStore.isLoggedIn);
-// console.log('username', loginStore.username);
-// console.log('viewer', viewer.value);
+
+watchEffect(async () => {
+  const doers = taskDoers.value;
+  const username = loginStore.username;
+
+  if (!doers?.length || !username) return;
+
+  await ratingStore.getUserScore(doers[0].email, username);
+
+  if (ratingStore.userScore.length > 0) {
+    score.value = ratingStore.userScore[0].givenRating[0].score;
+    rated.value = true;
+  } else {
+    rated.value = false;
+  }
+});
+
 </script>
 
 <template>
@@ -214,7 +229,7 @@ const labelColor = computed(() => {
         <p v-if="taskDoers.length < 1">Inga utförare har tackat ja ännu</p>
         <li v-for="doer in taskDoers" :key="doer.email">
           <h5>{{ doer.name }}</h5>
-          <p>Rating: {{ doer.rating }}</p>
+          <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
           <BButton @click="taskStore.confirmDoer(taskId, doer.userId, doer)" variant="warning">
             Bekräfta utförare
           </BButton>
@@ -250,7 +265,7 @@ const labelColor = computed(() => {
         <h3>Utförare för din uppgift</h3>
         <li v-for="doer in taskDoers" :key="doer.email">
           <h5>{{ doer.name }}</h5>
-          <p>Rating: {{ doer.rating }}</p>
+          <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
         </li>
         <BButton variant="success" @click="taskStore.markAsDone(taskId)">Markera som klar</BButton>
       </section>
@@ -260,12 +275,26 @@ const labelColor = computed(() => {
       <section v-if="viewer === 'creator'">
         <h3>Din uppgift har blivit utförd!</h3>
         <div v-if="!rated">
-          <h5>Vill du betygsätta din upplevelse?</h5>
-          <!-- <b-form-rating v-model="score" variant="primary" class="mb-2" show-value inline></b-form-rating> FUNKAR INTE -->
-          <!-- <BButton @click="rateDoer(score, loginStore.username)" variant="secondary">Ge betyg</BButton> -->
+          <h4>Vill du betygsätta din upplevelse?</h4>
+          <div v-for="doer in taskDoers" :key="doer.email">
+            <h5>{{ doer.name }}</h5>
+            <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
+            <div class="rating">
+            <CRating v-model="score" style="padding-block: 0.6em;" />
+            <BButton @click="rateDoer(doer.email, score, loginStore.username)" variant="info">Ge betyg</BButton>
+            </div>
+          </div>
         </div>
         <div v-if="rated">
           <p>Tack, du har betygsätt utföraren</p>
+          <h4>Utförare för din uppgift</h4>
+          <div v-for="doer in taskDoers" :key="doer.email">
+            <h5>{{ doer.name }}</h5>
+            <div class="rating">
+              <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
+              <p>Ditt betyg: {{ score }}</p>
+            </div>
+          </div>
         </div>
       </section>
     </section>
@@ -275,8 +304,8 @@ const labelColor = computed(() => {
 <style scoped>
 article {
   display: grid;
-  grid-template-rows: 70% 20% 20%;
-  padding-block: 2.5rem;
+  grid-template-rows: 2fr 1fr 1fr;
+  padding-block: 1rem;
   gap: 0.5rem;
 }
 
@@ -288,14 +317,14 @@ section {
 .task-details {
   display: grid;
   grid-template-columns: 3fr 1fr;
-  grid-template-rows: 3fr 1fr 1fr;
+  grid-template-rows: 1.5fr 1fr 1fr;
   gap: 2rem;
   margin-inline: auto;
   background-color: #f9f9f9;
   padding: 5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 70%;
+  min-width: 60%;
 }
 
 h1 {
@@ -320,6 +349,7 @@ h4 {
   margin-inline: auto;
   background-color: #fff;
   padding-inline: 5rem;
+  min-width: 50%;
   /* border-radius: 8px; */
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 }
@@ -340,5 +370,11 @@ li {
 .for-creator li {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+}
+
+.rating {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
 }
 </style>

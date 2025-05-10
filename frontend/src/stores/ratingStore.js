@@ -28,6 +28,7 @@ export const useRatingStore = defineStore('ratings', {
                     `http://localhost:3000/api/score?doerEmail=${doerEmail}&creatorEmail=${creatorEmail}`
                 );
                 this.userScore = res.data;
+                console.log(this.userScore)
             }
             catch (err) {
                 this.error = err.message;

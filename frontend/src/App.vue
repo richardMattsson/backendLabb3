@@ -41,4 +41,5 @@ const modal = ref(false)
 
 <style>
 @import "primeicons/primeicons.css";
+@import '@coreui/coreui-pro/dist/css/coreui.min.css';
 </style>
