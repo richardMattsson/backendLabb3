@@ -1,12 +1,25 @@
 <script setup>
 import { onMounted } from "vue"
-import { useTaskStore } from "@/stores/taskStore"
+import { useLoginStore } from "@/stores/loginStore"
+import { useUserStore } from "@/stores/userStore"
 
-const taskStore = useTaskStore()
+const userStore = useUserStore()
+const loginStore = useLoginStore()
+
+const performerTasks = userStore.performerTasks
+console.log("Performer tasks:", performerTasks)
+const clientTasks = userStore.clientTasks
+console.log("Client tasks:", clientTasks)
+
+const userEmail = loginStore.username
+console.log("User email:", userEmail)
+
+
+
 const userId = 2
-
 onMounted(async () => {
-    await taskStore.fetchUserTasksbyRole(userId)
+    /*await taskStore.fetchUserByEmail() */
+    await userStore.fetchUserTasksbyRole(userId)
 })
 </script>
 <template>
@@ -20,9 +33,9 @@ onMounted(async () => {
         <!-- Loading and Error Handling -->
         <b-row>
             <b-col cols="12">
-                <div v-if="taskStore.loading">Laddar uppdrag...</div>
-                <div v-else-if="taskStore.error" class="text-danger">
-                    Fel: {{ taskStore.error }}
+                <div v-if="userStore.loading">Laddar uppdrag...</div>
+                <div v-else-if="userStore.error" class="text-danger">
+                    Fel: {{ userStore.error }}
                 </div>
             </b-col>
         </b-row>
@@ -32,8 +45,8 @@ onMounted(async () => {
             <b-col md="6">
                 <h4 class="mt-3">Som Utförare</h4>
                 <b-list-group>
-                    <template v-if="taskStore.performerTasks.length">
-                        <b-list-group-item v-for="task in taskStore.performerTasks" :key="task.taskId">
+                    <template v-if="userStore.performerTasks.length">
+                        <b-list-group-item v-for="task in userStore.performerTasks" :key="task.taskId">
                             <b-card class="mb-2">
                                 <h5 class="mb-1">{{ task.title }}</h5>
                                 <p class="mb-0">
@@ -55,8 +68,8 @@ onMounted(async () => {
             <b-col md="6">
                 <h4 class="mt-3">Som Beställare</h4>
                 <b-list-group>
-                    <template v-if="taskStore.clientTasks.length">
-                        <b-list-group-item v-for="task in taskStore.clientTasks" :key="task.taskId">
+                    <template v-if="userStore.clientTasks.length">
+                        <b-list-group-item v-for="task in userStore.clientTasks" :key="task.taskId">
                             <b-card class="mb-2">
                                 <h5 class="mb-1">{{ task.title }}</h5>
                                 <p class="mb-0"><strong>Datum: </strong>{{ task.date }}</p>

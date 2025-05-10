@@ -133,36 +133,6 @@ export const useTaskStore = defineStore('taskStore', {
         this.error = err.message;
       }
     },
-
-    /*async fetchUserTasksRole(userId, tasksrole) {
-      this.loading = true;
-      try {
-        const res = await axios.get(
-          `http://localhost:3000/api/users/${userId}/${tasksrole}`
-        );
-        this.userTasksRole = res.data.userTasksRole;
-        this.error = null;
-      } catch (err) {
-        this.error = err.message;
-      } finally {
-        this.loading = false;
-      }
-    },*/
-    async fetchUserTasksbyRole(userId) {
-      this.loading = true;
-      try {
-        const res = await axios.get(
-          `http://localhost:3000/api/users/${userId}/tasksrole`
-        );
-        this.performerTasks = res.data.taskDoer;
-        this.clientTasks = res.data.taskCreator;
-        this.error = null;
-      } catch (err) {
-        this.error = err.message;
-      } finally {
-        this.loading = false;
-      }
-    },
     async createUserTask(userId, taskId) {
       const userTask = {
         userRole: 'taskDoer',
