@@ -36,7 +36,7 @@ function getUserByEmail(email) {
     let sql = "SELECT * FROM user WHERE email = ? LIMIT 1"
     connectionMySQL.query(sql, [email], (err, rows) => {
       if (err) reject(err)
-      else resolve(rows)
+      else resolve(rows[0] || null)
     })
   })
 }

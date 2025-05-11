@@ -6,22 +6,61 @@ import { useUserStore } from "@/stores/userStore"
 const userStore = useUserStore()
 const loginStore = useLoginStore()
 
-const performerTasks = userStore.performerTasks
+const performerTasks = userStore.tasks.performer
 console.log("Performer tasks:", performerTasks)
-const clientTasks = userStore.clientTasks
+const clientTasks = userStore.tasks.client
 console.log("Client tasks:", clientTasks)
-
-const userEmail = loginStore.username
-console.log("User email:", userEmail)
 
 const form = ref({})
 const isEditing = ref(false)
-const userId = 2
 
 onMounted(async () => {
-    /*await taskStore.fetchUserByEmail() */
-    await userStore.fetchUserTasksbyRole(userId)
+    const userEmail = loginStore.username
+    console.log("User email:", userEmail)
+
+    try {
+        await userStore.fetchUserByEmail(userEmail)
+        console.log("Hämtad användare:", userStore.user)
+
+        form.value = {
+            email: userEmail,
+            firstName: userStore.user.firstName || "",
+            lastName: userStore.user.lastName || "",
+            phone: userStore.user.phone || "",
+            city: userStore.user.city || "",
+        }
+
+        await userStore.fetchUserTasksByRole(userStore.user.id)
+        console.log("Hämtade uppdrag:", userStore.tasks)
+    } catch (error) {
+        console.error("Ett fel inträffade vid hämtning av profildata:", error)
+    }
 })
+
+const saveChanges = async () => {
+    try {
+        if (!userStore.user?.userId) {
+            console.error("Kan inte uppdatera användardata, userId saknas")
+            return
+        }
+
+        const updatedData = {
+            userId: userStore.user.userId,
+            firstName: form.value.firstName,
+            lastName: form.value.lastName,
+            phone: form.value.phone,
+            city: form.value.city,
+        }
+        await userStore.updateUser(updatedData)
+        isEditing.value = false
+    } catch (error) {
+        console.error("Ett fel inträffade vid uppdatering av profildata:", error)
+    }
+}
+
+const enableEdit = () => {
+    isEditing.value = true
+}
 
 </script>
 <template>
@@ -29,7 +68,13 @@ onMounted(async () => {
         <b-row class="mb-4">
             <b-col md="8" class="mb-4">
                 <h4>Min Profil</h4>
-                <b-form>
+                <b-form @submit.prevent="saveChanges">
+                    <!--E-mail ska inte kunna ändras, då den är kopplad till inloggning -->
+                    <b-row class="mb-2">
+                        <b-form-group label="E-post" label-for="email">
+                            <b-form-input v-model="form.email" disabled></b-form-input>
+                        </b-form-group>
+                    </b-row>
                     <b-row class="mb-2">
                         <b-col cols="6"> <b-form-group label="Förnamn" label-for="firstName">
                                 <b-form-input v-model="form.firstName" :disabled="!isEditing"></b-form-input>
@@ -39,12 +84,6 @@ onMounted(async () => {
                                 <b-form-input v-model="form.lastName" :disabled="!isEditing"></b-form-input>
                             </b-form-group>
                         </b-col>
-                    </b-row>
-                    <!--E-mail ska inte kunna ändras, då den är kopplad till inloggning -->
-                    <b-row class="mb-2">
-                        <b-form-group label="E-post" label-for="email">
-                            <b-form-input v-model="form.email" :disabled="!isEditing"></b-form-input>
-                        </b-form-group>
                     </b-row>
                     <b-row class="mb-4">
                         <b-col cols="6">
@@ -83,8 +122,8 @@ onMounted(async () => {
             <b-col md="6">
                 <h4 class="mt-3">Uppdrag att genomföra</h4>
                 <b-list-group>
-                    <template v-if="userStore.performerTasks.length">
-                        <b-list-group-item v-for="task in userStore.performerTasks" :key="task.taskId">
+                    <template v-if="userStore.tasks.performer.length">
+                        <b-list-group-item v-for="task in userStore.tasks.performer" :key="task.taskId">
                             <b-card class="mb-2">
                                 <h5 class="mb-1">{{ task.title }}</h5>
                                 <p class="mb-0">
@@ -106,8 +145,8 @@ onMounted(async () => {
             <b-col md="6">
                 <h4 class="mt-3">Beställda uppdrag</h4>
                 <b-list-group>
-                    <template v-if="userStore.clientTasks.length">
-                        <b-list-group-item v-for="task in userStore.clientTasks" :key="task.taskId">
+                    <template v-if="userStore.tasks.client.length">
+                        <b-list-group-item v-for="task in userStore.tasks.client" :key="task.taskId">
                             <b-card class="mb-2">
                                 <h5 class="mb-1">{{ task.title }}</h5>
                                 <p class="mb-0"><strong>Datum: </strong>{{ task.date }}</p>

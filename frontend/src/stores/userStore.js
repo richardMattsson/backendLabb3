@@ -5,27 +5,29 @@ export const useUserStore = defineStore("userStore", {
   state: () => {
     return {
       user: null,
-      performerTasks: [],
-      clientTasks: [],
+      tasks:{
+      performer: [],
+      client: [],
+      },
       loading: false,
       error: null,
     }
   },
 
   actions: {
-    async fetchUser(userId) {
+    /*async fetchUser(userId) {
       this.loading = true
       try {
         const res = await axios.get(`http://localhost:3000/api/users/${userId}`)
-        this.user = res.data.user
+        this.user = res.data
         this.error = null
       } catch (err) {
         this.error = err.message
       } finally {
         this.loading = false
       }
-    },
-      
+    },*/
+
     /*async fetchUserTasksRole(userId, tasksrole) {
       this.loading = true;
       try {
@@ -47,8 +49,8 @@ export const useUserStore = defineStore("userStore", {
         const res = await axios.get(
           `http://localhost:3000/api/users/${userId}/tasksrole`
         )
-        this.performerTasks = res.data.taskDoer
-        this.clientTasks = res.data.taskCreator
+        this.tasks.performer = res.data.taskDoer
+        this.tasks.client = res.data.taskCreator
         this.error = null
       } catch (err) {
         this.error = err.message
@@ -63,35 +65,33 @@ export const useUserStore = defineStore("userStore", {
         const res = await axios.get(
           `http://localhost:3000/api/users/email/${email}`
         )
+        console.log("fetchUserByEmail response:",res.data.user)
         this.user = res.data.user
-          this.error = null
+        this.error = null
       } catch (err) {
-        this.error = err.message
+        console.error("Fel i fetchUserByEmail:", err)
       } finally {
         this.loading = false
       }
      },
-       
-    async updateUser(userId, userData) {
+
+    async updateUser(userData) {
       this.loading = true
       try {
         const res = await axios.put(
-          `http://localhost:3000/api/users/${userId}`,
+          `http://localhost:3000/api/users/${userData.userId}`,
           userData
         )
-        const index = this.users.findIndex((user) => user.id === userId)
-        if (index !== -1) {
-          this.users[index] = res.data.user
-        }
+        this.user = {...this.user, ...userData}
         this.error = null
-      } catch (err) {
+      }catch (err) {
         this.error = err.message
       } finally {
         this.loading = false
       }
-    },   
-      
-    async deleteUser(userId) {
+    },
+
+    /*async deleteUser(userId) {
       this.loading = true
       try {
         await axios.delete(`http://localhost:3000/api/users/${userId}`)
@@ -102,6 +102,6 @@ export const useUserStore = defineStore("userStore", {
       } finally {
         this.loading = false
       }
-    },
+    },*/
   }
 })

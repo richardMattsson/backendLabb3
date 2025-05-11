@@ -46,12 +46,12 @@ exports.getUserByEmail = async (req, res) => {
   const { email } = req.params
   try {
     const user = await userService.getUserByEmail(email)
-    if (!user || user.length === 0) {
+    if (!user) {
       return res.status(404).json({
         message: "Ingen användare hittades med den angivna e-postadressen",
       })
     }
-    res.json({ user: user[0] })
+    res.json({ user})
   } catch (error) {
     res.status(500).json({
       message: "Fel vid hämtning av användare med e-postadress",
