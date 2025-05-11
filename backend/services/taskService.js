@@ -110,17 +110,28 @@ function editTask(
 
 function deleteTask(taskId) {
   return new Promise((resolve, reject) => {
-    let sql = 'DELETE FROM task WHERE taskId = ?';
+    const deleteUserTaskSql = 'DELETE FROM userTask WHERE userTaskTId = ?';
+    const deleteTaskSql = 'DELETE FROM task WHERE taskId = ?';
     // let sql2 = 'DELETE FROM task WHERE taskId = ?'
 
-    connectionMySQL.query(sql, [taskId], (err) => {
-      if (err) reject(err);
-      else resolve();
+    connectionMySQL.query(deleteUserTaskSql, [taskId], (err) => {
+      if (err) {
+        reject(err);
+      return;
+    }
+
+      connectionMySQL.query(deleteTaskSql, [taskId], (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
 
       // connectionMySQL.query(sql2, [taskId], (err) => {
       //   if (err) reject(err);
       //   else resolve();
       // })
+      });
     });
   });
 }

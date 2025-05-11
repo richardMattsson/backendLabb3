@@ -1,10 +1,10 @@
 <script setup>
-import { computed, onMounted, ref, watch, watchEffect } from 'vue';
-import { useTaskStore } from '@/stores/taskStore';
-import { useLoginStore } from '@/stores/loginStore';
-import { useRatingStore } from '@/stores/ratingStore';
-import { useRoute, useRouter } from 'vue-router';
-import { CRating } from '@coreui/vue-pro';
+import { computed, onMounted, ref, watch, watchEffect } from "vue";
+import { useTaskStore } from "@/stores/taskStore";
+import { useLoginStore } from "@/stores/loginStore";
+import { useRatingStore } from "@/stores/ratingStore";
+import { useRoute, useRouter } from "vue-router";
+import { CRating } from "@coreui/vue-pro";
 
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
@@ -15,7 +15,8 @@ const taskDetails = ref(null);
 const taskId = ref(null);
 const score = ref(0);
 const avgRating = ref(null);
-const rated = ref(false)
+const rated = ref(false);
+const task = ref(null);
 
 watch(
   () => taskStore.taskDetails,
@@ -35,7 +36,13 @@ onMounted(async () => {
 
   await ratingStore.getAvgRating();
   avgRating.value = ratingStore.avgRatingByUser;
-  console.log(avgRating.value)
+  console.log(avgRating.value);
+
+  const response = await fetch(
+    `http://localhost:3000/api/tasks/${route.params.taskId}`
+  );
+  const data = await response.json();
+  task.value = data.task[0];
 });
 
 async function doerAcceptTask() {
@@ -48,8 +55,10 @@ async function doerAcceptTask() {
   // userID (userTaskUId) === doer[0].userId
 
   await taskStore.createUserTask(doer[0].userId, taskId.value);
-  if (avgRating.value.findIndex((user) => user.username !== loginStore.username))
-    await ratingStore.addUserToRating(doer[0].email)
+  if (
+    avgRating.value.findIndex((user) => user.username !== loginStore.username)
+  )
+    await ratingStore.addUserToRating(doer[0].email);
 
   taskStore.fetchTaskDetails(taskId.value);
 }
@@ -61,40 +70,39 @@ async function rateDoer(doerEmail, newScore, creatorEmail) {
   rated.value = true;
 }
 
-
 function goToPage() {
-  router.push({ name: 'EditTask', params: { id: taskId.value } });
+  router.push({ name: "EditTask", params: { id: taskId.value } });
 }
 
 // function goToHomePage() {
 //   router.push({ path: "/tasks" });
 // }
 
-// async function deleteTask() {
-//   try {
-//     const response = await fetch(
-//       `http://localhost:3000/api/tasks/${taskId.value}`,
-//       {
-//         method: "DELETE",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `${loginStore.token}`,
-//         },
-//       }
-//     );
-//     if (!response.ok) {
-//       console.log(response);
-//       throw new Error(`Response status: ${response.status}`);
-//     }
-//     alert("Tjänsten har raderats!");
-//     const result = await response.json();
-//     console.log("Servern svarade med:", result);
+async function deleteTask() {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/tasks/${task.value.taskId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${loginStore.token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      console.log(response);
+      throw new Error(`Response status: ${response.status}`);
+    }
+    alert("Tjänsten har raderats!");
+    const result = await response.json();
+    console.log("Servern svarade med:", result);
 
-//     router.push({ name: "TasksView" });
-//   } catch (error) {
-//     console.log("Något gick fel", error.message);
-//   }
-// }
+    router.push({ path: "/tasks" });
+  } catch (error) {
+    console.log("Något gick fel", error.message);
+  }
+}
 
 // async function deleteTask() {
 //     try {
@@ -118,56 +126,58 @@ const taskCreator = computed(() => {
   let index = 0;
   if (taskStore.taskDetails.length > 1) {
     index = taskStore.taskDetails.findIndex((task) => {
-      return task.userRole === 'taskCreator';
+      return task.userRole === "taskCreator";
     });
   }
   return taskStore.taskDetails[index].firstName;
 });
 
 const viewer = computed(() => {
-  if (!loginStore.isLoggedIn) return 'anonymous';
+  if (!loginStore.isLoggedIn) return "anonymous";
 
   for (const task of taskStore.taskDetails) {
     if (loginStore.username === task.email) {
-      if (task.userRole === 'taskCreator') {
-        return 'creator';
-      } else return 'doer';
+      if (task.userRole === "taskCreator") {
+        return "creator";
+      } else return "doer";
     }
   }
-  return 'nonDoer';
+  return "nonDoer";
 });
 
 const taskDoers = computed(() => {
   let doers = [];
   for (const task of taskStore.taskDetails) {
-    if (task.userRole === 'taskDoer')
+    if (task.userRole === "taskDoer")
       doers.push({
         name: task.firstName,
         email: task.email,
         userId: task.userTaskUId,
       });
   }
-  console.log(doers)
+  console.log(doers);
   if (avgRating.value && doers) {
     for (const doer of doers) {
-      console.log(doer.email)
-      const index = avgRating.value.findIndex((user) => user.username === doer.email)
-      doer.rating = Math.round(avgRating.value[index].avgRating) || 'Användare har ingen rating'
-      doer.scoreNumber = avgRating.value[index].nRatings
+      console.log(doer.email);
+      const index = avgRating.value.findIndex(
+        (user) => user.username === doer.email
+      );
+      doer.rating =
+        Math.round(avgRating.value[index].avgRating) ||
+        "Användare har ingen rating";
+      doer.scoreNumber = avgRating.value[index].nRatings;
     }
   }
-  console.log(doers)
+  console.log(doers);
 
   return doers;
 });
 
 const labelColor = computed(() => {
-  if (taskStore.taskDetails[0].status === 'New') return 'success';
-  else if (taskStore.taskDetails[0].status === 'Pågående')
-    return 'warning';
-  else return 'secondary';
+  if (taskStore.taskDetails[0].status === "New") return "success";
+  else if (taskStore.taskDetails[0].status === "Pågående") return "warning";
+  else return "secondary";
 });
-
 
 watchEffect(async () => {
   const doers = taskDoers.value;
@@ -184,21 +194,28 @@ watchEffect(async () => {
     rated.value = false;
   }
 });
-
 </script>
 
 <template>
-  <i @click="router.push({ path: route.query.endpoint || '/tasks' })" class="pi pi-arrow-left" style="
+  <i
+    @click="router.push({ path: route.query.endpoint || '/tasks' })"
+    class="pi pi-arrow-left"
+    style="
       font-size: 1.2rem;
       font-weight: 500;
       margin-top: 0.8em;
       padding-left: 2em;
       cursor: pointer;
-    "><span style="
+    "
+    ><span
+      style="
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         cursor: pointer;
-      ">
-      Till tjänster</span></i>
+      "
+    >
+      Till tjänster</span
+    ></i
+  >
   <article v-if="taskDetails">
     <section class="task-details">
       <h1>
@@ -206,7 +223,7 @@ watchEffect(async () => {
         <BBadge :variant="labelColor">{{ taskDetails.status }}</BBadge>
       </h1>
       <h3>{{ taskDetails.price }} kr</h3>
-      <h4 v-if="taskDetails.date">{{ taskDetails.date.split('T')[0] }}</h4>
+      <h4 v-if="taskDetails.date">{{ taskDetails.date.split("T")[0] }}</h4>
       <h4 v-else>Datum diskuteras</h4>
       <p class="description" v-if="taskDetails.description">
         {{ taskDetails.description }}
@@ -217,7 +234,12 @@ watchEffect(async () => {
         <BButton @click="goToPage()" id="editDelete" variant="warning">
           Redigera
         </BButton>
-        <BButton @click="deleteTask()" id="editDelete" variant="danger">
+        <BButton
+          v-if="task && task.taskId"
+          @click="deleteTask()"
+          id="editDelete"
+          variant="danger"
+        >
           Radera
         </BButton>
       </div>

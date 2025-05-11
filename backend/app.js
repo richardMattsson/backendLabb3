@@ -25,6 +25,7 @@ app.use(userRoutes);
 app.use(userTaskRoute);
 app.use('/api/auth', authRoutes);
 app.use('/api', ratingRoutes);
+app.use('/api', taskRoutes);
 // app.use('/api/protected', protectedRoutes);
 
 const connectionMongoDB = require('./connectionMongoDB');

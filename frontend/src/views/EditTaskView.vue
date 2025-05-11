@@ -58,62 +58,11 @@ async function updateTask(id) {
     const result = await response.json();
     console.log("Servern svarade med:", result);
 
-    router.push({ name: "TaskView", params: { taskId: id } });
+    router.push({ name: "TaskView" });
   } catch (error) {
     console.log("Något gick fel", error.message);
   }
-};
-
-
-
-// async function getLatestTasks() {
-//   const url = 'http://localhost:3000/api/tasks';
-//   try {
-//     const response = await fetch(url);
-//     if (!response.ok) {
-//       throw new Error(`Response status: ${response.status}`);
-//     }
-//     const result = await response.json();
-//     latestUserTaskId.value = result.tasks[result.tasks.length - 1];
-//     // console.log(result.tasks);
-//     // console.log(latestUserTaskId.value.taskId);
-//     createUserTask(latestUserTaskId.value.taskId);
-//   } catch (error) {
-//     console.error(error.message);
-//   }
-// }
-// async function createUserTask(id) {
-//   await taskStore.fetchUsers();
-
-//   const taskCreator = taskStore.allUsers.users.filter((user) => {
-//     return user.email === loginStore.username;
-//   });
-//   const userTask = {
-//     userRole: 'taskCreator',
-//     userTaskUId: taskCreator[0].userId,
-//     userTaskTId: id,
-//   };
-//   console.log(userTask);
-//   try {
-//     const response = await fetch('http://localhost:3000/api/user-tasks', {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify(userTask),
-//     });
-//     if (!response.ok) {
-//       console.log(response);
-//       throw new Error(`Response status: ${response.status}`);
-//     }
-
-//     const result = await response.json();
-//     router.push({ name: 'TaskView', params: { taskId: id } })
-//     console.log('Servern svarade med:', result);
-//   } catch (error) {
-//     console.error('Något gick fel:', error.message);
-//   }
-// }
+}
 </script>
 
 <template>
