@@ -58,12 +58,11 @@ async function updateTask(id) {
     const result = await response.json();
     console.log("Servern svarade med:", result);
 
-    router.push({ name: "TaskView", params: { taskId: id } });
+    router.push({ name: "TaskView" });
   } catch (error) {
     console.log("Något gick fel", error.message);
   }
-};
-
+}
 </script>
 
 <template>

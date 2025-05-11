@@ -16,6 +16,7 @@ const taskId = ref(null);
 const score = ref(0);
 const avgRating = ref(null);
 const rated = ref(false);
+const task = ref(null);
 
 watch(
   () => taskStore.taskDetails,
@@ -36,6 +37,12 @@ onMounted(async () => {
   await ratingStore.getAvgRating();
   avgRating.value = ratingStore.avgRatingByUser;
   console.log(avgRating.value);
+
+  const response = await fetch(
+    `http://localhost:3000/api/tasks/${route.params.taskId}`
+  );
+  const data = await response.json();
+  task.value = data.task[0];
 });
 
 async function doerAcceptTask() {
@@ -71,15 +78,18 @@ function goToPage() {
 //   router.push({ path: "/tasks" });
 // }
 
-async function deleteTask(taskId) {
+async function deleteTask() {
   try {
-    const response = await fetch(`http://localhost:3000/api/tasks/${taskId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `${loginStore.token}`,
-      },
-    });
+    const response = await fetch(
+      `http://localhost:3000/api/tasks/${task.value.taskId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${loginStore.token}`,
+        },
+      }
+    );
     if (!response.ok) {
       console.log(response);
       throw new Error(`Response status: ${response.status}`);
@@ -88,7 +98,7 @@ async function deleteTask(taskId) {
     const result = await response.json();
     console.log("Servern svarade med:", result);
 
-    router.push({ name: "TasksView" });
+    router.push({ path: "/tasks" });
   } catch (error) {
     console.log("Något gick fel", error.message);
   }
@@ -225,7 +235,8 @@ watchEffect(async () => {
           Redigera
         </BButton>
         <BButton
-          @click="() => deleteTask(task.id)"
+          v-if="task && task.taskId"
+          @click="deleteTask()"
           id="editDelete"
           variant="danger"
         >
