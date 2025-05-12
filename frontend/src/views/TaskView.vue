@@ -48,7 +48,7 @@ async function doerAcceptTask() {
   await userStore.fetchUsers();
 
   // letar efter userId
-  const doer = userStore.allUsers.users.filter((user) => {
+  const doer = userStore.allUsers.filter((user) => {
     return user.email === loginStore.username;
   });
 

@@ -81,7 +81,7 @@ async function getLatestTasks() {
 async function createUserTask(id) {
   await userStore.fetchUsers();
 
-  const taskCreator = userStore.allUsers.users.filter((user) => {
+  const taskCreator = userStore.allUsers.filter((user) => {
     return user.email === loginStore.username;
   });
   const userTask = {

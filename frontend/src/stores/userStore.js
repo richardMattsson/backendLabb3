@@ -37,7 +37,7 @@ export const useUserStore = defineStore("userStore", {
     async fetchUsers() {
       try {
         const res = await axios.get(`http://localhost:3000/api/users`);
-        this.allUsers = res.data;
+        this.allUsers = res.data.users;
       } catch (err) {
         this.error = err.message;
       }
