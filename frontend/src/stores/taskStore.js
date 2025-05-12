@@ -11,8 +11,6 @@ export const useTaskStore = defineStore('taskStore', {
       tasksInCategory: [],
       categories: [],
       oneCategory: null,
-      users: [],
-      allUsers: [],
       loading: false,
       error: null,
     };
@@ -95,7 +93,6 @@ export const useTaskStore = defineStore('taskStore', {
       try {
         const res = await axios.get('http://localhost:3000/api/categories');
         this.categories = res.data.categories;
-        //console.log(res.data);
       } catch (err) {
         this.error = err.message;
       }
@@ -107,27 +104,6 @@ export const useTaskStore = defineStore('taskStore', {
         );
         this.oneCategory = res.data.category;
         //console.log(res.data.category);
-      } catch (err) {
-        this.error = err.message;
-      }
-    },
-
-    async fetchUsers() {
-      try {
-        const res = await axios.get(`http://localhost:3000/api/users`);
-        this.allUsers = res.data;
-      } catch (err) {
-        this.error = err.message;
-      }
-    },
-
-
-    async fetchUser(userId) {
-      try {
-        const res = await axios.get(
-          `http://localhost:3000/api/users/${userId}`
-        );
-        this.users = res.data;
       } catch (err) {
         this.error = err.message;
       }

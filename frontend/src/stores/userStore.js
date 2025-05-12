@@ -5,6 +5,7 @@ export const useUserStore = defineStore("userStore", {
   state: () => {
     return {
       user: null,
+      allUsers: [],
       performerTasks: [],
       clientTasks: [],
       loading: false,
@@ -25,30 +26,27 @@ export const useUserStore = defineStore("userStore", {
         this.loading = false
       }
     },
-      
-    /*async fetchUserTasksRole(userId, tasksrole) {
-      this.loading = true;
+
+
+    async fetchUsers() {
       try {
-        const res = await axios.get(
-          `http://localhost:3000/api/users/${userId}/${tasksrole}`
-        );
-        this.userTasksRole = res.data.userTasksRole;
-        this.error = null;
+        const res = await axios.get(`http://localhost:3000/api/users`);
+        this.allUsers = res.data;
       } catch (err) {
         this.error = err.message;
-      } finally {
-        this.loading = false;
       }
-    },*/
+    },
 
     async fetchUserTasksByRole(userId) {
       this.loading = true
       try {
         const res = await axios.get(
-          `http://localhost:3000/api/users/${userId}/tasksrole`
+          `http://localhost:3000/api/users/${userId}/taskrole`
         )
-        this.performerTasks = res.data.taskDoer
-        this.clientTasks = res.data.taskCreator
+        this.performerTasks = res.data.taskDoer;
+        console.log('from store doer', this.performerTasks);
+        this.clientTasks = res.data.taskCreator;
+        console.log('from store creator', this.clientTasks);
         this.error = null
       } catch (err) {
         this.error = err.message
@@ -64,14 +62,14 @@ export const useUserStore = defineStore("userStore", {
           `http://localhost:3000/api/users/email/${email}`
         )
         this.user = res.data.user
-          this.error = null
+        this.error = null
       } catch (err) {
         this.error = err.message
       } finally {
         this.loading = false
       }
-     },
-       
+    },
+
     async updateUser(userId, userData) {
       this.loading = true
       try {
@@ -89,8 +87,8 @@ export const useUserStore = defineStore("userStore", {
       } finally {
         this.loading = false
       }
-    },   
-      
+    },
+
     async deleteUser(userId) {
       this.loading = true
       try {

@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch, watchEffect } from "vue";
 import { useTaskStore } from "@/stores/taskStore";
 import { useLoginStore } from "@/stores/loginStore";
+import { useUserStore } from "@/stores/userStore";
 import { useRatingStore } from "@/stores/ratingStore";
 import { useRoute, useRouter } from "vue-router";
 import { CRating } from "@coreui/vue-pro";
@@ -9,6 +10,7 @@ import { CRating } from "@coreui/vue-pro";
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
 const ratingStore = useRatingStore();
+const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 const taskDetails = ref(null);
@@ -21,7 +23,6 @@ const task = ref(null);
 watch(
   () => taskStore.taskDetails,
   (newValue, oldValue) => {
-    // console.log(oldValue, 'ändras till ', newValue[0]);
     taskDetails.value = newValue[0];
   }
 );
@@ -30,8 +31,6 @@ onMounted(async () => {
   taskId.value = route.params.taskId;
 
   await taskStore.fetchTaskDetails(taskId.value);
-  //console.log('Task fetched:', taskStore.taskDetails[0]);
-  // taskDetails.value = taskStore.taskDetails[0];
   console.log(taskDetails.value);
 
   await ratingStore.getAvgRating();
@@ -46,13 +45,12 @@ onMounted(async () => {
 });
 
 async function doerAcceptTask() {
-  await taskStore.fetchUsers();
+  await userStore.fetchUsers();
 
   // letar efter userId
-  const doer = taskStore.allUsers.users.filter((user) => {
+  const doer = userStore.allUsers.users.filter((user) => {
     return user.email === loginStore.username;
   });
-  // userID (userTaskUId) === doer[0].userId
 
   await taskStore.createUserTask(doer[0].userId, taskId.value);
   if (
@@ -73,10 +71,6 @@ async function rateDoer(doerEmail, newScore, creatorEmail) {
 function goToPage() {
   router.push({ name: "EditTask", params: { id: taskId.value } });
 }
-
-// function goToHomePage() {
-//   router.push({ path: "/tasks" });
-// }
 
 async function deleteTask() {
   try {
@@ -103,24 +97,6 @@ async function deleteTask() {
     console.log("Något gick fel", error.message);
   }
 }
-
-// async function deleteTask() {
-//     try {
-//     const res = await fetch(`http://localhost:3000/api/tasks/${taskId.value}`, {
-//         method: 'DELETE'
-//     });
-
-//     const result = await res.json();
-
-//     if (!res.ok) {
-//         throw new Error(result.error)
-//     }
-//     alert('Tjänsten har raderats!', result.message);
-//     router.push('/tasks');
-// } catch (error) {
-//     console.error('Fel vid radering')
-//     }
-// };
 
 const taskCreator = computed(() => {
   let index = 0;
@@ -197,25 +173,17 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <i
-    @click="router.push({ path: route.query.endpoint || '/tasks' })"
-    class="pi pi-arrow-left"
-    style="
+  <i @click="router.push({ path: route.query.endpoint || '/tasks' })" class="pi pi-arrow-left" style="
       font-size: 1.2rem;
       font-weight: 500;
       margin-top: 0.8em;
       padding-left: 2em;
       cursor: pointer;
-    "
-    ><span
-      style="
+    "><span style="
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         cursor: pointer;
-      "
-    >
-      Till tjänster</span
-    ></i
-  >
+      ">
+      Till tjänster</span></i>
   <article v-if="taskDetails">
     <section class="task-details">
       <h1>
@@ -230,16 +198,11 @@ watchEffect(async () => {
       </p>
       <h4>Adress: {{ taskDetails.address }}</h4>
       <h4>Beställare: {{ taskCreator }}</h4>
-      <div v-if="viewer === 'creator' && taskDetails.status === 'New'">
+      <div id="edit" v-if="viewer === 'creator' && taskDetails.status === 'New'">
         <BButton @click="goToPage()" id="editDelete" variant="warning">
           Redigera
         </BButton>
-        <BButton
-          v-if="task && task.taskId"
-          @click="deleteTask()"
-          id="editDelete"
-          variant="danger"
-        >
+        <BButton v-if="task && task.taskId" @click="deleteTask()" id="editDelete" variant="danger">
           Radera
         </BButton>
       </div>
@@ -298,8 +261,11 @@ watchEffect(async () => {
           <h3>🎉 Du har blivit bekräftad som utförare!</h3>
           <p>Grattis! Beställaren har valt dig för att utföra tjänsten. Kontakta beställaren för att diskutera detaljer
             och säkerställa att allt är klart inför utförandet.</p>
-          <i class="pi pi-envelope" style="font-size: 1rem; color: green"></i>
-          <i class="pi pi-phone" style="font-size: 1.5rem; color: green"></i>
+          <div class="contacts">
+            <a :href="`mailto:${taskDetails.email}`"><i class="pi pi-envelope"
+              style="font-size: 1.5rem; color: green"></i></a>
+            <i class="pi pi-phone" style="font-size: 1.5rem; color: green"></i>
+          </div>
         </section>
       </section>
 
@@ -395,6 +361,12 @@ h4 {
   font-size: 1.1rem;
 }
 
+#edit {
+  display: flex;
+  justify-content: start;
+  gap: 1.5em;
+}
+
 .task-actions {
   margin-inline: auto;
   background-color: #fff;
@@ -424,6 +396,12 @@ li {
 .rating {
   display: flex;
   justify-content: center;
+  gap: 1em;
+}
+
+.contacts {
+  display: flex;
+  justify-content: flex-start;
   gap: 1em;
 }
 </style>
