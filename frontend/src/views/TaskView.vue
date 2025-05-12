@@ -138,10 +138,12 @@ const taskDoers = computed(() => {
       const index = avgRating.value.findIndex(
         (user) => user.username === doer.email
       );
-      doer.rating =
-        Math.round(avgRating.value[index].avgRating) ||
-        "Användare har ingen rating";
-      doer.scoreNumber = avgRating.value[index].nRatings;
+      if (index >= 0){
+        doer.rating =
+          Math.round(avgRating.value[index].avgRating) ||
+          "Användare har ingen rating";
+        doer.scoreNumber = avgRating.value[index].nRatings;
+      }
     }
   }
   console.log(doers);
