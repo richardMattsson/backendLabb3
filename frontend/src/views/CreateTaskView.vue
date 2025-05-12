@@ -113,7 +113,7 @@ async function createUserTask(id) {
 <template>
   <BContainer>
     <BRow>
-      <BCol cols="6">
+      <BCol lg="6">
         <p v-if="!loginStore.isLoggedIn">
           Du behöver logga in för att skapa en ny tjänst.
         </p>
