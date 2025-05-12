@@ -6,35 +6,46 @@ import { useUserStore } from "@/stores/userStore"
 const userStore = useUserStore()
 const loginStore = useLoginStore()
 
-const performerTasks = userStore.tasks.performer
-console.log("Performer tasks:", performerTasks)
-const clientTasks = userStore.tasks.client
-console.log("Client tasks:", clientTasks)
-
 const form = ref({})
 const isEditing = ref(false)
 
 onMounted(async () => {
-    const userEmail = loginStore.username
-    console.log("User email:", userEmail)
+const userEmail = loginStore.username
+console.log("User email:", userEmail)
 
-    try {
-        await userStore.fetchUserByEmail(userEmail)
-        console.log("Hämtad användare:", userStore.user)
+try {
+await userStore.fetchUserByEmail(userEmail)
+console.log("Hämtad användare:", userStore.user.email)
 
-        form.value = {
-            email: userEmail,
-            firstName: userStore.user.firstName || "",
-            lastName: userStore.user.lastName || "",
-            phone: userStore.user.phone || "",
-            city: userStore.user.city || "",
-        }
-
-        await userStore.fetchUserTasksByRole(userStore.user.id)
-        console.log("Hämtade uppdrag:", userStore.tasks)
-    } catch (error) {
-        console.error("Ett fel inträffade vid hämtning av profildata:", error)
+if (userStore.user && userStore.user.userId){
+    form.value = {
+    email: userEmail,
+    firstName: userStore.user.firstName || "",
+    lastName: userStore.user.lastName || "",
+    phone: userStore.user.phone || "",
+    city: userStore.user.city || "",
     }
+
+    const userId = userStore.user.userId
+    console.log("User ID:", userId)
+
+    if (userId){
+        //Hämtar uppdrag för "taskDoer"
+        await userStore.fetchUserTasksByRole(userId, "taskDoer")
+        console.log("Hämtade uppdrag för taskDoer:", userStore.tasks.performer)
+
+        //Hämtar uppdrag för "taskCreator"
+        await userStore.fetchUserTasksByRole(userId, "taskCreator")
+        console.log("Hämtade uppdrag för taskCreator:", userStore.tasks.client)
+    } else {
+    console.error("Kunde inte hitta userId för att hämta tasks")
+    }
+} else {
+    console.error("Kunde inte hitta användardata")
+    }
+} catch (error) {
+console.error("Fel vid hämtning av användardata eller tasks", error)
+}
 })
 
 const saveChanges = async () => {
@@ -69,7 +80,7 @@ const enableEdit = () => {
             <b-col md="8" class="mb-4">
                 <h4>Min Profil</h4>
                 <b-form @submit.prevent="saveChanges">
-                    <!--E-mail ska inte kunna ändras, då den är kopplad till inloggning -->
+                     <!--E-mail ska inte kunna ändras, då den är kopplad till inloggning -->
                     <b-row class="mb-2">
                         <b-form-group label="E-post" label-for="email">
                             <b-form-input v-model="form.email" disabled></b-form-input>

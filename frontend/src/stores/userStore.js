@@ -6,8 +6,13 @@ export const useUserStore = defineStore("userStore", {
     return {
       user: null,
       tasks:{
-      performer: [],
-      client: [],
+      performer: [
+        /*{ taskId: 1, title: "Task 1", date: "2025-05-01", status: "Pending" },
+        { taskId: 2, title: "Task 2", date: "2025-05-02", status: "Completed" }*/
+    ],
+    client: [
+        /*{ taskId: 3, title: "Task 3", date: "2025-05-03", status: "In Progress" }*/
+    ]
       },
       loading: false,
       error: null,
@@ -28,32 +33,20 @@ export const useUserStore = defineStore("userStore", {
       }
     },*/
 
-    /*async fetchUserTasksRole(userId, tasksrole) {
-      this.loading = true;
-      try {
-        const res = await axios.get(
-          `http://localhost:3000/api/users/${userId}/${tasksrole}`
-        );
-        this.userTasksRole = res.data.userTasksRole;
-        this.error = null;
-      } catch (err) {
-        this.error = err.message;
-      } finally {
-        this.loading = false;
-      }
-    },*/
-
-    async fetchUserTasksByRole(userId) {
+    async fetchUserTasksByRole(userId, role) {
       this.loading = true
       try {
-        const res = await axios.get(
-          `http://localhost:3000/api/users/${userId}/tasksrole`
-        )
-        this.tasks.performer = res.data.taskDoer
-        this.tasks.client = res.data.taskCreator
+        const res = await axios.get(`http://localhost:3000/api/users/${userId}/${role}`)
+        if (role === "taskDoer") {
+          this.tasks.performer = res.data.userTasksRole
+        }
+        else if (role === "taskCreator") {
+          this.tasks.client = res.data.userTasksRole
+        }
         this.error = null
       } catch (err) {
         this.error = err.message
+        console.error("Fel vid hämtning av uppdrag:", err)
       } finally {
         this.loading = false
       }
@@ -75,17 +68,20 @@ export const useUserStore = defineStore("userStore", {
       }
      },
 
-    async updateUser(userData) {
+    async updateUser(updatedData) {
       this.loading = true
       try {
         const res = await axios.put(
-          `http://localhost:3000/api/users/${userData.userId}`,
-          userData
-        )
-        this.user = {...this.user, ...userData}
-        this.error = null
-      }catch (err) {
-        this.error = err.message
+          `http://localhost:3000/api/users/${updatedData.userId}`, updatedData)
+          if (res.data.success) {
+            this.user = {...this.user, ...userData}
+            this.error = null
+          } else {
+            this.error = res.data.message
+          }
+      }catch (error) {
+        this.error = error.message
+        console.error("Fel vid uppdatering av användare:", error)
       } finally {
         this.loading = false
       }
