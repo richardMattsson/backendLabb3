@@ -150,7 +150,7 @@ const enableEdit = () => {
 }">
                                 <h5 class="mb-1">{{ task.title }}</h5>
                                 <p class="mb-0"><strong>Roll: </strong>{{task.userrole === "taskDoer" ? "Utförare" : ""}}</p>
-                                <p class="mb-0">
+                                <p class="mb-0" v-if="task.date">
                                     <strong>Bokat datum: </strong>{{ task.date.split("T")[0] }}
                                 </p>
                                 <p class="mb-0">
@@ -191,7 +191,7 @@ const enableEdit = () => {
                             'border-secondary': task.status === 'New'}">
                                 <h5 class="mb-1">{{ task.title }}</h5>
                                 <p class="mb-0"><strong>Roll: </strong>{{task.userrole === "taskCreator" ? "Beställare" : ""}}</p>
-                                <p class="mb-0"><strong>Bokat datum: </strong>{{ task.date.split("T")[0] }}</p>
+                                <p class="mb-0" v-if="task.date"><strong>Bokat datum: </strong>{{ task.date.split("T")[0] }}</p>
                                 <p class="mb-0"><strong>Status: </strong><span :class="{'text-success' : task.status === 'Completed',
                                     'text-warning' : task.status === 'In Progress',
                                     'text-secondary' : task.status === 'New',
