@@ -27,16 +27,34 @@ exports.getUser = async (req, res) => {
   }
 };
 
-exports.getUserTasksRole = async (req, res) => {
-  const { id } = req.params;
+exports.getUserTasksByRole = async (req, res) => {
+  const { userId, taskrole } = req.params;
+
+  if (!userId || !taskrole) {
+    return res.status(400).json({
+      success: false,
+      message: 'Både userId och taskrole är obligatoriska',
+    });
+  }
   try {
-    const performer = await userService.getUserTasksRole(id, 'taskDoer');
-    const client = await userService.getUserTasksRole(id, 'taskCreator');
-    res.json({ taskDoer: performer, taskCreator: client });
+    const userTasksRole = await userService.getUserTasksByRole(userId, taskrole);
+
+    if(!userTasksRole || userTasksRole.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Inga uppdrag hittades för användare med ID: ${userId} och roll: ${taskrole}`,
+        userTasksRole: [],
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: `Uppdrag hämtade för användare med ID: ${userId} och roll: ${taskrole}`,
+       userTasksRole,
+      })
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: `Fel vid hämtning av användarens uppgifter med ID: ${id}`,
+      message: `Fel vid hämtning av användarens uppdrag med ID: ${userId} och roll: ${taskrole}`,
       error: error.message,
     });
   }
@@ -48,7 +66,7 @@ exports.getUserByEmail = async (req, res) => {
     const user = await userService.getUserByEmail(email)
     if (!user) {
       return res.status(404).json({
-        message: "Ingen användare hittades med den angivna e-postadressen",
+        message: "Användare med den angivna e-postadressen hittades inte",
       })
     }
     res.json({ user})
@@ -75,22 +93,28 @@ exports.createUser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  const { id, firstName, lastName, phone, email, city } = req.body;
+  const userId = req.params.id;
+  const updatedData = req.body;
 
-  if (!id) {
-    return res.status(400).json({
-      success: false,
-      message: 'Användar-ID är obligatoriskt',
-    });
-  }
   try {
-    await userService.updateUser(id, firstName, lastName, phone, email, city);
-    const updatedUser = await userService.getUser(id)
-    res.status(200).json({ success: true,user: updatedUser[0], message: 'Användare uppdaterad!' });
+    const result = await userService.updateUser(userId, updatedData);
+
+    if (result.affectedRows > 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'Användardata uppdaterad!',
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: `Användaren hittades inte`,
+      });
+    }
   } catch (error) {
-    res.status(500).json({
+    console.error('Fel vid uppdatering av användare:', error);
+    return res.status(500).json({
       success: false,
-      message: `Fel vid uppdatering av användare med ID: ${id}`,
+      message: `Fel vid uppdatering av användardata`,
       error: error.message,
     });
   }
@@ -112,7 +136,7 @@ exports.deleteUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: `Fel vid borttagning av användare med ID: ${id}`,
+      message: `Fel vid borttagning av användare`,
       error: error.message,
     });
   }
