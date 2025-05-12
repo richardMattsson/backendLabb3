@@ -2,7 +2,9 @@
 import { ref, onMounted } from "vue"
 import { useLoginStore } from "@/stores/loginStore"
 import { useUserStore } from "@/stores/userStore"
+import { useRoute, RouterLink } from "vue-router"
 
+const route = useRoute()
 const userStore = useUserStore()
 const loginStore = useLoginStore()
 
@@ -125,14 +127,33 @@ const enableEdit = () => {
                 <b-list-group>
                     <template v-if="userStore.tasks.performer.length">
                         <b-list-group-item v-for="task in userStore.tasks.performer" :key="task.taskId">
-                            <b-card class="mb-2">
+                            <b-card class="mb-2" :class="
+                            'border-2',{
+                            'border-success': task.status === 'Completed',
+                            'border-warning': task.status === 'In Progress',
+                            'border-secondary': task.status === 'New'
+}">
                                 <h5 class="mb-1">{{ task.title }}</h5>
+                                <p class="mb-0"><strong>Roll: </strong>{{task.userrole === "taskDoer" ? "Utförare" : ""}}</p>
                                 <p class="mb-0">
-                                    <strong>Datum: </strong>{{ task.date }}
+                                    <strong>Bokat datum: </strong>{{ task.date.split("T")[0] }}
                                 </p>
                                 <p class="mb-0">
-                                    <strong>Status: </strong>{{ task.status }}
+                                    <strong>Bekräftad: </strong>{{ task.confirmed === true ? "Ja" : "Nej" }}
                                 </p>
+                                <p class="mb-0">
+                                    <strong>Status: </strong><span :class="{'text-success' : task.status === 'Completed',
+                                    'text-warning' : task.status === 'In Progress',
+                                    'text-secondary' : task.status === 'New',
+                                }">{{ task.status }}</span>
+                                </p>
+                                <b-col class="text-end"><RouterLink
+                                    :to="{
+                                        path: `/tasks/${task.taskId}`,
+                                        query: { endpoint: route.fullPath },
+                                     }"
+                                     class ="btn btn-primary">Visa Uppdrag</RouterLink>
+                                </b-col>
                             </b-card>
                         </b-list-group-item>
                     </template>
@@ -148,10 +169,25 @@ const enableEdit = () => {
                 <b-list-group>
                     <template v-if="userStore.tasks.client.length">
                         <b-list-group-item v-for="task in userStore.tasks.client" :key="task.taskId">
-                            <b-card class="mb-2">
+                            <b-card class="mb-2" :class="
+                            'border-2',{
+                            'border-success': task.status === 'Completed',
+                            'border-warning': task.status === 'In Progress',
+                            'border-secondary': task.status === 'New'}">
                                 <h5 class="mb-1">{{ task.title }}</h5>
-                                <p class="mb-0"><strong>Datum: </strong>{{ task.date }}</p>
-                                <p class="mb-0"><strong>Status: </strong>{{ task.status }}</p>
+                                <p class="mb-0"><strong>Roll: </strong>{{task.userrole === "taskCreator" ? "Beställare" : ""}}</p>
+                                <p class="mb-0"><strong>Bokat datum: </strong>{{ task.date.split("T")[0] }}</p>
+                                <p class="mb-0"><strong>Status: </strong><span :class="{'text-success' : task.status === 'Completed',
+                                    'text-warning' : task.status === 'In Progress',
+                                    'text-secondary' : task.status === 'New',
+                                }">{{ task.status }}</span></p>
+                                <b-col class="text-end"><RouterLink
+                                    :to="{
+                                        path: `/tasks/${task.taskId}`,
+                                        query: { endpoint: route.fullPath },
+                                     }"
+                                     class ="btn btn-primary">Visa Uppdrag</RouterLink>
+                                </b-col>
                             </b-card>
                         </b-list-group-item>
                     </template>
