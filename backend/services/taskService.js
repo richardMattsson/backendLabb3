@@ -110,17 +110,10 @@ function editTask(
 
 function deleteTask(taskId) {
   return new Promise((resolve, reject) => {
-    const deleteUserTaskSql = 'DELETE FROM userTask WHERE userTaskTId = ?';
-    const deleteTaskSql = 'DELETE FROM task WHERE taskId = ?';
+    const sql = 'DELETE FROM task WHERE taskId = ?';
     // let sql2 = 'DELETE FROM task WHERE taskId = ?'
 
-    connectionMySQL.query(deleteUserTaskSql, [taskId], (err) => {
-      if (err) {
-        reject(err);
-      return;
-    }
-
-      connectionMySQL.query(deleteTaskSql, [taskId], (err) => {
+      connectionMySQL.query(sql, [taskId], (err) => {
       if (err) {
         reject(err);
       } else {
@@ -133,7 +126,6 @@ function deleteTask(taskId) {
       // })
       });
     });
-  });
 }
 
 module.exports = {
