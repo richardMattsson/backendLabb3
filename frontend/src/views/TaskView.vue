@@ -2,6 +2,7 @@
 import { computed, onMounted, ref, watch, watchEffect } from "vue";
 import { useTaskStore } from "@/stores/taskStore";
 import { useLoginStore } from "@/stores/loginStore";
+import { useUserStore } from "@/stores/userStore";
 import { useRatingStore } from "@/stores/ratingStore";
 import { useRoute, useRouter } from "vue-router";
 import { CRating } from "@coreui/vue-pro";
@@ -9,6 +10,7 @@ import { CRating } from "@coreui/vue-pro";
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
 const ratingStore = useRatingStore();
+const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 const taskDetails = ref(null);
@@ -21,7 +23,6 @@ const task = ref(null);
 watch(
   () => taskStore.taskDetails,
   (newValue, oldValue) => {
-    // console.log(oldValue, 'ändras till ', newValue[0]);
     taskDetails.value = newValue[0];
   }
 );
@@ -30,8 +31,6 @@ onMounted(async () => {
   taskId.value = route.params.taskId;
 
   await taskStore.fetchTaskDetails(taskId.value);
-  //console.log('Task fetched:', taskStore.taskDetails[0]);
-  // taskDetails.value = taskStore.taskDetails[0];
   console.log(taskDetails.value);
 
   await ratingStore.getAvgRating();
@@ -46,13 +45,12 @@ onMounted(async () => {
 });
 
 async function doerAcceptTask() {
-  await taskStore.fetchUsers();
+  await userStore.fetchUsers();
 
   // letar efter userId
-  const doer = taskStore.allUsers.users.filter((user) => {
+  const doer = userStore.allUsers.users.filter((user) => {
     return user.email === loginStore.username;
   });
-  // userID (userTaskUId) === doer[0].userId
 
   await taskStore.createUserTask(doer[0].userId, taskId.value);
   if (
@@ -73,10 +71,6 @@ async function rateDoer(doerEmail, newScore, creatorEmail) {
 function goToPage() {
   router.push({ name: "EditTask", params: { id: taskId.value } });
 }
-
-// function goToHomePage() {
-//   router.push({ path: "/tasks" });
-// }
 
 async function deleteTask() {
   try {
@@ -103,24 +97,6 @@ async function deleteTask() {
     console.log("Något gick fel", error.message);
   }
 }
-
-// async function deleteTask() {
-//     try {
-//     const res = await fetch(`http://localhost:3000/api/tasks/${taskId.value}`, {
-//         method: 'DELETE'
-//     });
-
-//     const result = await res.json();
-
-//     if (!res.ok) {
-//         throw new Error(result.error)
-//     }
-//     alert('Tjänsten har raderats!', result.message);
-//     router.push('/tasks');
-// } catch (error) {
-//     console.error('Fel vid radering')
-//     }
-// };
 
 const taskCreator = computed(() => {
   let index = 0;
@@ -197,25 +173,17 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <i
-    @click="router.push({ path: route.query.endpoint || '/tasks' })"
-    class="pi pi-arrow-left"
-    style="
+  <i @click="router.push({ path: route.query.endpoint || '/tasks' })" class="pi pi-arrow-left" style="
       font-size: 1.2rem;
       font-weight: 500;
       margin-top: 0.8em;
       padding-left: 2em;
       cursor: pointer;
-    "
-    ><span
-      style="
+    "><span style="
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         cursor: pointer;
-      "
-    >
-      Till tjänster</span
-    ></i
-  >
+      ">
+      Till tjänster</span></i>
   <article v-if="taskDetails">
     <section class="task-details">
       <h1>
@@ -230,120 +198,119 @@ watchEffect(async () => {
       </p>
       <h4>Adress: {{ taskDetails.address }}</h4>
       <h4>Beställare: {{ taskCreator }}</h4>
-      <div v-if="viewer === 'creator'">
+      <div id="edit" v-if="viewer === 'creator' && taskDetails.status === 'New'">
         <BButton @click="goToPage()" id="editDelete" variant="warning">
           Redigera
         </BButton>
-        <BButton
-          v-if="task && task.taskId"
-          @click="deleteTask()"
-          id="editDelete"
-          variant="danger"
-        >
+        <BButton v-if="task && task.taskId" @click="deleteTask()" id="editDelete" variant="danger">
           Radera
         </BButton>
       </div>
     </section>
 
-    <section
-      class="task-actions"
-      v-if="taskStore.taskDetails[0].status === 'New'"
-    >
-      <section class="for-creator" v-if="viewer === 'creator'">
-        <h3>Utförare för din uppgift</h3>
-        <p v-if="taskDoers.length < 1">Inga utförare har tackat ja ännu</p>
-        <li v-for="doer in taskDoers" :key="doer.email">
-          <h5>{{ doer.name }}</h5>
-          <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
-          <BButton
-            @click="taskStore.confirmDoer(taskId, doer.userId, doer)"
-            variant="warning"
-          >
-            Bekräfta utförare
+    <section class="task-actions">
+      <!-- Task tatus NEW -->
+      <section v-if="taskDetails.status === 'New'">
+        <section class="for-creator" v-if="viewer === 'creator'">
+          <h3>Utförare för din uppgift</h3>
+          <p v-if="taskDoers.length < 1">Inga utförare har tackat ja ännu</p>
+          <li v-for="doer in taskDoers" :key="doer.email">
+            <h5>{{ doer.name }}</h5>
+            <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
+            <BButton @click="taskStore.confirmDoer(taskId, doer.userId)" variant="warning">
+              Bekräfta utförare
+            </BButton>
+          </li>
+        </section>
+        <section v-if="viewer === 'nonDoer'">
+          <BButton @click="doerAcceptTask" type="button" variant="primary">
+            Tacka ja
           </BButton>
-        </li>
-      </section>
-      <section v-if="viewer === 'nonDoer'">
-        <BButton @click="doerAcceptTask" type="button" variant="primary">
-          Tacka ja
-        </BButton>
-      </section>
-      <div class="card" v-if="viewer === 'doer'">
-        <div class="card-body">
-          Vänta på bekräftelse från beställare av tjänsten
+        </section>
+        <div class="card" v-if="viewer === 'doer'">
+          <div class="card-body">
+            Vänta på bekräftelse från beställare av tjänsten
+          </div>
         </div>
-      </div>
-      <div class="card" v-if="viewer === 'anonymous'">
-        <div class="card-body">
-          Du behöver vara inloggad för att tacka ja till uppgiften
-        </div>
-        <BButton
-          variant="primary"
-          @click="
+        <div class="card" v-if="viewer === 'anonymous'">
+          <div class="card-body">
+            Du behöver vara inloggad för att tacka ja till uppgiften
+          </div>
+          <BButton variant="primary" @click="
             router.push({
               path: '/login',
               query: { endpoint: route.fullPath },
             })
-          "
-          type="button"
-        >
-          Logga in
-        </BButton>
-      </div>
-    </section>
-
-    <section
-      class="task-actions"
-      v-if="taskStore.taskDetails[0].status === 'Pågående'"
-    >
-      <section v-if="viewer === 'creator'">
-        <h3>Utförare för din uppgift</h3>
-        <li v-for="doer in taskDoers" :key="doer.email">
-          <h5>{{ doer.name }}</h5>
-          <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
-        </li>
-        <BButton variant="success" @click="taskStore.markAsDone(taskId)"
-          >Markera som klar</BButton
-        >
+            " type="button">
+            Logga in
+          </BButton>
+        </div>
       </section>
-    </section>
 
-    <section
-      class="task-actions"
-      v-if="taskStore.taskDetails[0].status === 'Färdig'"
-    >
-      <section v-if="viewer === 'creator'">
-        <h3>Din uppgift har blivit utförd!</h3>
-        <div v-if="!rated">
-          <h4>Vill du betygsätta din upplevelse?</h4>
-          <div v-for="doer in taskDoers" :key="doer.email">
+      <!-- Task status In progress -->
+      <section v-if="taskDetails.status === 'Pågående'">
+        <section v-if="viewer === 'creator'">
+          <h3>Utförare för din uppgift</h3>
+          <li v-for="doer in taskDoers" :key="doer.email">
             <h5>{{ doer.name }}</h5>
-            <p>
-              Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span>
-            </p>
-            <div class="rating">
-              <CRating v-model="score" style="padding-block: 0.6em" />
-              <BButton
-                @click="rateDoer(doer.email, score, loginStore.username)"
-                variant="info"
-                >Ge betyg</BButton
-              >
+            <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
+          </li>
+          <BButton variant="success" @click="taskStore.markAsDone(taskId)">Markera som klar</BButton>
+        </section>
+        <section v-if="viewer === 'doer'">
+          <h3>🎉 Du har blivit bekräftad som utförare!</h3>
+          <p>Grattis! Beställaren har valt dig för att utföra tjänsten. Kontakta beställaren för att diskutera detaljer
+            och säkerställa att allt är klart inför utförandet.</p>
+          <div class="contacts">
+            <a :href="`mailto:${taskDetails.email}`"><i class="pi pi-envelope"
+              style="font-size: 1.5rem; color: green"></i></a>
+            <i class="pi pi-phone" style="font-size: 1.5rem; color: green"></i>
+          </div>
+        </section>
+      </section>
+
+      <!-- Task status Completed -->
+      <section v-if="taskStore.taskDetails[0].status === 'Färdig'">
+        <section v-if="viewer === 'creator'">
+          <h3>Din uppgift har blivit utförd!</h3>
+          <div v-if="!rated">
+            <h4>Vill du betygsätta din upplevelse?</h4>
+            <div v-for="doer in taskDoers" :key="doer.email">
+              <h5>{{ doer.name }}</h5>
+              <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
+              <div class="rating">
+                <CRating v-model="score" style="padding-block: 0.6em;" />
+                <BButton @click="rateDoer(doer.email, score, loginStore.username)" variant="info">Ge betyg</BButton>
+              </div>
             </div>
           </div>
-        </div>
-        <div v-if="rated">
-          <p>Tack, du har betygsätt utföraren</p>
-          <h4>Utförare för din uppgift</h4>
-          <div v-for="doer in taskDoers" :key="doer.email">
-            <h5>{{ doer.name }}</h5>
-            <div class="rating">
-              <p>
-                Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span>
-              </p>
-              <p>Ditt betyg: {{ score }}</p>
+          <div v-if="rated">
+            <p>Tack, du har betygsätt utföraren 🌟 </p>
+            <h4>Utförare för din uppgift</h4>
+            <div v-for="doer in taskDoers" :key="doer.email">
+              <h5 style="color: slategray;">{{ doer.name }}</h5>
+              <div class="rating">
+                <p>Rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
+                <p>Ditt betyg: {{ score }}</p>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
+        <section v-if="viewer === 'doer'">
+          <h3>✅ Du har utfört uppgiften!</h3>
+          <div v-for="doer in taskDoers" :key="doer.email">
+            <p>Din rating: {{ doer.rating }} <span class="pi pi-star-fill"></span></p>
+            <div v-if="!rated">
+              <p>Du har slutfört uppgiften - bra jobbat!
+                📌 Beställaren har ännu inte betygsatt din insats. Betyg visas här när det finns tillgängligt.</p>
+            </div>
+            <div v-if="rated">
+              <div class="rating">
+                <p>Bestallärens betyg: {{ score }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
       </section>
     </section>
   </article>
@@ -352,13 +319,12 @@ watchEffect(async () => {
 <style scoped>
 article {
   display: grid;
-  grid-template-rows: 2fr 1fr 1fr;
+  grid-template-rows: 2fr 1fr;
   padding-block: 1rem;
-  gap: 0.5rem;
+  gap: 2rem;
 }
 
 section {
-  padding: 1rem;
   box-sizing: border-box;
 }
 
@@ -369,9 +335,11 @@ section {
   gap: 2rem;
   margin-inline: auto;
   background-color: #f9f9f9;
-  padding: 5rem;
+  padding-inline: 5rem;
+  padding-block: 4rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 30em;
   min-width: 60%;
 }
 
@@ -393,13 +361,18 @@ h4 {
   font-size: 1.1rem;
 }
 
+#edit {
+  display: flex;
+  justify-content: start;
+  gap: 1.5em;
+}
+
 .task-actions {
   margin-inline: auto;
   background-color: #fff;
   padding-inline: 5rem;
-  min-width: 50%;
-  /* border-radius: 8px; */
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  width: 25em;
+  min-width: 60%;
 }
 
 li {
@@ -423,6 +396,12 @@ li {
 .rating {
   display: flex;
   justify-content: center;
+  gap: 1em;
+}
+
+.contacts {
+  display: flex;
+  justify-content: flex-start;
   gap: 1em;
 }
 </style>

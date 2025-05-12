@@ -9,9 +9,9 @@ const modal = ref(false)
 <template>
   <header>
     <BNavbar :toggleable="true" class="navbar-nav-scroll" v-b-color-mode="'light'" toggleable variant="light"
-      style="padding-inline: 2.5em">
+      style="padding-inline: 3em">
       <BNavbarToggle target="nav-scroll" />
-      <BNavbarBrand href="#" variant="success">Delagator
+      <BNavbarBrand href="#" variant="success">Delegator
         <img style="max-width: 50px" src="../public/crocodileLyingDown.jpg" alt="crocodile icon" />
       </BNavbarBrand>
     </BNavbar>

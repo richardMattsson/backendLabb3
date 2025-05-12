@@ -7,6 +7,7 @@ export const useLoginStore = defineStore('loggedUser', {
       token: localStorage.getItem('token') || null,
       isLoggedIn: localStorage.getItem('isLoggedIn') || false,
       username: localStorage.getItem('username') || '',
+      showAlert: false,
     };
   },
   actions: {
@@ -38,11 +39,11 @@ export const useLoginStore = defineStore('loggedUser', {
       localStorage.removeItem('token');
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('username');
-      //alert('Du har loggat ut!');
+
       this.router.push({ path: '/' });
     },
 
-    async register(username, password) {
+    async register(username, password, firstName) {
       const registerBody = {
         username: username,
         password: password,
@@ -53,23 +54,24 @@ export const useLoginStore = defineStore('loggedUser', {
           registerBody
         );
         console.log('Svar från servern:', response.data);
-        this.createNewUser(username);
+        this.createNewUser(firstName, username);
       } catch (error) {
         console.error('Något gick fel: ', error);
       }
     },
 
-    async createNewUser(email) {
+    async createNewUser(name, username) {
       const inputBody = {
-        email: email,
+        firstName: name,
+        email: username,
       };
-      console.log(inputBody);
       try {
         const response = await axios.post(
           'http://localhost:3000/api/users',
           inputBody
         );
         console.log('Svar från servern:', response.data);
+        this.showAlert = true;
       } catch (error) {
         console.error('Något gick fel: ', error);
       }
