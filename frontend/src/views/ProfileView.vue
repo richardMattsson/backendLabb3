@@ -2,9 +2,10 @@
 import { ref, onMounted } from "vue"
 import { useLoginStore } from "@/stores/loginStore"
 import { useUserStore } from "@/stores/userStore"
-import { useRoute, RouterLink } from "vue-router"
+import { useRoute, useRouter, RouterLink } from "vue-router"
 
 const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
 const loginStore = useLoginStore()
 
