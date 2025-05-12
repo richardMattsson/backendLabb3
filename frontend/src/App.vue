@@ -12,7 +12,7 @@ const modal = ref(false)
       style="padding-inline: 3em">
       <BNavbarToggle target="nav-scroll" />
       <BNavbarBrand href="#" variant="success">Delegator
-        <img style="max-width: 50px" src="../public/crocodileLyingDown.jpg" alt="crocodile icon" />
+        <img style="max-width: 50px" src="../crocodileLyingDown.jpg" alt="crocodile icon" />
       </BNavbarBrand>
     </BNavbar>
     <BCollapse id="nav-scroll" is-nav>

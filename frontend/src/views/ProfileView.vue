@@ -153,7 +153,16 @@ const enableEdit = () => {
                                     <strong>Bokat datum: </strong>{{ task.date.split("T")[0] }}
                                 </p>
                                 <p class="mb-1">
-                                    <strong>Bekräftad: </strong>{{ task.confirmed === true ? "Ja" : "Nej" }}
+                                    <strong>Bekräftad: </strong>
+                                    <span v-if="task.confirmed">
+                                    Ja
+                                        <i class="bi bi-check-circle text-success me-1" aria-hidden="true" title="Bekräftad"></i>
+
+                                    </span>
+                                    <span v-else>
+                                    Nej
+                                        <i class="bi bi-x-circle text-danger me-1" aria-hidden="true" title="Ej bekräftad"></i>
+                                    </span>
                                 </p>
                                 <p class="mb-2">
                                     <strong>Status: </strong>
