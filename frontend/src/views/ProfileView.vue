@@ -165,11 +165,11 @@ const enableEdit = () => {
                                     </span>
                                 </p>
                                 <p class="mb-2">
-                                    <strong>Status: </strong>
+                                    <strong>Status:
                                     <span :class="{'text-success' : task.status === 'Completed',
                                     'text-warning' : task.status === 'In Progress',
                                     'text-secondary' : task.status === 'New'}">{{ task.status }}
-                                    </span>
+                                    </span></strong>
                                 </p>
                                 <div class="text-end">
                                     <RouterLink
@@ -203,12 +203,12 @@ const enableEdit = () => {
                                 <p class="mb-1"><strong>Roll: </strong>{{task.userrole === "taskCreator" ? "Beställare" : ""}}</p>
                                 <p class="mb-1"><strong>Bokat datum: </strong>{{ task.date.split("T")[0] }}</p>
                                 <p class="mb-2">
-                                    <strong>Status: </strong>
+                                    <strong>Status:
                                     <span :class="{
                                     'text-success' : task.status === 'Completed',
                                     'text-warning' : task.status === 'In Progress',
                                     'text-secondary' : task.status === 'New',
-                                }">{{ task.status }}</span>
+                                }">{{ task.status }}</span></strong>
                                 </p>
                                 <div class="text-end">
                                     <RouterLink
