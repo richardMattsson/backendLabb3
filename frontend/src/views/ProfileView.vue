@@ -81,7 +81,21 @@ const enableEdit = () => {
         <b-row class="mb-4">
             <b-col md="8" class="mb-4">
                 <h4>Min Profil</h4>
-                <b-form @submit.prevent="saveChanges">
+                 <b-col>
+                    <p v-if="!loginStore.isLoggedIn">
+                    Du behöver logga in för att se dina kontouppgifter och uppdrag.
+                </p>
+                <BButton
+                @click="
+                router.push({
+                    path: '/login',
+                    query: { endpoint: route.fullPath },
+                })"
+          class="mt-4"
+          variant="success"
+          v-if="!loginStore.isLoggedIn"
+          >Logga in</BButton></b-col>
+                <b-form @submit.prevent="saveChanges" v-if="loginStore.isLoggedIn">
                      <!--E-mail ska inte kunna ändras, då den är kopplad till inloggning -->
                     <b-row class="mb-2">
                         <b-form-group label="E-post" label-for="email">
@@ -124,11 +138,11 @@ const enableEdit = () => {
         <b-row>
             <b-col md="6">
                 <h4 class="mt-3">Uppdrag att genomföra</h4>
-                <b-list-group>
-                    <template v-if="userStore.tasks.performer.length">
+                <b-list-group >
+                    <template v-if="userStore.tasks.performer.length && loginStore.isLoggedIn">
                         <b-list-group-item v-for="task in userStore.tasks.performer" :key="task.taskId">
                             <b-card class="mb-2" :class="
-                            'border-2',{
+                            'border-3',{
                             'border-success': task.status === 'Completed',
                             'border-warning': task.status === 'In Progress',
                             'border-secondary': task.status === 'New'
@@ -167,10 +181,10 @@ const enableEdit = () => {
             <b-col md="6">
                 <h4 class="mt-3">Beställda uppdrag</h4>
                 <b-list-group>
-                    <template v-if="userStore.tasks.client.length">
+                    <template v-if="userStore.tasks.client.length && loginStore.isLoggedIn">
                         <b-list-group-item v-for="task in userStore.tasks.client" :key="task.taskId">
                             <b-card class="mb-2" :class="
-                            'border-2',{
+                            'border-3',{
                             'border-success': task.status === 'Completed',
                             'border-warning': task.status === 'In Progress',
                             'border-secondary': task.status === 'New'}">
