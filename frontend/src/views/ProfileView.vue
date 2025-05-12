@@ -80,7 +80,7 @@ const enableEdit = () => {
 <template>
     <b-container class="mt-8">
         <b-row class="mb-4">
-            <b-col md="8" class="mb-4">
+            <b-col md="8" class="mb-4" >
                 <h4>Min Profil</h4>
                  <b-col>
                     <p v-if="!loginStore.isLoggedIn">
@@ -135,82 +135,106 @@ const enableEdit = () => {
             </b-col>
         </b-row>
 
-        <!-- Performer Task List -->
-        <b-row>
-            <b-col md="6">
-                <h4 class="mt-3">Uppdrag att genomföra</h4>
-                <b-list-group >
-                    <template v-if="userStore.tasks.performer.length && loginStore.isLoggedIn">
-                        <b-list-group-item v-for="task in userStore.tasks.performer" :key="task.taskId">
-                            <b-card class="mb-2" :class="
-                            'border-3',{
+
+        <b-row class="g-4">
+
+             <!-- Performer Task List -->
+            <b-col md="6" class="border-end pe-4">
+                <h4 class="mb-3">Uppdrag att genomföra</h4>
+                    <div v-if="userStore.tasks.performer.length && loginStore.isLoggedIn">
+                            <b-card v-for="task in userStore.tasks.performer" :key="task.taskId" class="mb-3 px-2 py-2 border-2 accessible-card" :class="{
                             'border-success': task.status === 'Completed',
                             'border-warning': task.status === 'In Progress',
                             'border-secondary': task.status === 'New'
-}">
-                                <h5 class="mb-1">{{ task.title }}</h5>
-                                <p class="mb-0"><strong>Roll: </strong>{{task.userrole === "taskDoer" ? "Utförare" : ""}}</p>
-                                <p class="mb-0">
+                            }">
+                                <h5 class="mb-3">{{ task.title }}</h5>
+                                <p class="mb-1"><strong>Roll: </strong>{{task.userrole === "taskDoer" ? "Utförare" : ""}}</p>
+                                <p class="mb-1">
                                     <strong>Bokat datum: </strong>{{ task.date.split("T")[0] }}
                                 </p>
-                                <p class="mb-0">
+                                <p class="mb-1">
                                     <strong>Bekräftad: </strong>{{ task.confirmed === true ? "Ja" : "Nej" }}
                                 </p>
-                                <p class="mb-0">
-                                    <strong>Status: </strong><span :class="{'text-success' : task.status === 'Completed',
+                                <p class="mb-2">
+                                    <strong>Status: </strong>
+                                    <span :class="{'text-success' : task.status === 'Completed',
+                                    'text-warning' : task.status === 'In Progress',
+                                    'text-secondary' : task.status === 'New'}">{{ task.status }}
+                                    </span>
+                                </p>
+                                <div class="text-end">
+                                    <RouterLink
+                                    :to="{
+                                        path: `/tasks/${task.taskId}`,
+                                        query: { endpoint: route.fullPath },
+                                     }"
+                                     class ="btn btn-primary">Visa Uppdrag</RouterLink>
+                                </div>
+                            </b-card>
+                        </div>
+                    <p v-else class="text-muted ps-3">
+                        Inga uppdrag
+                    </p>
+            </b-col>
+
+            <!-- Client Task List -->
+            <b-col md="6" class="ps-4">
+                <h4 class="mb-3">Beställda uppdrag</h4>
+                    <div v-if="userStore.tasks.client.length && loginStore.isLoggedIn">
+                            <b-card
+                            v-for="task in userStore.tasks.client"
+                            :key="task.taskId"
+                            class="mb-3 px-2 py-2 border-2 accessible-card"
+                            :class="{
+                            'border-success': task.status === 'Completed',
+                            'border-warning': task.status === 'In Progress',
+                            'border-secondary': task.status === 'New'
+                            }">
+                                <h5 class="mb-3">{{ task.title }}</h5>
+                                <p class="mb-1"><strong>Roll: </strong>{{task.userrole === "taskCreator" ? "Beställare" : ""}}</p>
+                                <p class="mb-1"><strong>Bokat datum: </strong>{{ task.date.split("T")[0] }}</p>
+                                <p class="mb-2">
+                                    <strong>Status: </strong>
+                                    <span :class="{
+                                    'text-success' : task.status === 'Completed',
                                     'text-warning' : task.status === 'In Progress',
                                     'text-secondary' : task.status === 'New',
                                 }">{{ task.status }}</span>
                                 </p>
-                                <b-col class="text-end"><RouterLink
+                                <div class="text-end">
+                                    <RouterLink
                                     :to="{
                                         path: `/tasks/${task.taskId}`,
                                         query: { endpoint: route.fullPath },
                                      }"
                                      class ="btn btn-primary">Visa Uppdrag</RouterLink>
-                                </b-col>
+                                </div>
                             </b-card>
-                        </b-list-group-item>
-                    </template>
-                    <p v-else class="text-muted ps-3">
-                        Inga uppdrag
-                    </p>
-                </b-list-group>
-            </b-col>
-
-            <!-- Client Task List -->
-            <b-col md="6">
-                <h4 class="mt-3">Beställda uppdrag</h4>
-                <b-list-group>
-                    <template v-if="userStore.tasks.client.length && loginStore.isLoggedIn">
-                        <b-list-group-item v-for="task in userStore.tasks.client" :key="task.taskId">
-                            <b-card class="mb-2" :class="
-                            'border-3',{
-                            'border-success': task.status === 'Completed',
-                            'border-warning': task.status === 'In Progress',
-                            'border-secondary': task.status === 'New'}">
-                                <h5 class="mb-1">{{ task.title }}</h5>
-                                <p class="mb-0"><strong>Roll: </strong>{{task.userrole === "taskCreator" ? "Beställare" : ""}}</p>
-                                <p class="mb-0"><strong>Bokat datum: </strong>{{ task.date.split("T")[0] }}</p>
-                                <p class="mb-0"><strong>Status: </strong><span :class="{'text-success' : task.status === 'Completed',
-                                    'text-warning' : task.status === 'In Progress',
-                                    'text-secondary' : task.status === 'New',
-                                }">{{ task.status }}</span></p>
-                                <b-col class="text-end"><RouterLink
-                                    :to="{
-                                        path: `/tasks/${task.taskId}`,
-                                        query: { endpoint: route.fullPath },
-                                     }"
-                                     class ="btn btn-primary">Visa Uppdrag</RouterLink>
-                                </b-col>
-                            </b-card>
-                        </b-list-group-item>
-                    </template>
+                    </div>
                     <template v-else>
                         <p class="text-muted ps-3">Du har inga beställda uppdrag</p>
                     </template>
-                </b-list-group>
             </b-col>
         </b-row>
     </b-container>
 </template>
+
+<style scoped>
+.accessible-card {
+  font-size: 1rem; /* 16px */
+  line-height: 1.4;
+}
+
+.accessible-card h5 {
+  font-size: 1.125rem; /* 18px – bra rubrikstorlek */
+}
+
+.accessible-card p {
+  margin-bottom: 0.5rem;
+}
+
+.accessible-card .btn {
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+}
+</style>
