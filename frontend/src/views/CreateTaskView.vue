@@ -2,8 +2,10 @@
 import { computed, ref, onMounted } from 'vue';
 import { useTaskStore } from '@/stores/taskStore';
 import { useLoginStore } from '@/stores/loginStore';
+import { useUserStore } from '@/stores/userStore';
 import { useRouter, useRoute } from 'vue-router';
 
+const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 
@@ -77,9 +79,9 @@ async function getLatestTasks() {
   }
 }
 async function createUserTask(id) {
-  await taskStore.fetchUsers();
+  await userStore.fetchUsers();
 
-  const taskCreator = taskStore.allUsers.users.filter((user) => {
+  const taskCreator = userStore.allUsers.users.filter((user) => {
     return user.email === loginStore.username;
   });
   const userTask = {
