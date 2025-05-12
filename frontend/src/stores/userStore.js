@@ -9,11 +9,12 @@ export const useUserStore = defineStore("userStore", {
       performer: [
         /*{ taskId: 1, title: "Task 1", date: "2025-05-01", status: "Pending" },
         { taskId: 2, title: "Task 2", date: "2025-05-02", status: "Completed" }*/
-    ],
-    client: [
+       ],
+      client: [
         /*{ taskId: 3, title: "Task 3", date: "2025-05-03", status: "In Progress" }*/
-    ]
+      ]
       },
+      allUsers: [],
       loading: false,
       error: null,
     }
@@ -32,6 +33,15 @@ export const useUserStore = defineStore("userStore", {
         this.loading = false
       }
     },*/
+
+    async fetchUsers() {
+      try {
+        const res = await axios.get(`http://localhost:3000/api/users`);
+        this.allUsers = res.data;
+      } catch (err) {
+        this.error = err.message;
+      }
+    },
 
     async fetchUserTasksByRole(userId, role) {
       this.loading = true
