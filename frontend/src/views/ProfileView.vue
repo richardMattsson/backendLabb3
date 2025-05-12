@@ -118,16 +118,6 @@ const enableEdit = () => {
             </b-col>
         </b-row>
 
-        <!-- Loading and Error Handling -->
-        <b-row>
-            <b-col cols="12">
-                <div v-if="userStore.loading">Laddar uppdrag...</div>
-                <div v-else-if="userStore.error" class="text-danger">
-                    Fel: {{ userStore.error }}
-                </div>
-            </b-col>
-        </b-row>
-
         <!-- Performer Task List -->
         <b-row>
             <b-col md="6">
