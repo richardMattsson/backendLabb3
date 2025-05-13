@@ -353,7 +353,8 @@ watchEffect(async () => {
 article {
   display: grid;
   grid-template-rows: 2fr auto;
-  padding-block: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 2em;
   gap: 2rem;
 }
 
@@ -369,11 +370,11 @@ section {
   margin-inline: auto;
   background-color: #f9f9f9;
   padding-inline: 5rem;
-  padding-block: 4rem;
+  padding-block: 3rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 30em;
-  min-width: 60%;
+  min-width: 75%;
 }
 
 h1 {
@@ -386,7 +387,7 @@ h3 {
 }
 
 h4 {
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .description {
@@ -404,8 +405,8 @@ h4 {
   margin-inline: auto;
   background-color: #fff;
   padding-inline: 5rem;
-  width: 25em;
-  min-width: 60%;
+  width: 30em;
+  min-width: 75%;
 }
 
 li {
