@@ -8,6 +8,8 @@ export const useLoginStore = defineStore('loggedUser', {
       isLoggedIn: localStorage.getItem('isLoggedIn') || false,
       username: localStorage.getItem('username') || '',
       showAlert: false,
+      failLogin: false,
+      loginSuccess: false,
     };
   },
   actions: {
@@ -22,6 +24,7 @@ export const useLoginStore = defineStore('loggedUser', {
           loginBody
         );
         //console.log('Svar från servern:', response.data);
+        this.loginSuccess = true;
         this.token = response.data.token;
         this.isLoggedIn = true;
         this.username = response.data.username;
@@ -29,6 +32,7 @@ export const useLoginStore = defineStore('loggedUser', {
         localStorage.setItem('isLoggedIn', this.isLoggedIn);
         localStorage.setItem('username', this.username);
       } catch (error) {
+        this.failLogin = true;
         console.error('Något gick fel: ', error.message);
       }
     },
