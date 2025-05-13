@@ -195,8 +195,8 @@ const enableEdit = () => {
                             :key="task.taskId"
                             class="mb-3 px-2 py-2 border-2 accessible-card"
                             :class="{
-                            'border-success': task.status === 'Completed',
-                            'border-warning': task.status === 'In Progress',
+                            'border-success': task.status === 'Färdig',
+                            'border-warning': task.status === 'Pågående',
                             'border-secondary': task.status === 'New'
                             }">
                                 <h5 class="mb-3">{{ task.title }}</h5>
@@ -205,8 +205,8 @@ const enableEdit = () => {
                                 <p class="mb-2">
                                     <strong>Status:
                                     <span :class="{
-                                    'text-success' : task.status === 'Completed',
-                                    'text-warning' : task.status === 'In Progress',
+                                    'text-success' : task.status === 'Färdig',
+                                    'text-warning' : task.status === 'Pågående',
                                     'text-secondary' : task.status === 'New',
                                 }">{{ task.status }}</span></strong>
                                 </p>
