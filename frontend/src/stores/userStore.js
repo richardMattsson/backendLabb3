@@ -21,18 +21,6 @@ export const useUserStore = defineStore("userStore", {
   },
 
   actions: {
-    /*async fetchUser(userId) {
-      this.loading = true
-      try {
-        const res = await axios.get(`http://localhost:3000/api/users/${userId}`)
-        this.user = res.data
-        this.error = null
-      } catch (err) {
-        this.error = err.message
-      } finally {
-        this.loading = false
-      }
-    },*/
 
     async fetchUsers() {
       try {
@@ -96,18 +84,5 @@ export const useUserStore = defineStore("userStore", {
         this.loading = false
       }
     },
-
-    /*async deleteUser(userId) {
-      this.loading = true
-      try {
-        await axios.delete(`http://localhost:3000/api/users/${userId}`)
-        this.users = this.users.filter((user) => user.id !== userId)
-        this.error = null
-      } catch (err) {
-        this.error = err.message
-      } finally {
-        this.loading = false
-      }
-    },*/
   }
 })
