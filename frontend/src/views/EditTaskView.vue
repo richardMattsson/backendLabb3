@@ -20,8 +20,8 @@ const taskCategoryId = ref(null);
 
 onMounted(async () => {
   taskId.value = route.params.id;
-  await taskStore.fetchTaskDetails(taskId.value);
-  task.value = taskStore.taskDetails[0];
+  await taskStore.fetchTask(taskId.value);
+  task.value = taskStore.task[0];
   await taskStore.fetchCategories();
   console.log(task.value);
   title.value = task.value.title;
@@ -29,8 +29,7 @@ onMounted(async () => {
   date.value = task.value.date;
   address.value = task.value.address;
   price.value = task.value.price;
-
-  console.log(taskId.value);
+  taskCategoryId.value = task.value.taskCategoryId;
 
   //console.log('Categories fetched:', taskStore.categories);
 });
