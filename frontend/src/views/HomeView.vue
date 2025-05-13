@@ -37,7 +37,7 @@ function goToCreateTask() {
   </div>
   <div>
     <b-alert v-model="loginStore.loginSuccess" variant="success" dismissible>
-      Du har loggat in!
+      Du är inloggad!
     </b-alert>
   </div>
   <BContainer style="">
