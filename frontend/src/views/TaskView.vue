@@ -27,6 +27,13 @@ watch(
   }
 );
 
+watch(
+  () => ratingStore.avgRatingByUser,
+  (newValue, oldValue) => {
+    avgRating.value = ratingStore.avgRatingByUser;
+  }
+);
+
 onMounted(async () => {
   taskId.value = route.params.taskId;
 
@@ -64,6 +71,7 @@ async function doerAcceptTask() {
 async function rateDoer(doerEmail, newScore, creatorEmail) {
   await ratingStore.addNewScore(doerEmail, newScore, creatorEmail);
   await ratingStore.getUserScore(doerEmail, creatorEmail);
+  await ratingStore.getAvgRating();
 
   rated.value = true;
 }
@@ -138,9 +146,9 @@ const taskDoers = computed(() => {
       const index = avgRating.value.findIndex(
         (user) => user.username === doer.email
       );
-      if (index >= 0){
+      if (index >= 0) {
         doer.rating =
-          Math.round(avgRating.value[index].avgRating);
+          Math.round(avgRating.value[index].avgRating) || "Användare har ingen rating";
         doer.scoreNumber = avgRating.value[index].nRatings;
       } else {
         doer.rating = "Användare har ingen rating";
@@ -158,13 +166,35 @@ const labelColor = computed(() => {
   else return "secondary";
 });
 
+// for taskCreator
 watchEffect(async () => {
   const doers = taskDoers.value;
-  const username = loginStore.username;
 
-  if (!doers?.length || !username) return;
+  if (!doers?.length || !loginStore.username) return;
+  if (doers[0].email === loginStore.username) return;
+  const username = loginStore.username;
+  console.log("i'm creator")
 
   await ratingStore.getUserScore(doers[0].email, username);
+
+  if (ratingStore.userScore.length > 0) {
+    score.value = ratingStore.userScore[0].givenRating[0].score;
+    rated.value = true;
+  } else {
+    rated.value = false;
+  }
+});
+
+//for taskDoer
+watchEffect(async () => {
+  const doers = taskDoers.value;
+  if (!doers?.length) return;
+
+  if (doers[0].email !== loginStore.username) return;
+  const creatorEmail = taskDetails.value.email;
+  console.log(creatorEmail)
+
+  await ratingStore.getUserScore(doers[0].email, creatorEmail);
 
   if (ratingStore.userScore.length > 0) {
     score.value = ratingStore.userScore[0].givenRating[0].score;
@@ -266,7 +296,7 @@ watchEffect(async () => {
             och säkerställa att allt är klart inför utförandet.</p>
           <div class="contacts">
             <a :href="`mailto:${taskDetails.email}`"><i class="pi pi-envelope"
-              style="font-size: 1.5rem; color: green"></i></a>
+                style="font-size: 1.5rem; color: green"></i></a>
             <i class="pi pi-phone" style="font-size: 1.5rem; color: green"></i>
           </div>
         </section>
