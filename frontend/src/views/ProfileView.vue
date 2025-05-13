@@ -142,7 +142,7 @@ const enableEdit = () => {
             <b-col md="6" class="border-end pe-4">
                 <h4 class="mb-3">Uppdrag att genomföra</h4>
                     <div v-if="userStore.tasks.performer.length && loginStore.isLoggedIn">
-                            <b-card v-for="task in userStore.tasks.performer" :key="task.taskId" class="mb-3 px-2 py-2 border-2 accessible-card" :class="{
+                            <b-card v-for="task in userStore.tasks.performer" :key="task.taskId" class="mb-3 px-2 py-2 border-3 accessible-card" :class="{
                             'border-success': task.status === 'Färdig',
                             'border-warning': task.status === 'Pågående',
                             'border-secondary': task.status === 'New'
@@ -193,7 +193,7 @@ const enableEdit = () => {
                             <b-card
                             v-for="task in userStore.tasks.client"
                             :key="task.taskId"
-                            class="mb-3 px-2 py-2 border-2 accessible-card"
+                            class="mb-3 px-2 py-2 border-3 accessible-card"
                             :class="{
                             'border-success': task.status === 'Färdig',
                             'border-warning': task.status === 'Pågående',
