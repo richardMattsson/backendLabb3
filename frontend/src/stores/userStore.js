@@ -84,7 +84,7 @@ export const useUserStore = defineStore("userStore", {
         const res = await axios.put(
           `http://localhost:3000/api/users/${updatedData.userId}`, updatedData)
           if (res.data.success) {
-            this.user = {...this.user, ...userData}
+            this.user = {...this.user, ...updatedData}
             this.error = null
           } else {
             this.error = res.data.message
