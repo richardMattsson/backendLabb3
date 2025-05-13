@@ -339,7 +339,7 @@ watchEffect(async () => {
             </div>
             <div v-if="rated">
               <div class="rating">
-                <p>Bestallärens betyg: {{ score }}</p>
+                <p>Beställarens betyg: {{ score }}</p>
               </div>
             </div>
           </div>
