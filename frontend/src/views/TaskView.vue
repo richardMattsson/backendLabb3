@@ -140,9 +140,10 @@ const taskDoers = computed(() => {
       );
       if (index >= 0){
         doer.rating =
-          Math.round(avgRating.value[index].avgRating) ||
-          "Användare har ingen rating";
+          Math.round(avgRating.value[index].avgRating);
         doer.scoreNumber = avgRating.value[index].nRatings;
+      } else {
+        doer.rating = "Användare har ingen rating";
       }
     }
   }
@@ -321,7 +322,7 @@ watchEffect(async () => {
 <style scoped>
 article {
   display: grid;
-  grid-template-rows: 2fr 1fr;
+  grid-template-rows: 2fr auto;
   padding-block: 1rem;
   gap: 2rem;
 }
