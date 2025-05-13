@@ -10,23 +10,39 @@ const route = useRoute();
 const taskStore = useTaskStore();
 const loginStore = useLoginStore();
 const taskId = ref(null);
+const task = ref(null);
+const title = ref("");
+const date = ref(null);
+const description = ref("");
+const address = ref("");
+const price = ref(null);
+const taskCategoryId = ref(null);
 
 onMounted(async () => {
-  await taskStore.fetchCategories();
   taskId.value = route.params.id;
-  console.log(taskId.value);
+  await taskStore.fetchTask(taskId.value);
+  task.value = taskStore.task[0];
+  await taskStore.fetchCategories();
+  console.log(task.value);
+  title.value = task.value.title;
+  description.value = task.value.description;
+  date.value = task.value.date;
+  address.value = task.value.address;
+  price.value = task.value.price;
+  taskCategoryId.value = task.value.taskCategoryId;
+
   //console.log('Categories fetched:', taskStore.categories);
 });
 
+// watch(
+//   () => taskStore.taskDetails,
+//   (newValue, oldValue) => {
+//     task.value = newValue[0];
+//   }
+// );
+
 const titleValidation = computed(() => title.value.length > 0);
 const addressValidation = computed(() => address.value.length > 0);
-
-const title = ref(""),
-  date = ref(null),
-  description = ref(""),
-  address = ref(""),
-  price = ref(null),
-  taskCategoryId = ref(null);
 
 async function updateTask(id) {
   const task = {
@@ -58,7 +74,7 @@ async function updateTask(id) {
     const result = await response.json();
     console.log("Servern svarade med:", result);
 
-    router.push({ name: "TaskView" });
+    router.push({ name: "TaskView", params: { taskId: id } });
   } catch (error) {
     console.log("Något gick fel", error.message);
   }
@@ -85,7 +101,7 @@ async function updateTask(id) {
           >Logga in</BButton
         >
         <BForm id="addTaskForm" v-if="loginStore.isLoggedIn">
-          <h3>Lägg till en ny tjänst</h3>
+          <h3>Uppdatera tjänst</h3>
           <BFormGroup id="input-group-1" label="Titel:" label-for="input-1">
             <BFormInput
               id="input-1"

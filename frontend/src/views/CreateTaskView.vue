@@ -20,10 +20,10 @@ onMounted(async () => {
 const titleValidation = computed(() => title.value.length > 0);
 const addressValidation = computed(() => address.value.length > 0);
 
-const title = ref(''),
+const title = ref(""),
   date = ref(null),
-  description = ref(''),
-  address = ref(''),
+  description = ref(""),
+  address = ref(""),
   price = ref(null),
   categories = ref(null),
   taskCategoryId = ref(null),
@@ -41,10 +41,10 @@ async function addNewTask() {
   };
   console.log(task);
   try {
-    const response = await fetch('http://localhost:3000/api/tasks', {
-      method: 'POST',
+    const response = await fetch("http://localhost:3000/api/tasks", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `${loginStore.token}`,
       },
       body: JSON.stringify(task),
@@ -55,15 +55,15 @@ async function addNewTask() {
     }
 
     const result = await response.json();
-    console.log('Servern svarade med:', result);
+    console.log("Servern svarade med:", result);
 
     getLatestTasks();
   } catch (error) {
-    console.error('Något gick fel:', error.message);
+    console.error("Något gick fel:", error.message);
   }
 }
 async function getLatestTasks() {
-  const url = 'http://localhost:3000/api/tasks';
+  const url = "http://localhost:3000/api/tasks";
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -85,16 +85,16 @@ async function createUserTask(id) {
     return user.email === loginStore.username;
   });
   const userTask = {
-    userRole: 'taskCreator',
+    userRole: "taskCreator",
     userTaskUId: taskCreator[0].userId,
     userTaskTId: id,
   };
   console.log(userTask);
   try {
-    const response = await fetch('http://localhost:3000/api/user-tasks', {
-      method: 'POST',
+    const response = await fetch("http://localhost:3000/api/user-tasks", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(userTask),
     });
@@ -104,10 +104,10 @@ async function createUserTask(id) {
     }
 
     const result = await response.json();
-    router.push({ name: 'TaskView', params: { taskId: id } });
-    console.log('Servern svarade med:', result);
+    router.push({ name: "TaskView", params: { taskId: id } });
+    console.log("Servern svarade med:", result);
   } catch (error) {
-    console.error('Något gick fel:', error.message);
+    console.error("Något gick fel:", error.message);
   }
 }
 </script>
