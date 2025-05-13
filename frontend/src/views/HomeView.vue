@@ -30,6 +30,16 @@ function goToCreateTask() {
       Du har skapat en ny användare!
     </b-alert>
   </div>
+  <div>
+    <b-alert v-model="loginStore.failLogin" variant="danger" dismissible>
+      Du har skrivit in fel användare eller lösenord!
+    </b-alert>
+  </div>
+  <div>
+    <b-alert v-model="loginStore.loginSuccess" variant="success" dismissible>
+      Du har loggat in!
+    </b-alert>
+  </div>
   <BContainer style="">
     <BRow align-v="center" align-h="evenly">
       <BCol cols="4" style="" class="homeBtn">
