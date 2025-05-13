@@ -48,7 +48,7 @@ async function doerAcceptTask() {
   await userStore.fetchUsers();
 
   // letar efter userId
-  const doer = userStore.allUsers.users.filter((user) => {
+  const doer = userStore.allUsers.filter((user) => {
     return user.email === loginStore.username;
   });
 
@@ -138,10 +138,13 @@ const taskDoers = computed(() => {
       const index = avgRating.value.findIndex(
         (user) => user.username === doer.email
       );
-      doer.rating =
-        Math.round(avgRating.value[index].avgRating) ||
-        "Användare har ingen rating";
-      doer.scoreNumber = avgRating.value[index].nRatings;
+      if (index >= 0){
+        doer.rating =
+          Math.round(avgRating.value[index].avgRating);
+        doer.scoreNumber = avgRating.value[index].nRatings;
+      } else {
+        doer.rating = "Användare har ingen rating";
+      }
     }
   }
   console.log(doers);
@@ -319,7 +322,7 @@ watchEffect(async () => {
 <style scoped>
 article {
   display: grid;
-  grid-template-rows: 2fr 1fr;
+  grid-template-rows: 2fr auto;
   padding-block: 1rem;
   gap: 2rem;
 }

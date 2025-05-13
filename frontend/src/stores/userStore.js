@@ -21,23 +21,11 @@ export const useUserStore = defineStore("userStore", {
   },
 
   actions: {
-    /*async fetchUser(userId) {
-      this.loading = true
-      try {
-        const res = await axios.get(`http://localhost:3000/api/users/${userId}`)
-        this.user = res.data
-        this.error = null
-      } catch (err) {
-        this.error = err.message
-      } finally {
-        this.loading = false
-      }
-    },*/
 
     async fetchUsers() {
       try {
         const res = await axios.get(`http://localhost:3000/api/users`);
-        this.allUsers = res.data;
+        this.allUsers = res.data.users;
       } catch (err) {
         this.error = err.message;
       }
@@ -84,7 +72,7 @@ export const useUserStore = defineStore("userStore", {
         const res = await axios.put(
           `http://localhost:3000/api/users/${updatedData.userId}`, updatedData)
           if (res.data.success) {
-            this.user = {...this.user, ...userData}
+            this.user = {...this.user, ...updatedData}
             this.error = null
           } else {
             this.error = res.data.message
@@ -96,18 +84,5 @@ export const useUserStore = defineStore("userStore", {
         this.loading = false
       }
     },
-
-    /*async deleteUser(userId) {
-      this.loading = true
-      try {
-        await axios.delete(`http://localhost:3000/api/users/${userId}`)
-        this.users = this.users.filter((user) => user.id !== userId)
-        this.error = null
-      } catch (err) {
-        this.error = err.message
-      } finally {
-        this.loading = false
-      }
-    },*/
   }
 })
