@@ -62,13 +62,13 @@ const saveChanges = async () => {
       userId: userStore.user.userId,
       firstName: form.value.firstName,
       lastName: form.value.lastName,
-      phone: form.value.phone,
+      phone: form.value.phone.length > 0 ? form.value.phone : null,
       city: form.value.city,
     };
     await userStore.updateUser(updatedData);
     isEditing.value = false;
   } catch (error) {
-    console.error('Ett fel inträffade vid uppdatering av profildata:', error);
+    console.error('Ett fel inträffade vid uppdatering av profildata:', error.message);
   }
 };
 
