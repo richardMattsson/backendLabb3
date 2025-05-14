@@ -175,7 +175,7 @@ const enableEdit = () => {
               <strong>Roll: </strong
               >{{ task.userrole === 'taskDoer' ? 'Utförare' : '' }}
             </p>
-            <p class="mb-1">
+            <p class="mb-1" v-if="task.date">
               <strong>Bokat datum: </strong>{{ task.date.split('T')[0] }}
             </p>
             <p class="mb-1">
@@ -244,7 +244,7 @@ const enableEdit = () => {
               <strong>Roll: </strong
               >{{ task.userrole === 'taskCreator' ? 'Beställare' : '' }}
             </p>
-            <p class="mb-1">
+            <p class="mb-1" v-if="task.date">
               <strong>Bokat datum: </strong>{{ task.date.split('T')[0] }}
             </p>
             <p class="mb-2">
