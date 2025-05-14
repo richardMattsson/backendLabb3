@@ -86,8 +86,7 @@ function editTask(
   taskCategoryId,
   status,
   taskId
-)
- {
+) {
   return new Promise((resolve, reject) => {
     let sql =
       'UPDATE task SET title = ?, description = ?, date = ?, address = ?, price = ?, taskCategoryId = ?, status = ? WHERE taskId = ?';
@@ -110,22 +109,24 @@ function editTask(
 
 function deleteTask(taskId) {
   return new Promise((resolve, reject) => {
-    const sql = 'DELETE FROM task WHERE taskId = ?';
-    // let sql2 = 'DELETE FROM task WHERE taskId = ?'
+    const sql = 'DELETE FROM userTask WHERE userTaskTId = ?';
+    let sql2 = 'DELETE FROM task WHERE taskId = ?'
 
-      connectionMySQL.query(sql, [taskId], (err) => {
+    connectionMySQL.query(sql, [taskId], (err) => {
       if (err) {
         reject(err);
-      } else {
-        resolve();
+        return
       }
+      // else {
+      //   resolve();
+      // }
 
-      // connectionMySQL.query(sql2, [taskId], (err) => {
-      //   if (err) reject(err);
-      //   else resolve();
-      // })
-      });
+      connectionMySQL.query(sql2, [taskId], (err) => {
+        if (err) reject(err);
+        else resolve();
+      })
     });
+  });
 }
 
 module.exports = {
