@@ -438,4 +438,42 @@ li {
   justify-content: flex-start;
   gap: 1em;
 }
+
+/* 📱 Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .task-details,
+  .task-actions {
+    grid-template-columns: 1fr !important;
+    padding-inline: 2rem;
+    width: 100%;
+    min-width: unset;
+  }
+
+  h1 {
+    grid-column: span 1;
+  }
+
+  .for-creator li {
+    grid-template-columns: 1fr;
+  }
+
+  .rating,
+  .contacts,
+  #edit {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+  }
+
+  h4 {
+    font-size: 0.95rem;
+  }
+}
 </style>
