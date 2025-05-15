@@ -65,13 +65,16 @@ const saveChanges = async () => {
       userId: userStore.user.userId,
       firstName: form.value.firstName,
       lastName: form.value.lastName,
-      phone: form.value.phone,
+      phone: form.value.phone.length > 0 ? form.value.phone : null,
       city: form.value.city,
     };
     await userStore.updateUser(updatedData);
     isEditing.value = false;
   } catch (error) {
-    console.error('Ett fel inträffade vid uppdatering av profildata:', error);
+    console.error(
+      'Ett fel inträffade vid uppdatering av profildata:',
+      error.message
+    );
   }
 };
 
@@ -183,7 +186,7 @@ const enableEdit = () => {
               <strong>Roll: </strong
               >{{ task.userrole === 'taskDoer' ? 'Utförare' : '' }}
             </p>
-            <p class="mb-1">
+            <p class="mb-1" v-if="task.date">
               <strong>Bokat datum: </strong>{{ task.date.split('T')[0] }}
             </p>
             <p class="mb-1">
@@ -252,8 +255,7 @@ const enableEdit = () => {
               <strong>Roll: </strong
               >{{ task.userrole === 'taskCreator' ? 'Beställare' : '' }}
             </p>
-            <!-- <p v-if="doer > 1">New doers: {{ doer - 1 }}</p> -->
-            <p class="mb-1">
+            <p class="mb-1" v-if="task.date">
               <strong>Bokat datum: </strong>{{ task.date.split('T')[0] }}
             </p>
             <p class="mb-2">
