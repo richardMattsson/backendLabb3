@@ -2,6 +2,17 @@ const UserModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+exports.getUsers = async (req, res) => {
+  try {
+    const allUsers = await UserModel.find();
+    return res.status(200).json(allUsers);
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
+};
+
 exports.registerUser = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -37,5 +48,15 @@ exports.loginUser = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Inloggningen gick fel!' });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const deletedUser = await UserModel.deleteOne({ username: email });
+    res.status(200).json(deletedUser);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

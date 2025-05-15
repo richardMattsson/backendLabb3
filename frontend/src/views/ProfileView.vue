@@ -2,15 +2,18 @@
 import { ref, onMounted } from 'vue';
 import { useLoginStore } from '@/stores/loginStore';
 import { useUserStore } from '@/stores/userStore';
+import { useTaskStore } from '@/stores/taskStore';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const loginStore = useLoginStore();
+const taskStore = useTaskStore();
 
 const form = ref({});
 const isEditing = ref(false);
+const doers = taskStore.taskDetails.length;
 
 onMounted(async () => {
   const userEmail = loginStore.username;
@@ -142,6 +145,11 @@ const enableEdit = () => {
             </b-col>
           </b-row>
           <b-row>
+            <b-col>
+              <b-button @click="userStore.deleteUser" variant="danger" disabled
+                >Ta bort</b-button
+              >
+            </b-col>
             <b-col class="text-end">
               <b-button v-if="!isEditing" variant="primary" @click="enableEdit"
                 >Redigera</b-button
@@ -157,7 +165,7 @@ const enableEdit = () => {
 
     <b-row class="g-4">
       <!-- Performer Task List -->
-      <b-col md="6" class="border-end pe-4">
+      <b-col cols="6" class="border-end pe-4">
         <h4 class="mb-3">Uppdrag att genomföra</h4>
         <div v-if="userStore.tasks.performer.length && loginStore.isLoggedIn">
           <b-card
@@ -226,7 +234,7 @@ const enableEdit = () => {
       </b-col>
 
       <!-- Client Task List -->
-      <b-col md="6" class="ps-4">
+      <b-col cols="6" class="ps-4">
         <h4 class="mb-3">Beställda uppdrag</h4>
         <div v-if="userStore.tasks.client.length && loginStore.isLoggedIn">
           <b-card
@@ -244,6 +252,7 @@ const enableEdit = () => {
               <strong>Roll: </strong
               >{{ task.userrole === 'taskCreator' ? 'Beställare' : '' }}
             </p>
+            <!-- <p v-if="doer > 1">New doers: {{ doer - 1 }}</p> -->
             <p class="mb-1">
               <strong>Bokat datum: </strong>{{ task.date.split('T')[0] }}
             </p>

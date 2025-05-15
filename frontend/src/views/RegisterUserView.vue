@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue';
 import { useLoginStore } from '@/stores/loginStore';
 import { useRoute, useRouter } from 'vue-router';
-import { BAlert } from 'bootstrap-vue-next';
 
 const loginStore = useLoginStore();
 const router = useRouter();
@@ -15,13 +14,12 @@ const passwordValidation = computed(
 const firstName = ref(''),
   userName = ref(''),
   password = ref(''),
-  repeatPassword = ref(''),
-  showAlert = ref(false);
+  repeatPassword = ref('');
 
 const handleSignUp = () => {
   console.log('Redirect to:', route.query.endpoint);
   loginStore.register(userName.value, password.value, firstName.value);
-  const redirectTo = route.query.endpoint || '/';
+  const redirectTo = route.query.endpoint || '/login';
   router.push(redirectTo);
 };
 </script>
