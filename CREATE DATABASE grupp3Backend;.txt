@@ -1,40 +1,265 @@
-CREATE DATABASE grupp3Backend;
+CREATE DATABASE grupp3Backend; 
 
-CREATE TABLE category(
-    categoryId INT NOT NULL AUTO_INCREMENT,
-    categoryName VARCHAR(100) UNIQUE,
-    PRIMARY KEY (categoryId)
-);
+  
 
-CREATE TABLE user (
-    userId INT NOT NULL AUTO_INCREMENT,
-    firstName VARCHAR(100),
-    lastName VARCHAR(100),
-    phone INT UNIQUE,
-    email VARCHAR(100) UNIQUE,
-    city VARCHAR(200),
-    PRIMARY KEY (userId)
-);
+CREATE TABLE category( 
 
-CREATE TABLE task (
-    taskId INT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
-    title VARCHAR(200) NOT NULL,
-    description VARCHAR(700),
-    date DATE,
-    address VARCHAR(200) NOT NULL,
-    price DEC(10, 2) NOT NULL,
-    status VARCHAR(20) DEFAULT 'New' NOT NULL,
-    dateCreated DATETIME DEFAULT NOW(),
-    taskCategoryId INT NOT NULL,
-    FOREIGN KEY (taskCategoryId) REFERENCES category (categoryId)
-);
+    categoryId INT NOT NULL AUTO_INCREMENT, 
 
-CREATE TABLE userTask (
-    userTaskId INT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
-    userTaskUId INT NOT NULL,
-    userTaskTId INT NOT NULL,
-    userRole VARCHAR(30),
-    FOREIGN KEY (userTaskUId) REFERENCES user (userId),
-    FOREIGN KEY (userTaskTId) REFERENCES task (taskId),
-    confirmed BOOLEAN DEFAULT FALSE
-);
+    categoryName VARCHAR(100) UNIQUE NOT NULL, 
+
+    categoryImage VARCHAR(100), 
+
+    PRIMARY KEY (categoryId) 
+
+); 
+
+  
+
+-- Lite exempeldata att lägga in i kategorier: 
+
+ 
+
+INSERT INTO category(categoryName, categoryImage) 
+VALUES ('Städ', 'cleaningBild.jpg'), 
+       ('Hund', 'hundBild.jpg'), 
+       ('Matlagning', 'matlagningBild.jpg'), 
+       ('Trädgårdsarbete', 'gardenWorkBild.jpg'), 
+       ('Montering av möbler', 'monteringFurnitureBild.jpg'), 
+       ('Flytthjälp', 'flytthelpBild.jpg'), 
+       ('Handla mat', 'foodShoppingBild.jpg'), 
+       ('Skjuts / Transport', 'skjutsBild.jpg'); 
+
+ 
+
+SELECT * FROM category; 
+
+  
+
+  
+
+CREATE TABLE user ( 
+
+    userId INT NOT NULL AUTO_INCREMENT, 
+
+    firstName VARCHAR(100), 
+
+    lastName VARCHAR(100), 
+
+    phone VARCHAR(20) UNIQUE, 
+
+    email VARCHAR(100) UNIQUE, 
+
+    city VARCHAR(200), 
+
+    PRIMARY KEY (userId) 
+
+); 
+
+  
+
+CREATE TABLE task ( 
+
+    taskId INT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY, 
+
+    title VARCHAR(200) NOT NULL, 
+
+    description VARCHAR(700), 
+
+    date DATE, 
+
+    address VARCHAR(200) NOT NULL, 
+
+    price DEC(10, 2) NOT NULL, 
+
+    status VARCHAR(20) DEFAULT 'New' NOT NULL, 
+
+    dateCreated DATETIME DEFAULT NOW(), 
+
+    taskCategoryId INT NOT NULL, 
+
+    FOREIGN KEY (taskCategoryId) REFERENCES category (categoryId) 
+
+); 
+
+  
+
+CREATE TABLE userTask ( 
+
+    userTaskId INT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY, 
+
+    userTaskUId INT NOT NULL, 
+
+    userTaskTId INT NOT NULL, 
+
+    userRole VARCHAR(30), 
+
+    FOREIGN KEY (userTaskUId) REFERENCES user (userId), 
+
+    FOREIGN KEY (userTaskTId) REFERENCES task (taskId), 
+
+    confirmed BOOLEAN DEFAULT FALSE 
+
+); 
+
+ 
+
+-- En stored procedure som accepterar en doer för en uppgift 
+ 
+DELIMITER // 
+ 
+CREATE PROCEDURE ConfirmDoer( 
+
+   IN inTaskId INT, 
+    IN inUserId INT 
+) 
+BEGIN 
+
+ 
+UPDATE userTask 
+SET confirmed = TRUE 
+WHERE userTaskUId = inUserId; 
+ 
+UPDATE userTask 
+SET confirmed = TRUE 
+WHERE userRole = 'taskCreator'; 
+ 
+UPDATE task 
+SET status = 'Pågående' 
+WHERE taskId = inTaskId; 
+ 
+DELETE 
+FROM userTask 
+WHERE userTaskTId = inTaskId 
+  AND confirmed = FALSE; 
+ 
+END // 
+
+ 
+
+-- Stored procedure som uppdaterar task tabellen status = Färdig 
+ 
+DELIMITER // 
+ 
+CREATE PROCEDURE markAsDone( 
+    IN inTaskId INT 
+) 
+BEGIN 
+    UPDATE task 
+        SET status = 'Färdig' 
+    WHERE taskId = inTaskId; 
+END // 
+
+ 
+
+ 
+
+-- data flr  
+ 
+
+INSERT INTO task (title, description, date, address, price, status, taskCategoryId) 
+    VALUES 
+('Promenad med osynlig hund', 
+ 'Varning: du måste låtsas att kopplet stramar ibland. Grannar kommer att döma dig.', 
+ '2025-05-12', 
+ '123 Fantasivägen, Hallucinasjö', 
+ 50.00, 
+ 'New', 
+ 1), 
+ 
+('Koka soppa på en spik', 
+ 'Enligt legenden går det. Vi bidrar med spiken – du med magin.', 
+ '2025-05-14', 
+ 'Trollgatan 9, Mytköping', 
+ 65.00, 
+ 'New', 
+ 1), 
+ 
+('Klippa gräs... på en balkong', 
+ 'Vi råkade plantera gräs i blomlådan. Det växte. Nu behöver det klippas.', 
+ '2025-05-16', 
+ 'Balkongvägen 42B, Högby', 
+ 40.00, 
+ 'New', 
+ 1), 
+ 
+('Montera IKEA-möbel utan instruktioner', 
+ 'En skruv, två plankor, tre tårar. Du får inga instruktioner – det är konst.', 
+ '2025-05-18', 
+ 'Skevmontörsvägen 1, Skruvsta', 
+ 80.00, 
+ 'New', 
+ 1), 
+ 
+('Flytta ett piano fyra trappor utan hiss', 
+ 'Bonuspoäng om du inte svär under uppdraget. Vi lyssnar.', 
+ '2025-05-19', 
+ 'Tungvägen 7, Musikdal', 
+ 150.00, 
+ 'New', 
+ 1), 
+ 
+('Handla mat blint – bokstavligen', 
+ 'Du får en lista. Och ögonbindel. Vi filmar inte (vi lovar).', 
+ '2025-05-21', 
+ 'Blindgatan 3, Matlanda', 
+ 55.00, 
+ 'New', 
+ 1), 
+ 
+('Skjutsa en uppblåsbar flamingo', 
+ 'Flamingon har en viktig fest att gå till. Den får inte punkteras.', 
+ '2025-05-23', 
+ 'Poolvägen 10, Sommarby', 
+ 60.00, 
+ 'New', 
+ 1); 
+
+('Spring Göteborgsvarvet åt en lat jävel', 
+ 'Låt mig chilla med en drink i handen medans jag kollar på när ni springer för glatta livet', 
+ '2025-05-17, 
+ 'Göteborg runt', 
+ 00.00, 
+ 'New', 
+ 1); 
+
+ 
+
+INSERT INTO user (firstName, lastName, phone, email, city) 
+VALUES ('Olha', 'Sparkles', '1234567890', 'ofedchen@gmail.com', 'Fantasyville'), 
+       ('Bob', 'Builder', '1234567891', 'bob.builder@fixit.com', 'Builditon'), 
+       ('Whiskers', 'McFluff', '1234567892', 'whiskers@meowmail.com', 'Meowtown'), 
+       ('Casper', 'Friendly', '1234567893', 'casper@ghostmail.com', 'Spooksville'), 
+       ('Tammy', 'Gochi', '1234567894', 'tammy@nostalgia.net', 'Digital City'), 
+       ('Taylor', 'Queue', '1234567895', 't.queue@swifttickets.com', 'Emo Alley'); 
+
+ 
+ 
+INSERT INTO userTask (userTaskUId, userTaskTId, userRole) 
+VALUES (3, 1, 'taskCreator'), 
+       (6, 2, 'taskCreator'), 
+       (1, 3, 'taskCreator'), 
+       (5, 4, 'taskCreator'), 
+       (4, 5, 'taskCreator'), 
+       (2, 6, 'taskCreator'), 
+       (2, 7, 'taskCreator'); 
+
+ 
+
+ 
+
+ALTER TABLE userTask DROP FOREIGN KEY userTask_ibfk_2; 
+ 
+ALTER TABLE userTask 
+ADD CONSTRAINT userTask_ibfk_2 
+FOREIGN KEY (userTaskTId) REFERENCES task(taskId) ON DELETE CASCADE; 
+
+ 
+
+ALTER TABLE userTask DROP FOREIGN KEY userTask_ibfk_1; 
+ 
+ALTER TABLE userTask 
+ADD CONSTRAINT userTask_ibfk_1 
+FOREIGN KEY (userTaskUId) REFERENCES user(userId) ON DELETE CASCADE; 
+
+ 
