@@ -1,4 +1,4 @@
-const taskService = require('../services/taskService');
+const taskService = require("../services/taskService");
 
 exports.getTasks = async (req, res) => {
   try {
@@ -13,7 +13,6 @@ exports.getTasks = async (req, res) => {
 
 exports.getTask = async (req, res) => {
   const { taskId } = req.params;
-  console.log('param' + taskId);
 
   try {
     const task = await taskService.getTask(taskId);
@@ -27,7 +26,6 @@ exports.getTask = async (req, res) => {
 
 exports.getTaskUserDetails = async (req, res) => {
   const { taskId } = req.params;
-  console.log('param' + taskId);
 
   try {
     const taskDetails = await taskService.getTaskUserDetails(taskId);
@@ -41,7 +39,6 @@ exports.getTaskUserDetails = async (req, res) => {
 
 exports.getTasksInCategory = async (req, res) => {
   const { categoryId } = req.params;
-  console.log('params ' + categoryId);
 
   try {
     const tasksInCategory = await taskService.getTasksInCategory(categoryId);
@@ -70,28 +67,28 @@ exports.createTask = async (req, res) => {
   if (!title || title.trim().length < 1) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in något titel för task',
+      error: "Du har inte skrivit in något titel för task",
     });
   }
 
   if (!address || address.trim().length < 1) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in något adress för task',
+      error: "Du har inte skrivit in något adress för task",
     });
   }
 
   if (price <= 0.0 || !price) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in något pris för uppgiften',
+      error: "Du har inte skrivit in något pris för uppgiften",
     });
   }
 
   if (!taskCategoryId) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in categoryId för uppgiften',
+      error: "Du har inte skrivit in categoryId för uppgiften",
     });
   }
 
@@ -102,11 +99,11 @@ exports.createTask = async (req, res) => {
       date,
       address,
       price,
-      taskCategoryId
+      taskCategoryId,
     );
     return res.status(201).json({
       success: true,
-      message: 'Du har lagt till en ny uppgift!',
+      message: "Du har lagt till en ny uppgift!",
     });
   } catch (error) {
     return res.status(500).json({
@@ -123,7 +120,7 @@ exports.markAsDone = async (req, res) => {
     await taskService.markAsDone(inTaskId);
     return res.status(201).json({
       success: true,
-      message: 'Du har markerat en uppgift som avklarad!',
+      message: "Du har markerat en uppgift som avklarad!",
     });
   } catch (error) {
     return res.status(500).json({
@@ -148,42 +145,42 @@ exports.editTask = async (req, res) => {
   if (!title || title.trim().length < 1) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in något titel för task',
+      error: "Du har inte skrivit in något titel för task",
     });
   }
 
   if (!address || address.trim().length < 1) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in något adress för task',
+      error: "Du har inte skrivit in något adress för task",
     });
   }
 
   if (price <= 0.0 || !price) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in något pris för uppgiften',
+      error: "Du har inte skrivit in något pris för uppgiften",
     });
   }
 
   if (!taskCategoryId) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in categoryId för uppgiften',
+      error: "Du har inte skrivit in categoryId för uppgiften",
     });
   }
 
   if (!status || status.trim().length < 1) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in något status för task',
+      error: "Du har inte skrivit in något status för task",
     });
   }
 
   if (!taskId) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in id för uppgiften',
+      error: "Du har inte skrivit in id för uppgiften",
     });
   }
 
@@ -196,11 +193,11 @@ exports.editTask = async (req, res) => {
       price,
       taskCategoryId,
       status,
-      taskId
+      taskId,
     );
     return res.status(201).json({
       success: true,
-      message: 'Du har uppdaterat en uppgift!',
+      message: "Du har uppdaterat en uppgift!",
     });
   } catch (error) {
     return res.status(500).json({
@@ -212,12 +209,11 @@ exports.editTask = async (req, res) => {
 
 exports.deleteTask = async (req, res) => {
   const { taskId } = req.params;
-  console.log('params' + taskId);
 
   if (!taskId) {
     return res.status(400).json({
       success: false,
-      error: 'Du har inte skrivit in något ID för uppgiften du ska radera!',
+      error: "Du har inte skrivit in något ID för uppgiften du ska radera!",
     });
   }
 
@@ -225,7 +221,7 @@ exports.deleteTask = async (req, res) => {
     await taskService.deleteTask(taskId);
     return res.status(200).json({
       success: true,
-      message: 'Du har raderat en uppgift!',
+      message: "Du har raderat en uppgift!",
     });
   } catch (error) {
     return res.status(500).json({

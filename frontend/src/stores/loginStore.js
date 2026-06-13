@@ -1,12 +1,12 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
+import { defineStore } from "pinia";
+import axios from "axios";
 
-export const useLoginStore = defineStore('loggedUser', {
+export const useLoginStore = defineStore("loggedUser", {
   state: () => {
     return {
-      token: localStorage.getItem('token') || null,
-      isLoggedIn: localStorage.getItem('isLoggedIn') || false,
-      username: localStorage.getItem('username') || '',
+      token: localStorage.getItem("token") || null,
+      isLoggedIn: localStorage.getItem("isLoggedIn") || false,
+      username: localStorage.getItem("username") || "",
       showAlert: false,
       failLogin: false,
       loginSuccess: false,
@@ -20,31 +20,30 @@ export const useLoginStore = defineStore('loggedUser', {
       };
       try {
         const response = await axios.post(
-          'http://localhost:3000/api/auth/login',
-          loginBody
+          "http://localhost:3000/api/auth/login",
+          loginBody,
         );
-        //console.log('Svar från servern:', response.data);
         this.loginSuccess = true;
         this.token = response.data.token;
         this.isLoggedIn = true;
         this.username = response.data.username;
-        localStorage.setItem('token', this.token);
-        localStorage.setItem('isLoggedIn', this.isLoggedIn);
-        localStorage.setItem('username', this.username);
+        localStorage.setItem("token", this.token);
+        localStorage.setItem("isLoggedIn", this.isLoggedIn);
+        localStorage.setItem("username", this.username);
       } catch (error) {
         this.failLogin = true;
-        console.error('Något gick fel: ', error.message);
+        console.error("Något gick fel: ", error.message);
       }
     },
     logout() {
       this.username = null;
       this.token = null;
       this.isLoggedIn = false;
-      localStorage.removeItem('token');
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('username');
+      localStorage.removeItem("token");
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("username");
 
-      this.router.push({ path: '/' });
+      this.router.push({ path: "/" });
     },
 
     async register(username, password, firstName) {
@@ -54,13 +53,13 @@ export const useLoginStore = defineStore('loggedUser', {
       };
       try {
         const response = await axios.post(
-          'http://localhost:3000/api/auth/register',
-          registerBody
+          "http://localhost:3000/api/auth/register",
+          registerBody,
         );
-        console.log('Svar från servern:', response.data);
+        console.log("Svar från servern:", response.data);
         this.createNewUser(firstName, username);
       } catch (error) {
-        console.error('Något gick fel: ', error);
+        console.error("Något gick fel: ", error);
       }
     },
 
@@ -71,13 +70,13 @@ export const useLoginStore = defineStore('loggedUser', {
       };
       try {
         const response = await axios.post(
-          'http://localhost:3000/api/users',
-          inputBody
+          "http://localhost:3000/api/users",
+          inputBody,
         );
-        console.log('Svar från servern:', response.data);
+        console.log("Svar från servern:", response.data);
         this.showAlert = true;
       } catch (error) {
-        console.error('Något gick fel: ', error);
+        console.error("Något gick fel: ", error);
       }
     },
   },
